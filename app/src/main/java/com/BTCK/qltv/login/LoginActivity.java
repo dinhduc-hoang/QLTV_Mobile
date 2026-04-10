@@ -1,0 +1,202 @@
+package com.BTCK.qltv.login; // Nhớ giữ nguyên package của bạn
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.BTCK.qltv.R; // Thay bằng đường dẫn R thực tế của bạn nếu lỗi đỏ
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import android.widget.LinearLayout; // MỚI THÊM
+import android.app.AlertDialog; // MỚI THÊM
+
+public class LoginActivity extends AppCompatActivity {
+
+    // 1. Khai báo các biến giao diện
+    EditText edtUsername, edtPassword;
+    Button btnLogin;
+    TextView tvForgotPassword; // MỚI THÊM: Khai báo
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        // 2. Ánh xạ ID từ file XML
+        edtUsername = findViewById(R.id.edtUsername);
+        edtPassword = findViewById(R.id.edtPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
+
+        // 3. Bắt sự kiện khi bấm nút Đăng Nhập
+        btnLogin.setOnClickListener(v -> {
+            String username = edtUsername.getText().toString().trim();
+            String password = edtPassword.getText().toString().trim();
+
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(LoginActivity.this, "Vui lòng nhập đủ thông tin!", Toast.LENGTH_SHORT).show();
+            } else {
+                // Gọi hàm xử lý đăng nhập với Firebase
+                performLogin(username, password);
+            }
+        });
+        tvForgotPassword.setOnClickListener(v -> {
+            showRecoverPasswordDialog();
+        });
+    }
+    private void showRecoverPasswordDialog() {
+        // 1. Tạo một hộp thoại (AlertDialog)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Khôi phục mật khẩu");
+        builder.setMessage("Vui lòng nhập Tên đăng nhập và Email để xác minh:");
+
+        // 2. Tạo 3 ô nhập liệu bỏ vào trong hộp thoại
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 20, 40, 20);
+
+        final EditText edtCheckUser = new EditText(this);
+        edtCheckUser.setHint("Nhập tên đăng nhập (VD: nv1)");
+        layout.addView(edtCheckUser);
+
+        final EditText edtCheckEmail = new EditText(this);
+        edtCheckEmail.setHint("Nhập Email của bạn");
+        layout.addView(edtCheckEmail);
+
+        final EditText edtNewPassword = new EditText(this);
+        edtNewPassword.setHint("Nhập Mật khẩu MỚI");
+        layout.addView(edtNewPassword);
+
+        builder.setView(layout);
+
+        // 3. Nút "Xác nhận" trên hộp thoại
+        builder.setPositiveButton("Đổi mật khẩu", (dialog, which) -> {
+            String user = edtCheckUser.getText().toString().trim();
+            String email = edtCheckEmail.getText().toString().trim();
+            String newPass = edtNewPassword.getText().toString().trim();
+
+            if (user.isEmpty() || email.isEmpty() || newPass.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập đủ thông tin!", Toast.LENGTH_SHORT).show();
+            } else {
+                updatePasswordInFirebase(user, email, newPass);
+            }
+        });
+
+        // 4. Nút "Hủy"
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+
+        builder.show();
+    }
+
+    // MỚI THÊM: Hàm kiểm tra và cập nhật mật khẩu mới lên Firebase
+    private void updatePasswordInFirebase(String username, String email, String newPassword) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("nhanvien");
+        Query checkUser = ref.orderByChild("User").equalTo(username);
+
+        checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        String dbEmail = userSnapshot.child("Email").getValue(String.class);
+
+                        // So sánh Email nhập vào có khớp với Email trên hệ thống không
+                        if (dbEmail != null && dbEmail.equalsIgnoreCase(email)) {
+                            // Cú pháp CẬP NHẬT dữ liệu trên Firebase
+                            userSnapshot.getRef().child("Pass").setValue(newPassword)
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(LoginActivity.this, "Đổi mật khẩu thành công! Hãy đăng nhập lại.", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Lỗi cập nhật mật khẩu!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Email không khớp với tài khoản!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(LoginActivity.this, "Không tìm thấy tên đăng nhập này!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(LoginActivity.this, "Lỗi cơ sở dữ liệu!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void performLogin(String username, String password) {
+        // Trỏ tới bảng "nhanvien" trong Firebase
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("nhanvien");
+
+        // Tìm kiếm nhân viên có "User" bằng với username vừa nhập
+        Query checkUser = ref.orderByChild("User").equalTo(username);
+
+        checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Nếu snapshot tồn tại (tức là tìm thấy user này)
+                if (snapshot.exists()) {
+                    // Mặc dù user là duy nhất, Firebase vẫn trả về 1 danh sách, nên ta phải dùng vòng lặp (hoặc lấy con đầu tiên)
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        String dbPassword = userSnapshot.child("Pass").getValue(String.class);
+
+                        if (dbPassword != null && dbPassword.equals(password)) {
+                            // Mật khẩu ĐÚNG
+                            String tenNV = userSnapshot.child("TenNV").getValue(String.class);
+                            String vaiTro = userSnapshot.child("VaiTro").getValue(String.class);
+
+                            Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
+                            // Lưu thông tin phiên đăng nhập vào SharedPreferences
+                            saveSession(tenNV, vaiTro);
+
+                            // Chuyển sang màn hình Dashboard
+                            // LƯU Ý: Đổi tên DashboardActivity.class thành tên file Dashboard của bạn nếu bạn đặt tên khác
+                            Intent intent = new Intent(LoginActivity.this, com.BTCK.qltv.dashboard.DashboardActivity.class); // Thay đổi package cho đúng nếu báo đỏ
+                            startActivity(intent);
+
+                            // Đóng màn hình đăng nhập để ấn nút Back không quay lại đây nữa
+                            finish();
+
+                        } else {
+                            // Mật khẩu SAI
+                            Toast.makeText(LoginActivity.this, "Sai mật khẩu!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    // Không tìm thấy username trong database
+                    Toast.makeText(LoginActivity.this, "Tài khoản không tồn tại!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(LoginActivity.this, "Lỗi kết nối cơ sở dữ liệu", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Hàm phụ trợ để lưu Tên và Vai trò vào bộ nhớ tạm
+    private void saveSession(String ten, String vaiTro) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("TenNV", ten);
+        editor.putString("VaiTro", vaiTro);
+        editor.apply();
+    }
+}
