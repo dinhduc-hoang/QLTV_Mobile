@@ -52,89 +52,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         tvForgotPassword.setOnClickListener(v -> {
-            showRecoverPasswordDialog();
-        });
-    }
-    private void showRecoverPasswordDialog() {
-        // 1. Tạo một hộp thoại (AlertDialog)
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Khôi phục mật khẩu");
-        builder.setMessage("Vui lòng nhập Tên đăng nhập và Email để xác minh:");
-
-        // 2. Tạo 3 ô nhập liệu bỏ vào trong hộp thoại
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(40, 20, 40, 20);
-
-        final EditText edtCheckUser = new EditText(this);
-        edtCheckUser.setHint("Nhập tên đăng nhập (VD: nv1)");
-        layout.addView(edtCheckUser);
-
-        final EditText edtCheckEmail = new EditText(this);
-        edtCheckEmail.setHint("Nhập Email của bạn");
-        layout.addView(edtCheckEmail);
-
-        final EditText edtNewPassword = new EditText(this);
-        edtNewPassword.setHint("Nhập Mật khẩu MỚI");
-        layout.addView(edtNewPassword);
-
-        builder.setView(layout);
-
-        // 3. Nút "Xác nhận" trên hộp thoại
-        builder.setPositiveButton("Đổi mật khẩu", (dialog, which) -> {
-            String user = edtCheckUser.getText().toString().trim();
-            String email = edtCheckEmail.getText().toString().trim();
-            String newPass = edtNewPassword.getText().toString().trim();
-
-            if (user.isEmpty() || email.isEmpty() || newPass.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đủ thông tin!", Toast.LENGTH_SHORT).show();
-            } else {
-                updatePasswordInFirebase(user, email, newPass);
-            }
-        });
-
-        // 4. Nút "Hủy"
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-
-        builder.show();
-    }
-
-    // MỚI THÊM: Hàm kiểm tra và cập nhật mật khẩu mới lên Firebase
-    private void updatePasswordInFirebase(String username, String email, String newPassword) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("nhanvien");
-        Query checkUser = ref.orderByChild("User").equalTo(username);
-
-        checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                        String dbEmail = userSnapshot.child("Email").getValue(String.class);
-
-                        // So sánh Email nhập vào có khớp với Email trên hệ thống không
-                        if (dbEmail != null && dbEmail.equalsIgnoreCase(email)) {
-                            // Cú pháp CẬP NHẬT dữ liệu trên Firebase
-                            userSnapshot.getRef().child("Pass").setValue(newPassword)
-                                    .addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(LoginActivity.this, "Đổi mật khẩu thành công! Hãy đăng nhập lại.", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(LoginActivity.this, "Lỗi cập nhật mật khẩu!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Email không khớp với tài khoản!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                } else {
-                    Toast.makeText(LoginActivity.this, "Không tìm thấy tên đăng nhập này!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(LoginActivity.this, "Lỗi cơ sở dữ liệu!", Toast.LENGTH_SHORT).show();
-            }
+            // Chuyển sang màn hình Khôi Phục Mật Khẩu
+            Intent intent = new Intent(LoginActivity.this, RecoverPasswordActivity.class);
+            startActivity(intent);
         });
     }
 

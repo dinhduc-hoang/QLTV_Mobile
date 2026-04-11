@@ -4,12 +4,16 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,10 +42,12 @@ public class SachActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     List<String> listHienThiString = new ArrayList<>();
 
+    int selectedPosition = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_management); // Tái sử dụng layout chung
+        setContentView(R.layout.activity_sach); // Đã đổi layout riêng cho Sách
 
         edtSearch = findViewById(R.id.edtSearch);
         btnAdd = findViewById(R.id.btnAdd);
@@ -68,13 +74,12 @@ public class SachActivity extends AppCompatActivity {
         });
 
         // NÚT THÊM SÁCH
-        btnAdd.setOnClickListener(v -> showAddEditDialog(null));
-
-        // CLICK VÀO SÁCH ĐỂ SỬA/XÓA
-        lvData.setOnItemClickListener((parent, view, position, id) -> {
-            Sach selectedSach = listHienThi.get(position);
-            showOptionsDialog(selectedSach);
+        btnAdd.setOnClickListener(v -> {
+            startActivity(new Intent(SachActivity.this, AddSachActivity.class));
         });
+
+        // Đăng ký mở Menu để Sửa/Xóa giống kiểu MainActivity mà bạn cung cấp
+        registerForContextMenu(lvData);
     }
 
     private void loadData() {
@@ -111,93 +116,43 @@ public class SachActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private void showOptionsDialog(Sach sach) {
-        String[] options = {"Sửa thông tin", "Xóa sách"};
-        new AlertDialog.Builder(this)
-                .setTitle("Tùy chọn: " + sach.getTenSach())
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) showAddEditDialog(sach); // Sửa
-                    else deleteSach(sach); // Xóa
-                }).show();
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
-    private void deleteSach(Sach sach) {
-        new AlertDialog.Builder(this)
-                .setTitle("Xóa sách")
-                .setMessage("Chắc chắn xóa cuốn '" + sach.getTenSach() + "'?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    mDatabase.child(sach.getId()).removeValue()
-                            .addOnSuccessListener(aVoid -> Toast.makeText(this, "Đã xóa!", Toast.LENGTH_SHORT).show());
-                })
-                .setNegativeButton("Hủy", null).show();
-    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Sach sachEdit = listHienThi.get(selectedPosition);
 
-    // HÀM CHUNG DÙNG CHO CẢ THÊM VÀ SỬA (Tiết kiệm code)
-    private void showAddEditDialog(Sach sachToEdit) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(sachToEdit == null ? "Thêm Sách Mới" : "Sửa Sách");
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(SachActivity.this, UpdateSachActivity.class);
+            // Đẩy dữ liệu cũ sang UpdateActivity
+            intent.putExtra("id", sachEdit.getId());
+            intent.putExtra("tenSach", sachEdit.getTenSach());
+            intent.putExtra("soLuong", sachEdit.getSoLuong());
+            intent.putExtra("namXB", sachEdit.getNamXB());
+            intent.putExtra("maTL", sachEdit.getMaTL());
+            intent.putExtra("maTG", sachEdit.getMaTG());
+            intent.putExtra("maNXB", sachEdit.getMaNXB());
+            intent.putExtra("maNN", sachEdit.getMaNN());
+            intent.putExtra("maViTri", sachEdit.getMaViTri());
+            startActivity(intent);
 
-        // Dựng Layout nhập liệu bằng Java
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(40, 20, 40, 20);
-
-        EditText edtTen = new EditText(this); edtTen.setHint("Tên sách");
-        EditText edtSoLuong = new EditText(this); edtSoLuong.setHint("Số lượng (VD: 20)"); edtSoLuong.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        EditText edtNamXB = new EditText(this); edtNamXB.setHint("Năm XB (VD: 2021)"); edtNamXB.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-
-        // Khóa ngoại (Mức cơ bản: Nhập mã. Mức nâng cao: Dùng Spinner)
-        EditText edtMaTL = new EditText(this); edtMaTL.setHint("Mã Thể Loại (VD: TL006)");
-        EditText edtMaTG = new EditText(this); edtMaTG.setHint("Mã Tác Giả (VD: TG005)");
-        EditText edtMaNXB = new EditText(this); edtMaNXB.setHint("Mã NXB (VD: NXB001)");
-        EditText edtMaNN = new EditText(this); edtMaNN.setHint("Mã Ngôn Ngữ (VD: NN001)");
-        EditText edtMaViTri = new EditText(this); edtMaViTri.setHint("Mã Vị Trí Kệ (VD: KS001)");
-
-        layout.addView(edtTen); layout.addView(edtSoLuong); layout.addView(edtNamXB);
-        layout.addView(edtMaTL); layout.addView(edtMaTG); layout.addView(edtMaNXB);
-        layout.addView(edtMaNN); layout.addView(edtMaViTri);
-        builder.setView(layout);
-
-        // Nếu là "Sửa", đổ dữ liệu cũ vào các ô
-        if (sachToEdit != null) {
-            edtTen.setText(sachToEdit.getTenSach());
-            edtSoLuong.setText(String.valueOf(sachToEdit.getSoLuong()));
-            edtNamXB.setText(String.valueOf(sachToEdit.getNamXB()));
-            edtMaTL.setText(sachToEdit.getMaTL());
-            edtMaTG.setText(sachToEdit.getMaTG());
-            edtMaNXB.setText(sachToEdit.getMaNXB());
-            edtMaNN.setText(sachToEdit.getMaNN());
-            edtMaViTri.setText(sachToEdit.getMaViTri());
+        } else if (item.getItemId() == R.id.menu_delete) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Xác nhận xóa")
+                    .setMessage("Bạn có chắc xóa Sách này?")
+                    .setPositiveButton("Có", (dialog, which) -> {
+                        mDatabase.child(sachEdit.getId()).removeValue();
+                        Toast.makeText(this, "Đã xóa!", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Không", null)
+                    .show();
         }
-
-        builder.setPositiveButton("Lưu", (dialog, which) -> {
-            try {
-                String ten = edtTen.getText().toString();
-                int soLuong = Integer.parseInt(edtSoLuong.getText().toString());
-                int namXB = Integer.parseInt(edtNamXB.getText().toString());
-                String maTL = edtMaTL.getText().toString();
-                String maTG = edtMaTG.getText().toString();
-                String maNXB = edtMaNXB.getText().toString();
-                String maNN = edtMaNN.getText().toString();
-                String maViTri = edtMaViTri.getText().toString();
-
-                if (ten.isEmpty() || maTL.isEmpty()) {
-                    Toast.makeText(this, "Tên sách và Mã TL không được để trống!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Nếu Thêm mới -> Tạo mã "S..." tự động. Nếu Sửa -> Dùng lại mã cũ
-                String bookId = (sachToEdit == null) ? mDatabase.push().getKey() : sachToEdit.getId();
-
-                Sach newSach = new Sach(bookId, maTG, maNXB, maTL, ten, maNN, maViTri, namXB, soLuong);
-
-                mDatabase.child(bookId).setValue(newSach)
-                        .addOnSuccessListener(aVoid -> Toast.makeText(this, "Lưu thành công!", Toast.LENGTH_SHORT).show());
-
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Số lượng và Năm XB phải là số!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("Hủy", null).show();
+        return super.onContextItemSelected(item);
     }
 }

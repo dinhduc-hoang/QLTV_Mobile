@@ -19,7 +19,16 @@
         </activity>
 
         <activity android:name=".dashboard.DashboardActivity" />
-<!--        <activity android:name="theloai.TheLoaiActivity" />-->
+        <activity android:name=".login.RecoverPasswordActivity" />
+        
+        <!-- Sách -->
         <activity android:name=".sach.SachActivity" />
+        <activity android:name=".sach.AddSachActivity" />
+        <activity android:name=".sach.UpdateSachActivity" />
+
+        <!-- Thể Loại -->
+        <activity android:name=".theloai.TheLoaiActivity" />
+        <activity android:name=".theloai.AddTheLoaiActivity" />
+        <activity android:name=".theloai.UpdateTheLoaiActivity" />
     </application>
 </manifest>
