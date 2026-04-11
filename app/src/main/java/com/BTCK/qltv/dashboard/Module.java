@@ -1,8 +1,8 @@
-package com.BTCK.qltv.dashboard; // Sửa lại đúng package của bạn
+package com.BTCK.qltv.dashboard;
 
 public class Module {
     private String name;
-    private int iconId; // ID của file ảnh trong thư mục drawable
+    private int iconId;
 
     public Module(String name, int iconId) {
         this.name = name;

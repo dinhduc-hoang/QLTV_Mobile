@@ -12,29 +12,28 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.BTCK.qltv.R; // Thay bằng đường dẫn R thực tế của bạn nếu lỗi đỏ
+import com.BTCK.qltv.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import android.widget.LinearLayout; // MỚI THÊM
-import android.app.AlertDialog; // MỚI THÊM
+import android.widget.LinearLayout;
+import android.app.AlertDialog;
 
 public class LoginActivity extends AppCompatActivity {
 
     // 1. Khai báo các biến giao diện
     EditText edtUsername, edtPassword;
     Button btnLogin;
-    TextView tvForgotPassword; // MỚI THÊM: Khai báo
+    TextView tvForgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // 2. Ánh xạ ID từ file XML
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
