@@ -26,12 +26,17 @@ public class AddTheLoaiActivity extends AppCompatActivity {
 
         theLoaiQuery = new TheLoaiQuery(this);
 
+        // Hiển thị mã tự động lên UI để người dùng thấy (optional)
+        String maTuDong = theLoaiQuery.taoMaTheLoaiMoi();
+        edtMaTL.setText(maTuDong);
+
         btnSaveTheLoai.setOnClickListener(v -> {
-            String ma = edtMaTL.getText().toString().trim();
+            // Khi lưu sẽ lấy mã tự động luôn
+            String ma = theLoaiQuery.taoMaTheLoaiMoi();
             String ten = edtTenTL.getText().toString().trim();
 
-            if (ma.isEmpty() || ten.isEmpty()) {
-                Toast.makeText(this, "Mã và Tên không được để trống", Toast.LENGTH_SHORT).show();
+            if (ten.isEmpty()) {
+                Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -39,10 +44,10 @@ public class AddTheLoaiActivity extends AppCompatActivity {
             boolean inserted = theLoaiQuery.themTheLoai(theLoai);
 
             if (inserted) {
-                Toast.makeText(this, "Đã thêm Thể Loại", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Đã thêm Thể Loại: " + ma, Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                Toast.makeText(this, "Thêm thất bại! Mã đã tồn tại.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Thêm thất bại!", Toast.LENGTH_SHORT).show();
             }
         });
     }

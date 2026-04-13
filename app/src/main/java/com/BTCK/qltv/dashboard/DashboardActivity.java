@@ -81,10 +81,14 @@ public class DashboardActivity extends AppCompatActivity {
         moduleList.add(new Module("Quản lý sách", R.drawable.ic_book));
         moduleList.add(new Module("Quản lý thể loại", R.drawable.ic_category));
         moduleList.add(new Module("Quản lý tác giả", R.drawable.ic_author));
+        moduleList.add(new Module("Quản lý khoa", R.drawable.ic_department));
+        moduleList.add(new Module("Quản lý lớp", R.drawable.ic_class));
+        moduleList.add(new Module("Quản lý nhân viên", R.drawable.ic_employee));
         moduleList.add(new Module("Quản lý nhà xuất bản", R.drawable.ic_publisher));
         moduleList.add(new Module("Quản lý độc giả", R.drawable.ic_reader));
         moduleList.add(new Module("Quản lý kệ sách", R.drawable.ic_bookshelf));
         moduleList.add(new Module("Quản lý ngôn ngữ", R.drawable.ic_language));
+        moduleList.add(new Module("Quản lý thẻ thư viện", R.drawable.ic_library));
         moduleList.add(new Module("Quản lý mượn - trả sách", R.drawable.ic_borrow_return));
 
         adapter = new ModuleAdapter(this, moduleList);

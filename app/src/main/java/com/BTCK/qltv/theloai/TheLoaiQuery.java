@@ -48,6 +48,28 @@ public class TheLoaiQuery {
         return row != -1;
     }
 
+    public String taoMaTheLoaiMoi() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT MaTL FROM theloai", null);
+
+        int maxId = 0;
+        while (cursor.moveToNext()) {
+            String maHienTai = cursor.getString(0);
+            if (maHienTai != null && maHienTai.startsWith("TL")) {
+                try {
+                    int id = Integer.parseInt(maHienTai.substring(2));
+                    if (id > maxId) {
+                        maxId = id;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        cursor.close();
+
+        return String.format("TL%03d", maxId + 1);
+    }
+
     public boolean suaTheLoai(String maCu, TheLoai theLoai) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();

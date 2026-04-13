@@ -1,17 +1,26 @@
 package com.BTCK.qltv.sach;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.BTCK.qltv.R;
+import com.BTCK.qltv.database.SQLiteHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddSachActivity extends AppCompatActivity {
 
-    EditText edtTenSach, edtSoLuong, edtNamXB, edtMaTL, edtMaTG, edtMaNXB, edtMaNN, edtMaViTri;
+    EditText edtTenSach, edtSoLuong, edtNamXB;
+    Spinner spnMaTL, spnMaTG, spnMaNXB, spnMaNN, spnMaViTri;
     Button btnSaveSach;
 
     SachQuery sachQuery;
@@ -24,29 +33,40 @@ public class AddSachActivity extends AppCompatActivity {
         edtTenSach = findViewById(R.id.edtTenSach);
         edtSoLuong = findViewById(R.id.edtSoLuong);
         edtNamXB = findViewById(R.id.edtNamXB);
-        edtMaTL = findViewById(R.id.edtMaTL);
-        edtMaTG = findViewById(R.id.edtMaTG);
-        edtMaNXB = findViewById(R.id.edtMaNXB);
-        edtMaNN = findViewById(R.id.edtMaNN);
-        edtMaViTri = findViewById(R.id.edtMaViTri);
+        
+        spnMaTL = findViewById(R.id.spnMaTL);
+        spnMaTG = findViewById(R.id.spnMaTG);
+        spnMaNXB = findViewById(R.id.spnMaNXB);
+        spnMaNN = findViewById(R.id.spnMaNN);
+        spnMaViTri = findViewById(R.id.spnMaViTri);
+        
         btnSaveSach = findViewById(R.id.btnSaveSach);
 
         sachQuery = new SachQuery(this);
 
+        // Load dữ liệu lên các Spinner
+        loadSpinnerData(spnMaTL, "theloai", "MaTL", "TenTL", null);
+        loadSpinnerData(spnMaTG, "tacgia", "MaTG", "TenTG", null);
+        loadSpinnerData(spnMaNXB, "nhaxuatban", "MaNXB", "TenNXB", null);
+        loadSpinnerData(spnMaNN, "ngonngu", "MaNN", "TenNN", null);
+        loadSpinnerData(spnMaViTri, "kesach", "MaViTri", "TenKe", null);
+
         btnSaveSach.setOnClickListener(v -> {
             String ten = edtTenSach.getText().toString().trim();
-            String maTL = edtMaTL.getText().toString().trim();
-            String maTG = edtMaTG.getText().toString().trim();
-            String maNXB = edtMaNXB.getText().toString().trim();
-            String maNN = edtMaNN.getText().toString().trim();
-            String maViTri = edtMaViTri.getText().toString().trim();
             String strSoLuong = edtSoLuong.getText().toString().trim();
             String strNamXB = edtNamXB.getText().toString().trim();
 
-            if (ten.isEmpty() || maTL.isEmpty() || maTG.isEmpty() || maNXB.isEmpty() || maNN.isEmpty() || maViTri.isEmpty() || strSoLuong.isEmpty() || strNamXB.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đủ thông tin!", Toast.LENGTH_SHORT).show();
+            if (ten.isEmpty() || strSoLuong.isEmpty() || strNamXB.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập đủ thông tin sách!", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // Lấy ID từ Spinner
+            String maTL = ((SpinnerItem) spnMaTL.getSelectedItem()).getId();
+            String maTG = ((SpinnerItem) spnMaTG.getSelectedItem()).getId();
+            String maNXB = ((SpinnerItem) spnMaNXB.getSelectedItem()).getId();
+            String maNN = ((SpinnerItem) spnMaNN.getSelectedItem()).getId();
+            String maViTri = ((SpinnerItem) spnMaViTri.getSelectedItem()).getId();
 
             int soLuong;
             int namXB;
@@ -69,5 +89,42 @@ public class AddSachActivity extends AppCompatActivity {
                 Toast.makeText(this, "Thêm sách thất bại!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void loadSpinnerData(Spinner spinner, String tableName, String idCol, String nameCol, String selectedId) {
+        SQLiteHelper dbHelper = new SQLiteHelper(this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + idCol + ", " + nameCol + " FROM " + tableName, null);
+
+        List<SpinnerItem> list = new ArrayList<>();
+        int selectedIndex = 0;
+        int currentIndex = 0;
+
+        while (cursor.moveToNext()) {
+            String id = cursor.getString(0);
+            String name = cursor.getString(1);
+            list.add(new SpinnerItem(id, name));
+
+            if (selectedId != null && id.equals(selectedId)) {
+                selectedIndex = currentIndex;
+            }
+            currentIndex++;
+        }
+
+        cursor.close();
+        db.close();
+        dbHelper.close();
+
+        if (list.isEmpty()) {
+            list.add(new SpinnerItem("", "-- Trống --"));
+        }
+
+        ArrayAdapter<SpinnerItem> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, list);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        if (selectedId != null) {
+            spinner.setSelection(selectedIndex);
+        }
     }
 }

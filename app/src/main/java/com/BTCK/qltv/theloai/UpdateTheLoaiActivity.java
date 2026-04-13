@@ -32,11 +32,11 @@ public class UpdateTheLoaiActivity extends AppCompatActivity {
         edtTenTL.setText(getIntent().getStringExtra("tenTL"));
 
         btnSaveTheLoai.setOnClickListener(v -> {
-            String ma = edtMaTL.getText().toString().trim();
+            String ma = edtMaTL.getText().toString().trim(); // Mã không cho sửa
             String ten = edtTenTL.getText().toString().trim();
 
-            if (ma.isEmpty() || ten.isEmpty()) {
-                Toast.makeText(this, "Mã và Tên không được để trống", Toast.LENGTH_SHORT).show();
+            if (ten.isEmpty()) {
+                Toast.makeText(this, "Tên Thể loại không được để trống", Toast.LENGTH_SHORT).show();
                 return;
             }
 

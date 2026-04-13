@@ -13,10 +13,12 @@ public class TheLoai {
     }
 
     public String getMaTL() {
+
         return maTL;
     }
 
     public void setMaTL(String maTL) {
+
         this.maTL = maTL;
     }
 
