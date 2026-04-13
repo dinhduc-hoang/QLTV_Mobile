@@ -2,31 +2,25 @@ package com.BTCK.qltv.sach;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.AdapterView;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.view.ContextMenu;
-import android.view.MenuItem;
-import android.view.View;
-import android.content.Intent;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.BTCK.qltv.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SachActivity extends AppCompatActivity {
 
@@ -34,11 +28,10 @@ public class SachActivity extends AppCompatActivity {
     ImageButton btnAdd;
     ListView lvData;
 
-    DatabaseReference mDatabase;
+    SachQuery sachQuery;
     List<Sach> listGoc = new ArrayList<>();
     List<Sach> listHienThi = new ArrayList<>();
 
-    // Tạm dùng ArrayAdapter hiển thị Tên Sách + Số lượng
     ArrayAdapter<String> adapter;
     List<String> listHienThiString = new ArrayList<>();
 
@@ -47,21 +40,20 @@ public class SachActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sach); // Đã đổi layout riêng cho Sách
+        setContentView(R.layout.activity_sach);
 
         edtSearch = findViewById(R.id.edtSearch);
         btnAdd = findViewById(R.id.btnAdd);
         lvData = findViewById(R.id.lvData);
+        sachQuery = new SachQuery(this);
 
-        // Trỏ vào bảng "sach"
-        mDatabase = FirebaseDatabase.getInstance().getReference("sach");
+        findViewById(R.id.imgBack).setOnClickListener(v -> finish());
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listHienThiString);
         lvData.setAdapter(adapter);
 
         loadData();
 
-        // TÌM KIẾM THEO TÊN SÁCH
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -73,46 +65,39 @@ public class SachActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // NÚT THÊM SÁCH
         btnAdd.setOnClickListener(v -> {
             startActivity(new Intent(SachActivity.this, AddSachActivity.class));
         });
 
-        // Đăng ký mở Menu để Sửa/Xóa giống kiểu MainActivity mà bạn cung cấp
         registerForContextMenu(lvData);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+
     private void loadData() {
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listGoc.clear();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    Sach sach = data.getValue(Sach.class);
-                    if (sach != null) {
-                        sach.setId(data.getKey()); // Lấy S001, S002...
-                        listGoc.add(sach);
-                    }
-                }
-                filterData("");
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(SachActivity.this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
-            }
-        });
+        listGoc.clear();
+        listGoc.addAll(sachQuery.layDanhSachSach());
+        filterData(edtSearch.getText().toString().trim());
     }
 
     private void filterData(String keyword) {
+        String tuKhoa = keyword == null ? "" : keyword.trim().toLowerCase(Locale.getDefault());
+
         listHienThi.clear();
         listHienThiString.clear();
+
         for (Sach sach : listGoc) {
-            if (keyword.isEmpty() || sach.getTenSach().toLowerCase().contains(keyword.toLowerCase())) {
+            String tenSach = sach.getTenSach() == null ? "" : sach.getTenSach();
+            if (tuKhoa.isEmpty() || tenSach.toLowerCase(Locale.getDefault()).contains(tuKhoa)) {
                 listHienThi.add(sach);
-                // Hiển thị tên sách và số lượng trên ListView
-                listHienThiString.add(sach.getTenSach() + " (SL: " + sach.getSoLuong() + ")");
+                listHienThiString.add(sach.getMaSach() + " - " + tenSach + " (SL: " + sach.getSoLuong() + ")");
             }
         }
+
         adapter.notifyDataSetChanged();
     }
 
@@ -126,12 +111,15 @@ public class SachActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
+        }
+
         Sach sachEdit = listHienThi.get(selectedPosition);
 
         if (item.getItemId() == R.id.menu_update) {
             Intent intent = new Intent(SachActivity.this, UpdateSachActivity.class);
-            // Đẩy dữ liệu cũ sang UpdateActivity
-            intent.putExtra("id", sachEdit.getId());
+            intent.putExtra("maSach", sachEdit.getMaSach());
             intent.putExtra("tenSach", sachEdit.getTenSach());
             intent.putExtra("soLuong", sachEdit.getSoLuong());
             intent.putExtra("namXB", sachEdit.getNamXB());
@@ -147,12 +135,18 @@ public class SachActivity extends AppCompatActivity {
                     .setTitle("Xác nhận xóa")
                     .setMessage("Bạn có chắc xóa Sách này?")
                     .setPositiveButton("Có", (dialog, which) -> {
-                        mDatabase.child(sachEdit.getId()).removeValue();
-                        Toast.makeText(this, "Đã xóa!", Toast.LENGTH_SHORT).show();
+                        boolean deleted = sachQuery.xoaSach(sachEdit.getMaSach());
+                        if (deleted) {
+                            Toast.makeText(this, "Đã xóa!", Toast.LENGTH_SHORT).show();
+                            loadData();
+                        } else {
+                            Toast.makeText(this, "Xóa thất bại!", Toast.LENGTH_SHORT).show();
+                        }
                     })
                     .setNegativeButton("Không", null)
                     .show();
         }
-        return super.onContextItemSelected(item);
+
+        return true;
     }
 }

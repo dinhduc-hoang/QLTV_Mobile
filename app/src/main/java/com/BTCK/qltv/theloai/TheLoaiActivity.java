@@ -15,18 +15,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.BTCK.qltv.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class TheLoaiActivity extends AppCompatActivity {
 
@@ -34,7 +29,7 @@ public class TheLoaiActivity extends AppCompatActivity {
     ImageButton btnAdd;
     ListView lvData;
 
-    DatabaseReference database;
+    TheLoaiQuery theLoaiQuery;
     List<TheLoai> listGoc = new ArrayList<>();
     List<TheLoai> listHienThi = new ArrayList<>();
 
@@ -46,21 +41,20 @@ public class TheLoaiActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_the_loai); // Đã đổi layout riêng cho Thể Loại
+        setContentView(R.layout.activity_the_loai);
 
         edtSearch = findViewById(R.id.edtSearch);
         btnAdd = findViewById(R.id.btnAdd);
         lvData = findViewById(R.id.lvData);
+        theLoaiQuery = new TheLoaiQuery(this);
 
-        // Trỏ vào bảng "theloai"
-        database = FirebaseDatabase.getInstance().getReference("theloai");
+        findViewById(R.id.imgBack).setOnClickListener(v -> finish());
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listHienThiString);
         lvData.setAdapter(adapter);
 
         loadData();
 
-        // TÌM KIẾM THEO TÊN
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -72,46 +66,39 @@ public class TheLoaiActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // NÚT THÊM THỂ LOẠI
         btnAdd.setOnClickListener(v -> {
             startActivity(new Intent(TheLoaiActivity.this, AddTheLoaiActivity.class));
         });
 
-        // Đăng ký mở Menu để Sửa/Xóa
         registerForContextMenu(lvData);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+
     private void loadData() {
-        database.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listGoc.clear();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    TheLoai tl = data.getValue(TheLoai.class);
-                    if (tl != null) {
-                        tl.id = data.getKey();
-                        listGoc.add(tl);
-                    }
-                }
-                filterData("");
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(TheLoaiActivity.this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
-            }
-        });
+        listGoc.clear();
+        listGoc.addAll(theLoaiQuery.layDanhSachTheLoai());
+        filterData(edtSearch.getText().toString().trim());
     }
 
     private void filterData(String keyword) {
+        String tuKhoa = keyword == null ? "" : keyword.trim().toLowerCase(Locale.getDefault());
+
         listHienThi.clear();
         listHienThiString.clear();
+
         for (TheLoai tl : listGoc) {
-            if (tl.tenTL != null && (keyword.isEmpty() || tl.tenTL.toLowerCase().contains(keyword.toLowerCase()))) {
+            String tenTL = tl.getTenTL() == null ? "" : tl.getTenTL();
+            if (tuKhoa.isEmpty() || tenTL.toLowerCase(Locale.getDefault()).contains(tuKhoa)) {
                 listHienThi.add(tl);
-                // Hiển thị tên Thể loại trên ListView
-                listHienThiString.add(tl.tenTL + " (" + tl.maTL + ")");
+                listHienThiString.add(tenTL + " (" + tl.getMaTL() + ")");
             }
         }
+
         adapter.notifyDataSetChanged();
     }
 
@@ -125,15 +112,16 @@ public class TheLoaiActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
+        }
+
         TheLoai tlEdit = listHienThi.get(selectedPosition);
 
         if (item.getItemId() == R.id.menu_update) {
             Intent intent = new Intent(TheLoaiActivity.this, UpdateTheLoaiActivity.class);
-            // Đẩy dữ liệu cũ sang UpdateActivity
-            intent.putExtra("id", tlEdit.id);
-            intent.putExtra("maTL", tlEdit.maTL);
-            intent.putExtra("tenTL", tlEdit.tenTL);
-            intent.putExtra("moTa", tlEdit.moTa);
+            intent.putExtra("maTL", tlEdit.getMaTL());
+            intent.putExtra("tenTL", tlEdit.getTenTL());
             startActivity(intent);
 
         } else if (item.getItemId() == R.id.menu_delete) {
@@ -141,12 +129,18 @@ public class TheLoaiActivity extends AppCompatActivity {
                     .setTitle("Xác nhận xóa")
                     .setMessage("Bạn có chắc xóa Thể Loại này?")
                     .setPositiveButton("Có", (dialog, which) -> {
-                        database.child(tlEdit.id).removeValue();
-                        Toast.makeText(this, "Đã xóa!", Toast.LENGTH_SHORT).show();
+                        boolean deleted = theLoaiQuery.xoaTheLoai(tlEdit.getMaTL());
+                        if (deleted) {
+                            Toast.makeText(this, "Đã xóa!", Toast.LENGTH_SHORT).show();
+                            loadData();
+                        } else {
+                            Toast.makeText(this, "Xóa thất bại!", Toast.LENGTH_SHORT).show();
+                        }
                     })
                     .setNegativeButton("Không", null)
                     .show();
         }
-        return super.onContextItemSelected(item);
+
+        return true;
     }
 }

@@ -8,15 +8,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.BTCK.qltv.R;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class UpdateTheLoaiActivity extends AppCompatActivity {
 
-    EditText edtMaTL, edtTenTL, edtMoTa;
+    EditText edtMaTL, edtTenTL;
     Button btnSaveTheLoai;
-    DatabaseReference database;
-    String id;
+    TheLoaiQuery theLoaiQuery;
+    String maCu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,31 +23,37 @@ public class UpdateTheLoaiActivity extends AppCompatActivity {
 
         edtMaTL = findViewById(R.id.edtMaTL);
         edtTenTL = findViewById(R.id.edtTenTL);
-        edtMoTa = findViewById(R.id.edtMoTa);
         btnSaveTheLoai = findViewById(R.id.btnSaveTheLoai);
 
-        database = FirebaseDatabase.getInstance().getReference("theloai");
+        theLoaiQuery = new TheLoaiQuery(this);
 
-        id = getIntent().getStringExtra("id");
+        maCu = getIntent().getStringExtra("maTL");
         edtMaTL.setText(getIntent().getStringExtra("maTL"));
         edtTenTL.setText(getIntent().getStringExtra("tenTL"));
-        edtMoTa.setText(getIntent().getStringExtra("moTa"));
 
         btnSaveTheLoai.setOnClickListener(v -> {
-            String ma = edtMaTL.getText().toString();
-            String ten = edtTenTL.getText().toString();
-            String mota = edtMoTa.getText().toString();
+            String ma = edtMaTL.getText().toString().trim();
+            String ten = edtTenTL.getText().toString().trim();
 
             if (ma.isEmpty() || ten.isEmpty()) {
                 Toast.makeText(this, "Mã và Tên không được để trống", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            TheLoai tlUpdate = new TheLoai(id, ma, ten, mota);
-            database.child(id).setValue(tlUpdate);
+            if (maCu == null || maCu.isEmpty()) {
+                Toast.makeText(this, "Không tìm thấy thể loại cần sửa", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            Toast.makeText(this, "Đã cập nhật Thể Loại", Toast.LENGTH_SHORT).show();
-            finish();
+            TheLoai theLoaiMoi = new TheLoai(ma, ten);
+            boolean updated = theLoaiQuery.suaTheLoai(maCu, theLoaiMoi);
+
+            if (updated) {
+                Toast.makeText(this, "Đã cập nhật Thể Loại", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

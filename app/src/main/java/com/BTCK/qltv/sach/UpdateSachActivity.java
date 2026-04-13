@@ -8,15 +8,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.BTCK.qltv.R;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class UpdateSachActivity extends AppCompatActivity {
 
     EditText edtTenSach, edtSoLuong, edtNamXB, edtMaTL, edtMaTG, edtMaNXB, edtMaNN, edtMaViTri;
     Button btnSaveSach;
-    DatabaseReference database;
-    String bookId;
+    SachQuery sachQuery;
+    String maSach;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +31,9 @@ public class UpdateSachActivity extends AppCompatActivity {
         edtMaViTri = findViewById(R.id.edtMaViTri);
         btnSaveSach = findViewById(R.id.btnSaveSach);
 
-        database = FirebaseDatabase.getInstance().getReference("sach");
+        sachQuery = new SachQuery(this);
 
-        // Nhận dữ liệu truyền từ SachActivity sang
-        bookId = getIntent().getStringExtra("id");
+        maSach = getIntent().getStringExtra("maSach");
         edtTenSach.setText(getIntent().getStringExtra("tenSach"));
         edtSoLuong.setText(String.valueOf(getIntent().getIntExtra("soLuong", 0)));
         edtNamXB.setText(String.valueOf(getIntent().getIntExtra("namXB", 0)));
@@ -46,32 +43,45 @@ public class UpdateSachActivity extends AppCompatActivity {
         edtMaNN.setText(getIntent().getStringExtra("maNN"));
         edtMaViTri.setText(getIntent().getStringExtra("maViTri"));
 
-        // Cập nhật lên Firebase
         btnSaveSach.setOnClickListener(v -> {
-            String ten = edtTenSach.getText().toString();
-            String maTL = edtMaTL.getText().toString();
-            String maTG = edtMaTG.getText().toString();
-            String maNXB = edtMaNXB.getText().toString();
-            String maNN = edtMaNN.getText().toString();
-            String maViTri = edtMaViTri.getText().toString();
-            String strSoLuong = edtSoLuong.getText().toString();
-            String strNamXB = edtNamXB.getText().toString();
+            String ten = edtTenSach.getText().toString().trim();
+            String maTL = edtMaTL.getText().toString().trim();
+            String maTG = edtMaTG.getText().toString().trim();
+            String maNXB = edtMaNXB.getText().toString().trim();
+            String maNN = edtMaNN.getText().toString().trim();
+            String maViTri = edtMaViTri.getText().toString().trim();
+            String strSoLuong = edtSoLuong.getText().toString().trim();
+            String strNamXB = edtNamXB.getText().toString().trim();
 
-            if (ten.isEmpty() || maTL.isEmpty() || strSoLuong.isEmpty() || strNamXB.isEmpty()) {
+            if (maSach == null || maSach.isEmpty()) {
+                Toast.makeText(this, "Không tìm thấy mã sách!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (ten.isEmpty() || maTL.isEmpty() || maTG.isEmpty() || maNXB.isEmpty() || maNN.isEmpty() || maViTri.isEmpty() || strSoLuong.isEmpty() || strNamXB.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đủ thông tin!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            int soLuongMoi = Integer.parseInt(strSoLuong);
-            int namXBMoi = Integer.parseInt(strNamXB);
+            int soLuongMoi;
+            int namXBMoi;
+            try {
+                soLuongMoi = Integer.parseInt(strSoLuong);
+                namXBMoi = Integer.parseInt(strNamXB);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Số lượng và năm xuất bản phải là số!", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            Sach sachUpdate = new Sach(bookId, maTG, maNXB, maTL, ten, maNN, maViTri, namXBMoi, soLuongMoi);
-            
-            // Lưu đè lên ID cũ
-            database.child(bookId).setValue(sachUpdate);
+            Sach sachMoi = new Sach(maSach, maTG, maNXB, maTL, ten, maNN, maViTri, namXBMoi, soLuongMoi);
+            boolean updated = sachQuery.suaSach(sachMoi);
 
-            Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
-            finish();
+            if (updated) {
+                Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Cập nhật thất bại!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

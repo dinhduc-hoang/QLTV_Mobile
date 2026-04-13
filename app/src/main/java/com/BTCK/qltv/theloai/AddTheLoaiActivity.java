@@ -8,14 +8,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.BTCK.qltv.R;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class AddTheLoaiActivity extends AppCompatActivity {
 
-    EditText edtMaTL, edtTenTL, edtMoTa;
+    EditText edtMaTL, edtTenTL;
     Button btnSaveTheLoai;
-    DatabaseReference database;
+    TheLoaiQuery theLoaiQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,28 +22,28 @@ public class AddTheLoaiActivity extends AppCompatActivity {
 
         edtMaTL = findViewById(R.id.edtMaTL);
         edtTenTL = findViewById(R.id.edtTenTL);
-        edtMoTa = findViewById(R.id.edtMoTa);
         btnSaveTheLoai = findViewById(R.id.btnSaveTheLoai);
 
-        database = FirebaseDatabase.getInstance().getReference("theloai");
+        theLoaiQuery = new TheLoaiQuery(this);
 
         btnSaveTheLoai.setOnClickListener(v -> {
-            String ma = edtMaTL.getText().toString();
-            String ten = edtTenTL.getText().toString();
-            String mota = edtMoTa.getText().toString();
+            String ma = edtMaTL.getText().toString().trim();
+            String ten = edtTenTL.getText().toString().trim();
 
             if (ma.isEmpty() || ten.isEmpty()) {
                 Toast.makeText(this, "Mã và Tên không được để trống", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String theloaiId = database.push().getKey();
-            TheLoai tl = new TheLoai(theloaiId, ma, ten, mota);
+            TheLoai theLoai = new TheLoai(ma, ten);
+            boolean inserted = theLoaiQuery.themTheLoai(theLoai);
 
-            database.child(theloaiId).setValue(tl);
-
-            Toast.makeText(this, "Đã thêm Thể Loại", Toast.LENGTH_SHORT).show();
-            finish();
+            if (inserted) {
+                Toast.makeText(this, "Đã thêm Thể Loại", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Thêm thất bại! Mã đã tồn tại.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

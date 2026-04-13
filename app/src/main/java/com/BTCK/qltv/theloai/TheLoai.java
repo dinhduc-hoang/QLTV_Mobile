@@ -1,19 +1,30 @@
 package com.BTCK.qltv.theloai;
 
 public class TheLoai {
-    public String id;
-    public String maTL;
-    public String tenTL;
-    public String moTa; // Thêm mô tả nếu cần
+    private String maTL;
+    private String tenTL;
 
     public TheLoai() {
-        // Firebase yêu cầu hàm tạo rỗng
     }
 
-    public TheLoai(String id, String maTL, String tenTL, String moTa) {
-        this.id = id;
+    public TheLoai(String maTL, String tenTL) {
         this.maTL = maTL;
         this.tenTL = tenTL;
-        this.moTa = moTa;
+    }
+
+    public String getMaTL() {
+        return maTL;
+    }
+
+    public void setMaTL(String maTL) {
+        this.maTL = maTL;
+    }
+
+    public String getTenTL() {
+        return tenTL;
+    }
+
+    public void setTenTL(String tenTL) {
+        this.tenTL = tenTL;
     }
 }
