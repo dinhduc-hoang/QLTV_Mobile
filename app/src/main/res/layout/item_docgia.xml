@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTenDG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tên độc giả"
+            android:textColor="#111827"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMaDG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Mã độc giả: DG001"
+            android:textColor="#4F46E5"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvGioiTinh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Giới tính: Nam"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvNamSinh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Năm sinh: 2003"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvLop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Lớp: CNTT1"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvKhoa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Khoa: Công nghệ thông tin"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvDiaChi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Địa chỉ: Hà Nội"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Email: example@gmail.com"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvSdt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="SĐT: 0123456789"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

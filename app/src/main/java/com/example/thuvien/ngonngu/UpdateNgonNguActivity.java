@@ -1,0 +1,81 @@
+package com.example.thuvien.ngonngu;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.thuvien.R;
+
+public class UpdateNgonNguActivity extends AppCompatActivity {
+
+    ImageView imgBack;
+    EditText edtTenNN;
+    Button btnUpdate;
+
+    String maNN;
+    NgonNguQuery ngonNguQuery;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_update_ngonngu);
+
+        imgBack = findViewById(R.id.imgBack);
+        edtTenNN = findViewById(R.id.edtTenNN);
+        btnUpdate = findViewById(R.id.btnUpdate);
+
+        ngonNguQuery = new NgonNguQuery(this);
+        maNN = getIntent().getStringExtra("MaNN");
+
+        loadThongTin();
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                capNhatNgonNgu();
+            }
+        });
+    }
+
+    private void loadThongTin() {
+        NgonNgu item = ngonNguQuery.layThongTinTheoMa(maNN);
+        if (item != null) {
+            edtTenNN.setText(item.getTenNN());
+        }
+    }
+
+    private void capNhatNgonNgu() {
+        String tenNN = edtTenNN.getText().toString().trim();
+
+        if (tenNN.isEmpty()) {
+            edtTenNN.setError("Nhập tên ngôn ngữ");
+            edtTenNN.requestFocus();
+            return;
+        }
+
+        NgonNgu item = new NgonNgu();
+        item.setMaNN(maNN);
+        item.setTenNN(tenNN);
+
+        boolean result = ngonNguQuery.capNhatNgonNgu(item);
+
+        if (result) {
+            Toast.makeText(this, "Cập nhật ngôn ngữ thành công!", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Cập nhật ngôn ngữ thất bại!", Toast.LENGTH_SHORT).show();
+        }
+    }
+}

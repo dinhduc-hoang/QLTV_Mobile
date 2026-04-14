@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="2dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTrangThai"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
+            android:text="Còn hạn"
+            android:textColor="#065F46"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMaThe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/tvTrangThai"
+            android:layout_marginEnd="10dp"
+            android:text="Thẻ Ma001"
+            android:textColor="#111827"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvTenDG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvMaThe"
+            android:layout_marginTop="8dp"
+            android:text="Độc giả: Nguyễn Văn A"
+            android:textColor="#4F46E5"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvNgayCap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTenDG"
+            android:layout_marginTop="4dp"
+            android:text="Ngày cấp: 10/04/2026"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvNgayHetHan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvNgayCap"
+            android:layout_marginTop="4dp"
+            android:text="Ngày hết hạn: 10/04/2027"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
