@@ -65,6 +65,7 @@ public class AddLopActivity extends AppCompatActivity {
     }
 
     private void luuLop() {
+        List<Lop> list = lopQuery.layDanhSachLop();
         String tenLop = edtTenLop.getText().toString().trim();
         SpinnerItem khoa = (SpinnerItem) spnKhoa.getSelectedItem();
 
@@ -78,7 +79,13 @@ public class AddLopActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng chọn khoa", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        for (Lop l : list) {
+            if (l.getTenLop().equalsIgnoreCase(tenLop)) {
+                edtTenLop.setError("Tên lớp đã tồn tại");
+                edtTenLop.requestFocus();
+                return;
+            }
+        }
         Lop item = new Lop();
         item.setMaLop(lopQuery.taoMaMoi());
         item.setTenLop(tenLop);

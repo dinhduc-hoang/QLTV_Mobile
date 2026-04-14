@@ -87,7 +87,9 @@
 
         <!-- THỐNG KÊ -->
         <activity android:name=".thongke.ThongKeActivity" />
-
+        <activity android:name=".thongke.TopDocGiaActivity"/>
+        <activity android:name=".thongke.TopSachActivity"/>
+        <activity android:name=".thongke.QuaHanActivity"/>
     </application>
 
 </manifest>

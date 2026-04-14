@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,24 +55,8 @@ public class MuonTraActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemLongClick(final String maMT) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MuonTraActivity.this);
-                builder.setTitle("Xóa phiếu mượn");
-                builder.setMessage("Bạn có chắc muốn xóa phiếu mượn này không?");
-                builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        boolean result = muonTraQuery.xoaPhieuMuon(maMT);
-                        if (result) {
-                            Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thành công!", Toast.LENGTH_SHORT).show();
-                            loadDanhSach();
-                        } else {
-                            Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thất bại!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                builder.setNegativeButton("Hủy", null);
-                builder.show();
+            public void onItemLongClick(final String maMT, View view) {
+                showPopupMenu(view, maMT);
             }
         });
 
@@ -117,5 +102,71 @@ public class MuonTraActivity extends AppCompatActivity {
     private void loadDanhSach() {
         list = muonTraQuery.layDanhSachMuonTra();
         adapter.capNhatDuLieu(list);
+    }
+
+    private void showPopupMenu(View view, final String maMT) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenu().add("Trả sách");
+        popupMenu.getMenu().add("Sửa");
+        popupMenu.getMenu().add("Xóa");
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            String title = item.getTitle().toString();
+
+            if (title.equals("Trả sách")) {
+                MuonTra mt = muonTraQuery.layThongTinMuonTraTheoMa(maMT);
+                if (mt != null && "Đã trả".equals(mt.getTrangThai())) {
+                    Toast.makeText(this, "Phiếu này đã được trả rồi!", Toast.LENGTH_SHORT).show();
+                } else {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Xác nhận trả sách")
+                            .setMessage("Bạn có chắc chắn muốn xác nhận trả sách cho phiếu " + maMT + "?\nSố lượng sách trong kho sẽ được cập nhật lại.")
+                            .setPositiveButton("Xác nhận", (dialog, which) -> {
+                                boolean result = muonTraQuery.capNhatTrangThaiDaTra(maMT);
+                                if (result) {
+                                    Toast.makeText(this, "Trả sách thành công!", Toast.LENGTH_SHORT).show();
+                                    loadDanhSach();
+                                } else {
+                                    Toast.makeText(this, "Trả sách thất bại!", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .setNegativeButton("Hủy", null)
+                            .show();
+                }
+                return true;
+            }
+
+            if (title.equals("Sửa")) {
+                Intent intent = new Intent(MuonTraActivity.this, UpdateMuonTraActivity.class);
+                intent.putExtra("MaMT", maMT);
+                startActivity(intent);
+                return true;
+            }
+
+            if (title.equals("Xóa")) {
+                new AlertDialog.Builder(MuonTraActivity.this)
+                        .setTitle("Xóa phiếu mượn")
+                        .setMessage("Bạn có chắc muốn xóa phiếu mượn này không?")
+                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                boolean result = muonTraQuery.xoaPhieuMuon(maMT);
+                                if (result) {
+                                    Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thành công!", Toast.LENGTH_SHORT).show();
+                                    loadDanhSach();
+                                } else {
+                                    Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thất bại!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton("Hủy", null)
+                        .show();
+                return true;
+            }
+
+            return false;
+        });
+
+        popupMenu.show();
     }
 }

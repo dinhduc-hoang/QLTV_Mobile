@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.List;
+
 public class AddKhoaActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -46,6 +48,7 @@ public class AddKhoaActivity extends AppCompatActivity {
     }
 
     private void luuKhoa() {
+        List<Khoa> list = khoaQuery.layDanhSachKhoa();
         String tenKhoa = edtTenKhoa.getText().toString().trim();
 
         if (tenKhoa.isEmpty()) {
@@ -53,7 +56,13 @@ public class AddKhoaActivity extends AppCompatActivity {
             edtTenKhoa.requestFocus();
             return;
         }
-
+        for (Khoa k : list) {
+            if (k.getTenKhoa().equalsIgnoreCase(tenKhoa)) {
+                edtTenKhoa.setError("Tên khoa đã tồn tại");
+                edtTenKhoa.requestFocus();
+                return;
+            }
+        }
         Khoa item = new Khoa();
         item.setMaKhoa(khoaQuery.taoMaMoi());
         item.setTenKhoa(tenKhoa);

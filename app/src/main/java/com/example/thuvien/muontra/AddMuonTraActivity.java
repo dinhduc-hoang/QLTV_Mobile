@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 import com.example.thuvien.common.SpinnerItem;
+import com.example.thuvien.sach.Sach;
+import com.example.thuvien.sach.SachQuery;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +37,7 @@ public class AddMuonTraActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
 
     MuonTraQuery muonTraQuery;
+    SachQuery sachQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,7 @@ public class AddMuonTraActivity extends AppCompatActivity {
         lvSachDaChon = findViewById(R.id.lvSachDaChon);
 
         muonTraQuery = new MuonTraQuery(this);
+        sachQuery = new SachQuery(this);
 
         listHienThi = new ArrayList<>();
         listMaSach = new ArrayList<>();
@@ -169,6 +173,15 @@ public class AddMuonTraActivity extends AppCompatActivity {
             edtSoLuong.setError("Số lượng phải lớn hơn 0");
             edtSoLuong.requestFocus();
             return;
+        }
+
+        // Kiểm tra số lượng sách trong kho
+        Sach s = sachQuery.layThongTinSachTheoMa(sach.getId());
+        if (s != null) {
+            if (s.getSoLuong() < soLuong) {
+                Toast.makeText(this, "Số lượng sách trong kho không đủ (Còn: " + s.getSoLuong() + ")", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         listMaSach.add(sach.getId());

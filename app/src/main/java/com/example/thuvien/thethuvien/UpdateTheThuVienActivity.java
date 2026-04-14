@@ -45,9 +45,12 @@ public class UpdateTheThuVienActivity extends AppCompatActivity {
         id = getIntent().getStringExtra("MaThe");
 
         loadDocGiaSpinner();
-        setupDateField(edtNgayCap);
         setupDateField(edtNgayHetHan);
         loadThongTin();
+
+        spnDocGia.setEnabled(false);
+        edtNgayCap.setEnabled(false);
+        edtTrangThai.setEnabled(false);
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,38 +137,21 @@ public class UpdateTheThuVienActivity extends AppCompatActivity {
     }
 
     private void capNhat() {
-        SpinnerItem docGia = (SpinnerItem) spnDocGia.getSelectedItem();
-        String ngayCap = edtNgayCap.getText().toString().trim();
         String ngayHetHan = edtNgayHetHan.getText().toString().trim();
-        String trangThai = edtTrangThai.getText().toString().trim();
-
-        if (docGia.getId().isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn độc giả", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (ngayCap.isEmpty()) {
-            edtNgayCap.setError("Không được để trống");
-            return;
-        }
 
         if (ngayHetHan.isEmpty()) {
             edtNgayHetHan.setError("Không được để trống");
             return;
         }
 
-        if (trangThai.isEmpty()) {
-            edtTrangThai.setError("Không được để trống");
-            edtTrangThai.requestFocus();
-            return;
-        }
+        TheThuVien old = theThuVienQuery.layThongTinTheoMa(id);
 
         TheThuVien item = new TheThuVien();
         item.setMaThe(id);
-        item.setMaDG(docGia.getId());
-        item.setNgayCap(ngayCap);
+        item.setMaDG(old.getMaDG());
+        item.setNgayCap(old.getNgayCap());
+        item.setTrangThai(old.getTrangThai());
         item.setNgayHetHan(ngayHetHan);
-        item.setTrangThai(trangThai);
 
         boolean result = theThuVienQuery.capNhatThe(item);
 

@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.List;
+
 public class UpdateTheLoaiActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -63,6 +65,16 @@ public class UpdateTheLoaiActivity extends AppCompatActivity {
             edtTenTL.setError("Nhập tên thể loại");
             edtTenTL.requestFocus();
             return;
+        }
+        List<TheLoai> list = theLoaiQuery.layDanhSachTheLoai();
+        for(TheLoai theloai:list)
+        {
+            if(theloai.getTenTL().equals(tenTL))
+            {
+                edtTenTL.setError("Tn thể loại đã tồn tại");
+                edtTenTL.requestFocus();
+                return;
+            }
         }
 
         TheLoai item = new TheLoai();

@@ -104,13 +104,32 @@ public class MuonTraQuery {
     public boolean capNhatTrangThaiDaTra(String maMT) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
+            db.beginTransaction();
+
+            // Lấy danh sách sách và số lượng trong phiếu mượn
+            Cursor cursor = db.rawQuery("SELECT MaSach, SoLuong FROM chitietmuontra WHERE MaMT = ?", new String[]{maMT});
+            while (cursor.moveToNext()) {
+                String maSach = cursor.getString(0);
+                int soLuongMuon = cursor.getInt(1);
+
+                // Cập nhật tăng số lượng sách trong kho khi trả
+                db.execSQL("UPDATE sach SET SoLuong = SoLuong + ? WHERE MaSach = ?", new Object[]{soLuongMuon, maSach});
+            }
+            cursor.close();
+
+            // Cập nhật trạng thái phiếu mượn
             db.execSQL("UPDATE muontra SET TrangThai = 'Đã trả' WHERE MaMT = ?", new Object[]{maMT});
-            db.close();
+
+            db.setTransactionSuccessful();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            db.close();
             return false;
+        } finally {
+            if (db.inTransaction()) {
+                db.endTransaction();
+            }
+            db.close();
         }
     }
 
@@ -148,34 +167,6 @@ public class MuonTraQuery {
         return maMoi;
     }
 
-    public boolean themPhieuMuon(String maMT, String maDG, String maNV, String ngayMuon, String hanTra) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        try {
-            db.execSQL("INSERT INTO muontra (MaMT, MaDG, MaNV, NgayMuon, HanTra, TrangThai) VALUES (?, ?, ?, ?, ?, ?)",
-                    new Object[]{maMT, maDG, maNV, ngayMuon, hanTra, "Chưa trả"});
-            db.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            db.close();
-            return false;
-        }
-    }
-
-    public boolean themChiTietMuonTra(String maMT, String maSach, int soLuong) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        try {
-            db.execSQL("INSERT INTO chitietmuontra (MaMT, MaSach, SoLuong) VALUES (?, ?, ?)",
-                    new Object[]{maMT, maSach, soLuong});
-            db.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            db.close();
-            return false;
-        }
-    }
-
     public boolean themPhieuMuonVaChiTiet(String maMT, String maDG, String maNV, String ngayMuon, String hanTra,
                                           List<String> listMaSach, List<Integer> listSoLuong) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -186,22 +177,28 @@ public class MuonTraQuery {
                     new Object[]{maMT, maDG, maNV, ngayMuon, hanTra, "Chưa trả"});
 
             for (int i = 0; i < listMaSach.size(); i++) {
+                String maSach = listMaSach.get(i);
+                int soLuong = listSoLuong.get(i);
+
+                // Thêm chi tiết mượn trả
                 db.execSQL("INSERT INTO chitietmuontra (MaMT, MaSach, SoLuong) VALUES (?, ?, ?)",
-                        new Object[]{maMT, listMaSach.get(i), listSoLuong.get(i)});
+                        new Object[]{maMT, maSach, soLuong});
+
+                // Cập nhật giảm số lượng sách trong kho
+                db.execSQL("UPDATE sach SET SoLuong = SoLuong - ? WHERE MaSach = ?",
+                        new Object[]{soLuong, maSach});
             }
 
             db.setTransactionSuccessful();
-            db.endTransaction();
-            db.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            try {
+            return false;
+        } finally {
+            if (db.inTransaction()) {
                 db.endTransaction();
-            } catch (Exception ignored) {
             }
             db.close();
-            return false;
         }
     }
 

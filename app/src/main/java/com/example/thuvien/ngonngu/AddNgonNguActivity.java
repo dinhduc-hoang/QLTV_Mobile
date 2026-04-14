@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.List;
+
 public class AddNgonNguActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -44,7 +46,6 @@ public class AddNgonNguActivity extends AppCompatActivity {
             }
         });
     }
-
     private void luuNgonNgu() {
         String tenNN = edtTenNN.getText().toString().trim();
 
@@ -52,6 +53,16 @@ public class AddNgonNguActivity extends AppCompatActivity {
             edtTenNN.setError("Nhập tên ngôn ngữ");
             edtTenNN.requestFocus();
             return;
+        }
+
+        List<NgonNgu> list = ngonNguQuery.layDanhSachNgonNgu();
+
+        for (NgonNgu nn : list) {
+            if (nn.getTenNN().equalsIgnoreCase(tenNN)) {
+                edtTenNN.setError("Tên ngôn ngữ đã tồn tại");
+                edtTenNN.requestFocus();
+                return;
+            }
         }
 
         NgonNgu item = new NgonNgu();

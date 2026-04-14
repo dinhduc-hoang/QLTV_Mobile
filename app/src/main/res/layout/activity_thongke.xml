@@ -191,131 +191,43 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- THÊM 3 NÚT -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:orientation="horizontal">
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_item_card"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                <Button
+                    android:id="@+id/btnTopSach"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="Danh sách sách mượn nhiều"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="#4F46E5" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Top độc giả mượn nhiều"
-                        android:textColor="#111827"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                <Button
+                    android:id="@+id/btnTopDocGia"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Danh sách độc giả mượn nhiều"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="#059669" />
 
-                    <TextView
-                        android:id="@+id/tvTopDocGia1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:text="..."
-                        android:textColor="#374151"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvTopDocGia2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="..."
-                        android:textColor="#374151"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvTopDocGia3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="..."
-                        android:textColor="#374151"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="12dp"
-                    android:layout_height="1dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_item_card"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Top sách mượn nhiều"
-                        android:textColor="#111827"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvTopSach1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:text="..."
-                        android:textColor="#374151"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvTopSach2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="..."
-                        android:textColor="#374151"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvTopSach3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="..."
-                        android:textColor="#374151"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                <Button
+                    android:id="@+id/btnQuaHan"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Danh sách phiếu mượn quá hạn"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="#DC2626" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="24dp"
-                android:background="@drawable/bg_item_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Báo cáo phiếu mượn quá hạn"
-                    android:textColor="#111827"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvQuaHan"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:text="..."
-                    android:textColor="#374151"
-                    android:textSize="14sp" />
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.Calendar;
+
 public class UpdateTacGiaActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -87,8 +89,11 @@ public class UpdateTacGiaActivity extends AppCompatActivity {
     }
 
     private void capNhatTacGia() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
         String tenTG = edtTenTG.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
+        int namSinhInt = Integer.parseInt(namSinh);
         String quocTich = edtQuocTich.getText().toString().trim();
         String gioiTinh = spnGioiTinh.getSelectedItem().toString();
 
@@ -104,8 +109,8 @@ public class UpdateTacGiaActivity extends AppCompatActivity {
             return;
         }
 
-        if (!namSinh.matches("\\d{4}")) {
-            edtNamSinh.setError("Năm sinh phải gồm 4 chữ số");
+        if (namSinhInt < 1000 || namSinhInt > year) {
+            edtNamSinh.setError("Năm sinh không hợp lệ");
             edtNamSinh.requestFocus();
             return;
         }

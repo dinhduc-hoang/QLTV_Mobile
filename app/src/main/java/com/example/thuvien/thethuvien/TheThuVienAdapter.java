@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.thuvien.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class TheThuVienAdapter extends RecyclerView.Adapter<TheThuVienAdapter.Holder> implements Filterable {
@@ -49,13 +50,15 @@ public class TheThuVienAdapter extends RecyclerView.Adapter<TheThuVienAdapter.Ho
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         final TheThuVien item = list.get(position);
 
+        String trangThai = getTrangThai(item.getNgayHetHan());
+
         holder.tvMaThe.setText("Thẻ " + item.getMaThe());
         holder.tvTenDG.setText("Độc giả: " + item.getTenDG());
         holder.tvNgayCap.setText("Ngày cấp: " + item.getNgayCap());
         holder.tvNgayHetHan.setText("Ngày hết hạn: " + item.getNgayHetHan());
-        holder.tvTrangThai.setText(item.getTrangThai());
+        holder.tvTrangThai.setText(trangThai);
 
-        setTrangThaiStyle(holder.tvTrangThai, item.getTrangThai());
+        setTrangThaiStyle(holder.tvTrangThai, trangThai);
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -68,19 +71,42 @@ public class TheThuVienAdapter extends RecyclerView.Adapter<TheThuVienAdapter.Ho
         });
     }
 
+    private String getTrangThai(String ngayHetHan) {
+        try {
+            String[] parts = ngayHetHan.split("/");
+            int day = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]) - 1;
+            int year = Integer.parseInt(parts[2]);
+
+            Calendar ngayHH = Calendar.getInstance();
+            ngayHH.set(year, month, day, 0, 0, 0);
+
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar.SECOND, 0);
+
+            if (ngayHH.before(today)) {
+                return "Hết hiệu lực";
+            } else {
+                return "Còn hiệu lực";
+            }
+
+        } catch (Exception e) {
+            return "Không xác định";
+        }
+    }
+
     private void setTrangThaiStyle(TextView textView, String trangThai) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(100f);
 
-        if ("Hết hạn".equalsIgnoreCase(trangThai)) {
+        if ("Hết hiệu lực".equalsIgnoreCase(trangThai)) {
             drawable.setColor(Color.parseColor("#FEE2E2"));
-            textView.setTextColor(Color.parseColor("#B91C1C"));
-        } else if ("Khóa".equalsIgnoreCase(trangThai)) {
-            drawable.setColor(Color.parseColor("#E5E7EB"));
-            textView.setTextColor(Color.parseColor("#374151"));
+            textView.setTextColor(Color.parseColor("#DC2626"));
         } else {
             drawable.setColor(Color.parseColor("#D1FAE5"));
-            textView.setTextColor(Color.parseColor("#065F46"));
+            textView.setTextColor(Color.parseColor("#16A34A"));
         }
 
         textView.setBackground(drawable);
@@ -119,10 +145,11 @@ public class TheThuVienAdapter extends RecyclerView.Adapter<TheThuVienAdapter.Ho
             } else {
                 String k = c.toString().toLowerCase().trim();
                 for (TheThuVien item : goc) {
+                    String trangThai = getTrangThai(item.getNgayHetHan());
                     if ((item.getTenDG() != null && item.getTenDG().toLowerCase().contains(k))
                             || (item.getMaDG() != null && item.getMaDG().toLowerCase().contains(k))
                             || (item.getMaThe() != null && item.getMaThe().toLowerCase().contains(k))
-                            || (item.getTrangThai() != null && item.getTrangThai().toLowerCase().contains(k))) {
+                            || (trangThai.toLowerCase().contains(k))) {
                         f.add(item);
                     }
                 }

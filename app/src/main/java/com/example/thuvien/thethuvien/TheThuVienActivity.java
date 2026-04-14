@@ -56,24 +56,15 @@ public class TheThuVienActivity extends AppCompatActivity {
         rvData.setAdapter(adapter);
         loadDanhSach();
 
-        imgBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        imgBack.setOnClickListener(v -> finish());
 
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(TheThuVienActivity.this, AddTheThuVienActivity.class));
-            }
-        });
+        btnAdd.setOnClickListener(v ->
+                startActivity(new Intent(TheThuVienActivity.this, AddTheThuVienActivity.class))
+        );
 
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
 
             @Override
             public void onTextChanged(CharSequence s, int a, int b, int c) {
@@ -81,8 +72,7 @@ public class TheThuVienActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable e) {
-            }
+            public void afterTextChanged(Editable e) {}
         });
     }
 
@@ -119,7 +109,24 @@ public class TheThuVienActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                TheThuVien the = theThuVienQuery.layThongTinTheoMa(id);
+
+                                if (the == null) {
+                                    Toast.makeText(TheThuVienActivity.this,
+                                            "Không tìm thấy dữ liệu!",
+                                            Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+
+                                if (theThuVienQuery.dangMuonSach(the.getMaDG())) {
+                                    Toast.makeText(TheThuVienActivity.this,
+                                            "Độc giả đang mượn sách, không thể xóa!",
+                                            Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+
                                 boolean result = theThuVienQuery.xoaThe(id);
+
                                 if (result) {
                                     Toast.makeText(TheThuVienActivity.this, "Xóa thành công!", Toast.LENGTH_SHORT).show();
                                     loadDanhSach();

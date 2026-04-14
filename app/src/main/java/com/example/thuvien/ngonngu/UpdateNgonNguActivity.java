@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.List;
+
 public class UpdateNgonNguActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -64,7 +66,14 @@ public class UpdateNgonNguActivity extends AppCompatActivity {
             edtTenNN.requestFocus();
             return;
         }
-
+        List<NgonNgu> list = ngonNguQuery.layDanhSachNgonNgu();
+        for (NgonNgu nn : list) {
+            if (nn.getTenNN().equalsIgnoreCase(tenNN)) {
+                edtTenNN.setError("Tên ngôn ngữ đã tồn tại");
+                edtTenNN.requestFocus();
+                return;
+            }
+        }
         NgonNgu item = new NgonNgu();
         item.setMaNN(maNN);
         item.setTenNN(tenNN);

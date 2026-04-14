@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.Calendar;
+import java.util.List;
+
 public class UpdateNhanVienActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -105,9 +108,12 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
     }
 
     private void capNhatNhanVien() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
         String tenNV = edtTenNV.getText().toString().trim();
         String queQuan = edtQueQuan.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
+        int namSinhInt = Integer.parseInt(namSinh);
         String email = edtEmail.getText().toString().trim();
         String sdt = edtSdt.getText().toString().trim();
         String user = edtUser.getText().toString().trim();
@@ -130,11 +136,12 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
             edtNamSinh.requestFocus();
             return;
         }
-        if (!namSinh.matches("\\d{4}")) {
-            edtNamSinh.setError("Năm sinh phải gồm 4 chữ số");
+        if (namSinhInt < 1900 || namSinhInt > year || (year - namSinhInt) < 18 ) {
+            edtNamSinh.setError("Năm sinh không hợp lệ");
             edtNamSinh.requestFocus();
             return;
         }
+
         if (email.isEmpty()) {
             edtEmail.setError("Nhập email");
             edtEmail.requestFocus();
@@ -166,6 +173,28 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
             return;
         }
 
+        List<NhanVien> list = nhanVienQuery.layDanhSachNhanVien();
+
+        for (NhanVien nv : list) {
+
+            if (nv.getSdt().equals(sdt)) {
+                edtSdt.setError("SĐT đã tồn tại");
+                edtSdt.requestFocus();
+                return;
+            }
+
+            if (nv.getEmail().equalsIgnoreCase(email)) {
+                edtEmail.setError("Email đã tồn tại");
+                edtEmail.requestFocus();
+                return;
+            }
+
+            if (nv.getUser().equalsIgnoreCase(user)) {
+                edtUser.setError("User đã tồn tại");
+                edtUser.requestFocus();
+                return;
+            }
+        }
         NhanVien item = new NhanVien();
         item.setMaNV(maNV);
         item.setTenNV(tenNV);

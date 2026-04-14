@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.thuvien.R;
 import com.example.thuvien.common.SpinnerItem;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class AddSachActivity extends AppCompatActivity {
@@ -79,15 +80,18 @@ public class AddSachActivity extends AppCompatActivity {
     }
 
     private void luuSach() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
         String ten = edtTenSach.getText().toString().trim();
         String strSoLuong = edtSoLuong.getText().toString().trim();
         String strNamXB = edtNamXB.getText().toString().trim();
-
+        int namXB = Integer.parseInt(strNamXB);
         if (ten.isEmpty()) {
             edtTenSach.setError("Nhập tên sách");
             edtTenSach.requestFocus();
             return;
         }
+
 
         if (strSoLuong.isEmpty()) {
             edtSoLuong.setError("Nhập số lượng");
@@ -100,22 +104,12 @@ public class AddSachActivity extends AppCompatActivity {
             edtNamXB.requestFocus();
             return;
         }
-
-        SpinnerItem theLoai = (SpinnerItem) spnMaTL.getSelectedItem();
-        SpinnerItem tacGia = (SpinnerItem) spnMaTG.getSelectedItem();
-        SpinnerItem nxb = (SpinnerItem) spnMaNXB.getSelectedItem();
-        SpinnerItem ngonNgu = (SpinnerItem) spnMaNN.getSelectedItem();
-        SpinnerItem viTri = (SpinnerItem) spnMaViTri.getSelectedItem();
-
-        if (theLoai.getId().isEmpty() || tacGia.getId().isEmpty() || nxb.getId().isEmpty()
-                || ngonNgu.getId().isEmpty() || viTri.getId().isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+        if (namXB < 1900 || namXB > year) {
+            edtNamXB.setError("Năm xuất bản không hợp lệ");
+            edtNamXB.requestFocus();
             return;
         }
-
         int soLuong;
-        int namXB;
-
         try {
             soLuong = Integer.parseInt(strSoLuong);
             namXB = Integer.parseInt(strNamXB);
@@ -129,6 +123,29 @@ public class AddSachActivity extends AppCompatActivity {
             edtSoLuong.requestFocus();
             return;
         }
+
+        List<Sach> list = sachQuery.layDanhSachSach();
+
+        for(Sach sach : list)
+        {
+            if (sach.getTenSach().equalsIgnoreCase(ten)) {
+                edtTenSach.setError("Tên sách đã tồn tại");
+                edtTenSach.requestFocus();
+                return;
+            }
+        }
+        SpinnerItem theLoai = (SpinnerItem) spnMaTL.getSelectedItem();
+        SpinnerItem tacGia = (SpinnerItem) spnMaTG.getSelectedItem();
+        SpinnerItem nxb = (SpinnerItem) spnMaNXB.getSelectedItem();
+        SpinnerItem ngonNgu = (SpinnerItem) spnMaNN.getSelectedItem();
+        SpinnerItem viTri = (SpinnerItem) spnMaViTri.getSelectedItem();
+
+        if (theLoai.getId().isEmpty() || tacGia.getId().isEmpty() || nxb.getId().isEmpty()
+                || ngonNgu.getId().isEmpty() || viTri.getId().isEmpty()) {
+            Toast.makeText(this, "Vui lòng chọn đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 
         String maSach = sachQuery.taoMaSachMoi();
 

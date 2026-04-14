@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.thuvien.R;
 import com.example.thuvien.common.SpinnerItem;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class AddDocGiaActivity extends AppCompatActivity {
@@ -27,6 +28,7 @@ public class AddDocGiaActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_docgia);
 
@@ -61,6 +63,7 @@ public class AddDocGiaActivity extends AppCompatActivity {
             }
         });
     }
+
     private void loadKhoaSpinner() {
         setSpinner(spnKhoa, docGiaQuery.layDanhSachKhoaSpinner());
         setSpinner(spnLop, docGiaQuery.layDanhSachLopTheoKhoa(""));
@@ -83,6 +86,7 @@ public class AddDocGiaActivity extends AppCompatActivity {
             }
         });
     }
+
     private void loadSpinnerData() {
         setSpinner(spnKhoa, docGiaQuery.layDanhSachSpinner("khoa", "MaKhoa", "TenKhoa", "--- Chọn khoa ---"));
         setSpinner(spnLop, docGiaQuery.layDanhSachSpinner("lop", "MaLop", "TenLop", "--- Chọn lớp ---"));
@@ -109,8 +113,12 @@ public class AddDocGiaActivity extends AppCompatActivity {
     }
 
     private void luuDocGia() {
+        List<DocGia> list = docGiaQuery.layDanhSachDocGia();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
         String tenDG = edtTenDG.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
+        int namSinhInt = Integer.parseInt(namSinh);
         String gioiTinh = spnGioiTinh.getSelectedItem().toString();
         String diaChi = edtDiaChi.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
@@ -123,6 +131,11 @@ public class AddDocGiaActivity extends AppCompatActivity {
         }
         if (namSinh.isEmpty()) {
             edtNamSinh.setError("Nhập năm sinh");
+            edtNamSinh.requestFocus();
+            return;
+        }
+        if (namSinhInt < 1900 || namSinhInt > year) {
+            edtNamSinh.setError("Năm sinh không hợp lệ");
             edtNamSinh.requestFocus();
             return;
         }
@@ -146,38 +159,51 @@ public class AddDocGiaActivity extends AppCompatActivity {
             edtSdt.requestFocus();
             return;
         }
-        if (!sdt.matches("0\\d{9}")) {
-            edtSdt.setError("SĐT phải 10 số, bắt đầu bằng 0");
+        if (!sdt.matches("0\\d{9,11}")) {
+            edtSdt.setError("SĐT phải từ 10-12 số, bắt đầu bằng 0");
             edtSdt.requestFocus();
             return;
         }
+        for (DocGia dg : list) {
 
-        SpinnerItem khoa = (SpinnerItem) spnKhoa.getSelectedItem();
-        SpinnerItem lop = (SpinnerItem) spnLop.getSelectedItem();
+            if (dg.getSdt().equals(sdt)) {
+                edtSdt.setError("SĐT đã tồn tại");
+                edtSdt.requestFocus();
+                return;
+            }
 
-        if (khoa.getId().isEmpty() || lop.getId().isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn khoa và lớp", Toast.LENGTH_SHORT).show();
-            return;
+            if (dg.getEmail().equalsIgnoreCase(email)) {
+                edtEmail.setError("Email đã tồn tại");
+                edtEmail.requestFocus();
+                return;
+            }
         }
+            SpinnerItem khoa = (SpinnerItem) spnKhoa.getSelectedItem();
+            SpinnerItem lop = (SpinnerItem) spnLop.getSelectedItem();
 
-        DocGia item = new DocGia();
-        item.setMaDG(docGiaQuery.taoMaMoi());
-        item.setMaKhoa(khoa.getId());
-        item.setMaLop(lop.getId());
-        item.setTenDG(tenDG);
-        item.setNamSinh(namSinh);
-        item.setGioiTinh(gioiTinh);
-        item.setDiaChi(diaChi);
-        item.setEmail(email);
-        item.setSdt(sdt);
+            if (khoa.getId().isEmpty() || lop.getId().isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn khoa và lớp", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        boolean result = docGiaQuery.themDocGia(item);
+            DocGia item = new DocGia();
+            item.setMaDG(docGiaQuery.taoMaMoi());
+            item.setMaKhoa(khoa.getId());
+            item.setMaLop(lop.getId());
+            item.setTenDG(tenDG);
+            item.setNamSinh(namSinh);
+            item.setGioiTinh(gioiTinh);
+            item.setDiaChi(diaChi);
+            item.setEmail(email);
+            item.setSdt(sdt);
 
-        if (result) {
-            Toast.makeText(this, "Thêm độc giả thành công!", Toast.LENGTH_SHORT).show();
-            finish();
-        } else {
-            Toast.makeText(this, "Thêm độc giả thất bại!", Toast.LENGTH_SHORT).show();
+            boolean result = docGiaQuery.themDocGia(item);
+
+            if (result) {
+                Toast.makeText(this, "Thêm độc giả thành công!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Thêm độc giả thất bại!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
-}

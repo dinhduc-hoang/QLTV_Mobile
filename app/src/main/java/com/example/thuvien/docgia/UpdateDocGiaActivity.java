@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.thuvien.R;
 import com.example.thuvien.common.SpinnerItem;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class UpdateDocGiaActivity extends AppCompatActivity {
@@ -188,8 +189,12 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
     }
 
     private void capNhatDocGia() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        List<DocGia> list = docGiaQuery.layDanhSachDocGia();
         String tenDG = edtTenDG.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
+        int namSinhInt = Integer.parseInt(namSinh);
         String diaChi = edtDiaChi.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
         String sdt = edtSdt.getText().toString().trim();
@@ -208,13 +213,11 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
             edtNamSinh.requestFocus();
             return;
         }
-
-        if (!namSinh.matches("\\d{4}")) {
-            edtNamSinh.setError("Năm sinh phải gồm 4 chữ số");
+        if (namSinhInt < 1900 || namSinhInt > year) {
+            edtNamSinh.setError("Năm sinh không hợp lệ");
             edtNamSinh.requestFocus();
             return;
         }
-
         if (diaChi.isEmpty()) {
             edtDiaChi.setError("Nhập địa chỉ");
             edtDiaChi.requestFocus();
@@ -244,7 +247,20 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
             edtSdt.requestFocus();
             return;
         }
+        for (DocGia dg : list) {
 
+            if (dg.getSdt().equals(sdt)) {
+                edtSdt.setError("SĐT đã tồn tại");
+                edtSdt.requestFocus();
+                return;
+            }
+
+            if (dg.getEmail().equalsIgnoreCase(email)) {
+                edtEmail.setError("Email đã tồn tại");
+                edtEmail.requestFocus();
+                return;
+            }
+        }
         SpinnerItem khoa = spnKhoa.getSelectedItem() instanceof SpinnerItem
                 ? (SpinnerItem) spnKhoa.getSelectedItem()
                 : null;

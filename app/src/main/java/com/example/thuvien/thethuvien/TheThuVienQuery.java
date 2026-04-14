@@ -68,7 +68,18 @@ public class TheThuVienQuery {
         db.close();
         return item;
     }
+    public boolean dangMuonSach(String maDG) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM muontra WHERE MaDG = ? AND TrangThai = 'Chưa trả'",
+                new String[]{maDG}
+        );
+
+        boolean result = cursor.getCount() > 0;
+        cursor.close();
+        return result;
+    }
     public boolean themThe(TheThuVien item) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {

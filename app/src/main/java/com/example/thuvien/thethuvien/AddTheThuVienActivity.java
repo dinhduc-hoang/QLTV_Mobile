@@ -59,6 +59,10 @@ public class AddTheThuVienActivity extends AppCompatActivity {
                 luu();
             }
         });
+        setDefaultDates();
+        edtTrangThai.setEnabled(false);
+        edtNgayCap.setEnabled(false);
+
     }
 
     private void loadDocGiaSpinner() {
@@ -108,13 +112,38 @@ public class AddTheThuVienActivity extends AppCompatActivity {
 
         datePickerDialog.show();
     }
+    private void setDefaultDates() {
+        Calendar calendar = Calendar.getInstance();
 
+        // Ngày cấp = hôm nay
+        String ngayCap = String.format(
+                Locale.getDefault(),
+                "%02d/%02d/%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR)
+        );
+
+        edtNgayCap.setText(ngayCap);
+
+        calendar.add(Calendar.YEAR, 1);
+
+        String ngayHetHan = String.format(
+                Locale.getDefault(),
+                "%02d/%02d/%04d",
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR)
+        );
+
+        edtNgayHetHan.setText(ngayHetHan);
+    }
     private void luu() {
+
         SpinnerItem docGia = (SpinnerItem) spnDocGia.getSelectedItem();
         String ngayCap = edtNgayCap.getText().toString().trim();
         String ngayHetHan = edtNgayHetHan.getText().toString().trim();
-        String trangThai = edtTrangThai.getText().toString().trim();
-
+        String trangThai = "Còn hiệu lực";
         if (docGia.getId().isEmpty()) {
             Toast.makeText(this, "Vui lòng chọn độc giả", Toast.LENGTH_SHORT).show();
             return;
@@ -136,6 +165,14 @@ public class AddTheThuVienActivity extends AppCompatActivity {
             return;
         }
 
+        List<TheThuVien> list = theThuVienQuery.layDanhSachThe();
+
+        for (TheThuVien t : list) {
+            if (t.getMaDG().equals(docGia.getId())) {
+                Toast.makeText(this, "Độc giả này đã có thẻ thư viện", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         TheThuVien item = new TheThuVien();
         item.setMaThe(theThuVienQuery.taoMaMoi());
         item.setMaDG(docGia.getId());

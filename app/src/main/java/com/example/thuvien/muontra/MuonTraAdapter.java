@@ -21,7 +21,7 @@ public class MuonTraAdapter extends RecyclerView.Adapter<MuonTraAdapter.ViewHold
 
     public interface OnMuonTraListener {
         void onItemClick(String maMT);
-        void onItemLongClick(String maMT);
+        void onItemLongClick(String maMT, View view);
     }
 
     private List<MuonTra> list;
@@ -73,7 +73,7 @@ public class MuonTraAdapter extends RecyclerView.Adapter<MuonTraAdapter.ViewHold
             @Override
             public boolean onLongClick(View view) {
                 if (listener != null) {
-                    listener.onItemLongClick(item.getMaMT());
+                    listener.onItemLongClick(item.getMaMT(), view);
                 }
                 return true;
             }

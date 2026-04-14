@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.List;
+
 public class AddNXBActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -84,6 +86,28 @@ public class AddNXBActivity extends AppCompatActivity {
             return;
         }
 
+        List<NXB> list = nxbQuery.layDanhSachNXB();
+
+        for (NXB nxb : list) {
+
+            if (nxb.getTenNXB().equalsIgnoreCase(ten)) {
+                edtTen.setError("Tên NXB đã tồn tại");
+                edtTen.requestFocus();
+                return;
+            }
+
+            if (nxb.getEmail().equalsIgnoreCase(email)) {
+                edtEmail.setError("Email đã tồn tại");
+                edtEmail.requestFocus();
+                return;
+            }
+
+            if (nxb.getSdt().equals(sdt)) {
+                edtSdt.setError("SĐT đã tồn tại");
+                edtSdt.requestFocus();
+                return;
+            }
+        }
         NXB item = new NXB();
         item.setMaNXB(nxbQuery.taoMaMoi());
         item.setTenNXB(ten);

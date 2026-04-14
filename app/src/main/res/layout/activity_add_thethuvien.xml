@@ -98,7 +98,7 @@
                     android:layout_height="52dp"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_input_box"
-                    android:hint="Trạng thái"
+                    android:hint="Còn hiệu lực"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp" />
 

@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 
+import java.util.List;
+
 public class AddKeSachActivity extends AppCompatActivity {
 
     ImageView imgBack;
@@ -47,6 +49,7 @@ public class AddKeSachActivity extends AppCompatActivity {
     }
 
     private void luuKeSach() {
+        List<KeSach> list = keSachQuery.layDanhSachKeSach();
         String tenKe = edtTenKe.getText().toString().trim();
         String moTa = edtMoTa.getText().toString().trim();
 
@@ -61,7 +64,13 @@ public class AddKeSachActivity extends AppCompatActivity {
             edtMoTa.requestFocus();
             return;
         }
-
+        for (KeSach ks : list) {
+            if (ks.getTenKe().equalsIgnoreCase(tenKe)) {
+                edtTenKe.setError("Tên kệ đã tồn tại");
+                edtTenKe.requestFocus();
+                return;
+            }
+        }
         KeSach item = new KeSach();
         item.setMaViTri(keSachQuery.taoMaMoi());
         item.setTenKe(tenKe);
