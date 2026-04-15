@@ -29,7 +29,13 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        holder.tv.setText(list.get(position));
+        String raw = list.get(position);
+        String[] parts = raw.split("\\|");
+
+        if (parts.length >= 1) holder.tvTitle.setText(parts[0]);
+        if (parts.length >= 2) holder.tvSubtitle.setText(parts[1]);
+        if (parts.length >= 3) holder.tvDetail.setText(parts[2]);
+        if (parts.length >= 4) holder.tvBadge.setText(parts[3]);
     }
 
     @Override
@@ -38,11 +44,14 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.Holder> {
     }
 
     static class Holder extends RecyclerView.ViewHolder {
-        TextView tv;
+        TextView tvTitle, tvSubtitle, tvDetail, tvBadge;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
-            tv = itemView.findViewById(R.id.tvText);
+            tvTitle = itemView.findViewById(R.id.tvTitle);
+            tvSubtitle = itemView.findViewById(R.id.tvSubtitle);
+            tvDetail = itemView.findViewById(R.id.tvDetail);
+            tvBadge = itemView.findViewById(R.id.tvBadge);
         }
     }
 }

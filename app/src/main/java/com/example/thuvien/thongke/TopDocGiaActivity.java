@@ -3,6 +3,8 @@ package com.example.thuvien.thongke;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,11 +21,17 @@ public class TopDocGiaActivity extends AppCompatActivity {
     RecyclerView rvData;
     TopAdapter adapter;
     List<String> list;
+    TextView tvTitle;
+    ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_thongke_list);
+
+        tvTitle = findViewById(R.id.tvTitle);
+        imgBack = findViewById(R.id.imgBack);
+        tvTitle.setText("Top Độc Giả Mượn Sách");
 
         rvData = findViewById(R.id.rvData);
         rvData.setLayoutManager(new LinearLayoutManager(this));
@@ -32,25 +40,35 @@ public class TopDocGiaActivity extends AppCompatActivity {
         adapter = new TopAdapter(list);
         rvData.setAdapter(adapter);
 
+        imgBack.setOnClickListener(v -> finish());
+
         loadData();
     }
 
     private void loadData() {
         SQLiteDatabase db = new SQLiteHelper(this).getReadableDatabase();
 
-        Cursor c = db.rawQuery(
-                "SELECT d.TenDG, COUNT(mt.MaMT) " +
-                        "FROM docgia d " +
-                        "JOIN muontra mt ON d.MaDG = mt.MaDG " +
-                        "GROUP BY d.MaDG " +
-                        "ORDER BY COUNT(mt.MaMT) DESC", null);
+        // SQL: Lấy mã DG, tên, khoa, lớp và đếm số phiếu mượn (lượt mượn)
+        String sql = "SELECT d.MaDG, d.TenDG, k.TenKhoa, l.TenLop, COUNT(m.MaMT) as SoLuot " +
+                "FROM docgia d " +
+                "JOIN khoa k ON d.MaKhoa = k.MaKhoa " +
+                "JOIN lop l ON d.MaLop = l.MaLop " +
+                "JOIN muontra m ON d.MaDG = m.MaDG " +
+                "GROUP BY d.MaDG " +
+                "ORDER BY SoLuot DESC";
+
+        Cursor c = db.rawQuery(sql, null);
 
         list.clear();
         while (c.moveToNext()) {
-            list.add(c.getString(0) + " - " + c.getInt(1) + " lượt");
+            // Định dạng: Tên DG|Mã DG|Khoa - Lớp|Số lượt mượn
+            String info = c.getString(1) + "|" +
+                         "Mã ĐG: " + c.getString(0) + "|" +
+                         "Khoa: " + c.getString(2) + " - Lớp: " + c.getString(3) + "|" +
+                         c.getInt(4);
+            list.add(info);
         }
         c.close();
-
         adapter.notifyDataSetChanged();
         db.close();
     }

@@ -69,21 +69,57 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <include layout="@layout/item_menu_trangchu_sach" />
-            <include layout="@layout/item_menu_trangchu_muontra" />
-            <include layout="@layout/item_menu_trangchu_thethuvien" />
-            <include layout="@layout/item_menu_trangchu_docgia" />
+            <include
+                android:id="@+id/layoutSach"
+                layout="@layout/item_menu_trangchu_sach" />
 
-            <include layout="@layout/item_menu_trangchu_tacgia" />
-            <include layout="@layout/item_menu_trangchu_theloai" />
-            <include layout="@layout/item_menu_trangchu_nxb" />
-            <include layout="@layout/item_menu_trangchu_ngonngu" />
-            <include layout="@layout/item_menu_trangchu_kesach" />
-            <include layout="@layout/item_menu_trangchu_lop" />
-            <include layout="@layout/item_menu_trangchu_khoa" />
+            <include
+                android:id="@+id/layoutMuonTra"
+                layout="@layout/item_menu_trangchu_muontra" />
 
-            <include layout="@layout/item_menu_trangchu_nhanvien" />
-            <include layout="@layout/item_menu_trangchu_thongke" />
+            <include
+                android:id="@+id/layoutTheThuVien"
+                layout="@layout/item_menu_trangchu_thethuvien" />
+
+            <include
+                android:id="@+id/layoutDocGia"
+                layout="@layout/item_menu_trangchu_docgia" />
+
+            <include
+                android:id="@+id/layoutTacGia"
+                layout="@layout/item_menu_trangchu_tacgia" />
+
+            <include
+                android:id="@+id/layoutTheLoai"
+                layout="@layout/item_menu_trangchu_theloai" />
+
+            <include
+                android:id="@+id/layoutNXB"
+                layout="@layout/item_menu_trangchu_nxb" />
+
+            <include
+                android:id="@+id/layoutNgonNgu"
+                layout="@layout/item_menu_trangchu_ngonngu" />
+
+            <include
+                android:id="@+id/layoutKeSach"
+                layout="@layout/item_menu_trangchu_kesach" />
+
+            <include
+                android:id="@+id/layoutLop"
+                layout="@layout/item_menu_trangchu_lop" />
+
+            <include
+                android:id="@+id/layoutKhoa"
+                layout="@layout/item_menu_trangchu_khoa" />
+
+            <include
+                android:id="@+id/layoutNhanVien"
+                layout="@layout/item_menu_trangchu_nhanvien" />
+
+            <include
+                android:id="@+id/layoutThongKe"
+                layout="@layout/item_menu_trangchu_thongke" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

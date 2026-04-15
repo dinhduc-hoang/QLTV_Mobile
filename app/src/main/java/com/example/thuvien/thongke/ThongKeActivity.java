@@ -31,17 +31,17 @@ public class ThongKeActivity extends AppCompatActivity {
         tvTongSoLuongSach = findViewById(R.id.tvTongSoLuongSach);
 
 
-        Button btnTopDocGia = findViewById(R.id.btnTopDocGia);
-        Button btnTopSach = findViewById(R.id.btnTopSach);
-        Button btnQuaHan = findViewById(R.id.btnQuaHan);
+        View layoutTopDocGia = findViewById(R.id.layoutTopDocGia);
+        View layoutTopSach = findViewById(R.id.layoutTopSach);
+        View layoutQuaHan = findViewById(R.id.layoutQuaHan);
 
-        btnTopDocGia.setOnClickListener(v ->
+        layoutTopDocGia.setOnClickListener(v ->
                 startActivity(new Intent(this, TopDocGiaActivity.class)));
 
-        btnTopSach.setOnClickListener(v ->
+        layoutTopSach.setOnClickListener(v ->
                 startActivity(new Intent(this, TopSachActivity.class)));
 
-        btnQuaHan.setOnClickListener(v ->
+        layoutQuaHan.setOnClickListener(v ->
                 startActivity(new Intent(this, QuaHanActivity.class)));
 
         imgBack.setOnClickListener(new View.OnClickListener() {

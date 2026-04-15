@@ -3,6 +3,8 @@ package com.example.thuvien.thongke;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,11 +21,17 @@ public class TopSachActivity extends AppCompatActivity {
     RecyclerView rvData;
     TopAdapter adapter;
     List<String> list;
+    TextView tvTitle;
+    ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_thongke_list);
+
+        tvTitle = findViewById(R.id.tvTitle);
+        imgBack = findViewById(R.id.imgBack);
+        tvTitle.setText("Top Sách Mượn Nhiều");
 
         rvData = findViewById(R.id.rvData);
         rvData.setLayoutManager(new LinearLayoutManager(this));
@@ -32,25 +40,33 @@ public class TopSachActivity extends AppCompatActivity {
         adapter = new TopAdapter(list);
         rvData.setAdapter(adapter);
 
+        imgBack.setOnClickListener(v -> finish());
+
         loadData();
     }
 
     private void loadData() {
         SQLiteDatabase db = new SQLiteHelper(this).getReadableDatabase();
 
-        Cursor c = db.rawQuery(
-                "SELECT s.TenSach, SUM(ct.SoLuong) " +
-                        "FROM sach s " +
-                        "JOIN chitietmuontra ct ON s.MaSach = ct.MaSach " +
-                        "GROUP BY s.MaSach " +
-                        "ORDER BY SUM(ct.SoLuong) DESC", null);
+        String sql = "SELECT s.MaSach, s.TenSach, t.TenTG, SUM(ct.SoLuong) as Tong " +
+                "FROM sach s " +
+                "JOIN tacgia t ON s.MaTG = t.MaTG " +
+                "JOIN chitietmuontra ct ON s.MaSach = ct.MaSach " +
+                "GROUP BY s.MaSach " +
+                "ORDER BY Tong DESC";
+
+        Cursor c = db.rawQuery(sql, null);
 
         list.clear();
         while (c.moveToNext()) {
-            list.add(c.getString(0) + " - " + c.getInt(1) + " lượt");
+            // Định dạng cho TopAdapter: Tiêu đề|Subtitle|Chi tiết|Badge
+            String info = c.getString(1) + "|" +          // Tên sách
+                         "Mã: " + c.getString(0) + "|" +  // Mã sách
+                         "Tác giả: " + c.getString(2) + "|" + // Tác giả
+                         c.getInt(3);                     // Tổng lượt mượn
+            list.add(info);
         }
         c.close();
-
         adapter.notifyDataSetChanged();
         db.close();
     }

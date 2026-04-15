@@ -149,16 +149,20 @@ public class MuonTraQuery {
 
     public String taoMaMuonTraMoi() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT MaMT FROM muontra ORDER BY MaMT DESC LIMIT 1", null);
+        // Lấy mã MT lớn nhất dựa trên giá trị số sau chữ "MT"
+        Cursor cursor = db.rawQuery("SELECT MaMT FROM muontra ORDER BY CAST(SUBSTR(MaMT, 3) AS INTEGER) DESC LIMIT 1", null);
 
         String maMoi = "MT001";
 
         if (cursor.moveToFirst()) {
+            String maHienTai = cursor.getString(0);
             try {
-                int so = Integer.parseInt(cursor.getString(0).substring(2)) + 1;
+                // Cắt bỏ "MT" và tăng số lên 1
+                int so = Integer.parseInt(maHienTai.substring(2)) + 1;
                 maMoi = String.format(Locale.getDefault(), "MT%03d", so);
             } catch (Exception e) {
-                maMoi = "MT001";
+                // Nếu có lỗi định dạng, tạo mã ngẫu nhiên để tránh dừng app
+                maMoi = "MT" + (System.currentTimeMillis() % 100000);
             }
         }
 
@@ -198,6 +202,69 @@ public class MuonTraQuery {
             if (db.inTransaction()) {
                 db.endTransaction();
             }
+            db.close();
+        }
+    }
+
+    public List<ChiTietMuonTra> layDanhSachChiTiet(String maMT) {
+        List<ChiTietMuonTra> list = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT ct.MaSach, s.TenSach, ct.SoLuong " +
+                        "FROM chitietmuontra ct " +
+                        "JOIN sach s ON ct.MaSach = s.MaSach " +
+                        "WHERE ct.MaMT = ?",
+                new String[]{maMT}
+        );
+        while (cursor.moveToNext()) {
+            ChiTietMuonTra ct = new ChiTietMuonTra();
+            ct.setMaSach(cursor.getString(0));
+            ct.setTenSach(cursor.getString(1));
+            ct.setSoLuong(cursor.getInt(2));
+            list.add(ct);
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public boolean capNhatMuonTraToanBo(String maMT, String maDG, String maNV, String ngayMuon, String hanTra, String trangThai,
+                                       List<String> listMaSach, List<Integer> listSoLuong) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        try {
+            db.beginTransaction();
+
+            // 1. Hoàn trả số lượng sách cũ vào kho trước khi xóa chi tiết cũ
+            Cursor cursor = db.rawQuery("SELECT MaSach, SoLuong FROM chitietmuontra WHERE MaMT = ?", new String[]{maMT});
+            while (cursor.moveToNext()) {
+                db.execSQL("UPDATE sach SET SoLuong = SoLuong + ? WHERE MaSach = ?",
+                        new Object[]{cursor.getInt(1), cursor.getString(0)});
+            }
+            cursor.close();
+
+            // 2. Xóa chi tiết cũ
+            db.delete("chitietmuontra", "MaMT = ?", new String[]{maMT});
+
+            // 3. Cập nhật thông tin chung
+            db.execSQL("UPDATE muontra SET MaDG = ?, MaNV = ?, NgayMuon = ?, HanTra = ?, TrangThai = ? WHERE MaMT = ?",
+                    new Object[]{maDG, maNV, ngayMuon, hanTra, trangThai, maMT});
+
+            // 4. Thêm chi tiết mới và trừ kho
+            for (int i = 0; i < listMaSach.size(); i++) {
+                db.execSQL("INSERT INTO chitietmuontra (MaMT, MaSach, SoLuong) VALUES (?, ?, ?)",
+                        new Object[]{maMT, listMaSach.get(i), listSoLuong.get(i)});
+
+                db.execSQL("UPDATE sach SET SoLuong = SoLuong - ? WHERE MaSach = ?",
+                        new Object[]{listSoLuong.get(i), listMaSach.get(i)});
+            }
+
+            db.setTransactionSuccessful();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (db.inTransaction()) db.endTransaction();
             db.close();
         }
     }

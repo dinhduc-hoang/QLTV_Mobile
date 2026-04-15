@@ -322,9 +322,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "('S014', 'TG009', 'NXB003', 'TL002', 'The Da Vinci Code', 2012, 12, 'NN002', 'KS007')");
 
         db.execSQL("INSERT OR IGNORE INTO muontra (MaMT, MaDG, MaNV, NgayMuon, HanTra, TrangThai) VALUES " +
-                "('MT01', 'DG001', 'NV001', '2026-01-05', '2026-01-06', 'Chưa trả')," +
-                "('MT02', 'DG002', 'NV001', '2026-01-01', '2026-01-02', 'Chưa trả')," +
-                "('MT03', 'DG002', 'NV001', '2026-01-01', '2026-01-22', 'Đã trả')");
+                "('MT01', 'DG001', 'NV001', '05/01/2026', '06/01/2026', 'Chưa trả')," +
+                "('MT02', 'DG002', 'NV001', '01/01/2026', '02/01/2026', 'Chưa trả')," +
+                "('MT03', 'DG002', 'NV001', '01/01/2026', '22/01/2026', 'Đã trả')");
 
         db.execSQL("INSERT OR IGNORE INTO chitietmuontra (MaMT, MaSach, SoLuong) VALUES " +
                 "('MT01', 'S001', 1)," +

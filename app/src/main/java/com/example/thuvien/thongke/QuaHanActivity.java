@@ -3,6 +3,8 @@ package com.example.thuvien.thongke;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,11 +21,17 @@ public class QuaHanActivity extends AppCompatActivity {
     RecyclerView rvData;
     TopAdapter adapter;
     List<String> list;
+    TextView tvTitle;
+    ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_thongke_list);
+
+        tvTitle = findViewById(R.id.tvTitle);
+        imgBack = findViewById(R.id.imgBack);
+        tvTitle.setText("Phiếu Mượn Quá Hạn");
 
         rvData = findViewById(R.id.rvData);
         rvData.setLayoutManager(new LinearLayoutManager(this));
@@ -32,28 +40,32 @@ public class QuaHanActivity extends AppCompatActivity {
         adapter = new TopAdapter(list);
         rvData.setAdapter(adapter);
 
+        imgBack.setOnClickListener(v -> finish());
+
         loadData();
     }
 
     private void loadData() {
         SQLiteDatabase db = new SQLiteHelper(this).getReadableDatabase();
 
-        Cursor c = db.rawQuery(
-                "SELECT MaMT, HanTra FROM muontra " +
-                        "WHERE TrangThai = 'Chưa trả' AND " +
-                        "date(substr(HanTra,7,4)||'-'||substr(HanTra,4,2)||'-'||substr(HanTra,1,2)) < date('now','localtime')",
-                null);
+        String sql = "SELECT * FROM (" +
+                "  SELECT m.MaMT, d.TenDG, m.HanTra, " +
+                "  CAST(julianday('now', 'start of day') - julianday(substr(m.HanTra, 7, 4) || '-' || substr(m.HanTra, 4, 2) || '-' || substr(m.HanTra, 1, 2)) AS INTEGER) as SoNgay " +
+                "  FROM muontra m " +
+                "  JOIN docgia d ON m.MaDG = d.MaDG " +
+                "  WHERE m.TrangThai = 'Chưa trả'" +
+                ") WHERE SoNgay > 0 ORDER BY SoNgay DESC";
+
+        Cursor c = db.rawQuery(sql, null);
 
         list.clear();
-
-        if (c.getCount() == 0) {
-            list.add("Không có phiếu mượn quá hạn");
-        } else {
-            while (c.moveToNext()) {
-                list.add("Phiếu " + c.getString(0) + " - Hạn: " + c.getString(1));
-            }
+        while (c.moveToNext()) {
+            String info = c.getString(1) + "|" +
+                         "Mã phiếu: " + c.getString(0) + "|" +
+                         "Hạn trả: " + c.getString(2) + "|" +
+                         c.getInt(3);
+            list.add(info);
         }
-
         c.close();
         adapter.notifyDataSetChanged();
         db.close();
