@@ -115,7 +115,7 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
             setSpinnerSelected(spnTrangThai, item.getTrangThai());
         }
 
-        // Load chi tiết sách đang có trong phiếu
+        
         List<ChiTietMuonTra> details = muonTraQuery.layDanhSachChiTiet(maMT);
         listHienThi.clear();
         listMaSach.clear();

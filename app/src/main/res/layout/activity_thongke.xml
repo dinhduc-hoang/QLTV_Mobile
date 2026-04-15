@@ -191,14 +191,14 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- THÊM 3 NÚT ĐÃ ĐỒNG BỘ GIAO DIỆN -->
+            
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical">
 
-                <!-- Nút Top Sách -->
+                
                 <LinearLayout
                     android:id="@+id/layoutTopSach"
                     android:layout_width="match_parent"
@@ -240,7 +240,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Nút Top Độc Giả -->
+                
                 <LinearLayout
                     android:id="@+id/layoutTopDocGia"
                     android:layout_width="match_parent"
@@ -283,7 +283,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Nút Quá Hạn -->
+                
                 <LinearLayout
                     android:id="@+id/layoutQuaHan"
                     android:layout_width="match_parent"

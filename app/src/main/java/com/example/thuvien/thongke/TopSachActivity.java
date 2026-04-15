@@ -59,11 +59,11 @@ public class TopSachActivity extends AppCompatActivity {
 
         list.clear();
         while (c.moveToNext()) {
-            // Định dạng cho TopAdapter: Tiêu đề|Subtitle|Chi tiết|Badge
-            String info = c.getString(1) + "|" +          // Tên sách
-                         "Mã: " + c.getString(0) + "|" +  // Mã sách
-                         "Tác giả: " + c.getString(2) + "|" + // Tác giả
-                         c.getInt(3);                     // Tổng lượt mượn
+            
+            String info = c.getString(1) + "|" +          
+                         "Mã: " + c.getString(0) + "|" +  
+                         "Tác giả: " + c.getString(2) + "|" + 
+                         c.getInt(3);                     
             list.add(info);
         }
         c.close();

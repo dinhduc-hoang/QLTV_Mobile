@@ -175,7 +175,6 @@ public class AddMuonTraActivity extends AppCompatActivity {
             return;
         }
 
-        // Kiểm tra số lượng sách trong kho
         Sach s = sachQuery.layThongTinSachTheoMa(sach.getId());
         if (s != null) {
             if (s.getSoLuong() < soLuong) {
@@ -199,6 +198,16 @@ public class AddMuonTraActivity extends AppCompatActivity {
 
         if (docGia.getId().isEmpty()) {
             Toast.makeText(this, "Chọn độc giả", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!muonTraQuery.kiemTraDocGiaCoTheThuVien(docGia.getId())) {
+            Toast.makeText(this, "Độc giả chưa có thẻ thư viện hoặc thẻ đã hết hạn", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (muonTraQuery.kiemTraDocGiaDangMuonSach(docGia.getId())) {
+            Toast.makeText(this, "Độc giả đang có phiếu mượn chưa trả sách", Toast.LENGTH_LONG).show();
             return;
         }
 

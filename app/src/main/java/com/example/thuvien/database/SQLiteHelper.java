@@ -332,8 +332,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "('MT03', 'S005', 3)");
 
         db.execSQL("INSERT OR IGNORE INTO thethuvien (MaThe, MaDG, NgayCap, NgayHetHan, TrangThai) VALUES " +
-                "('TTV001', 'DG001', '2025-06-01', '2025-07-02', 'Hết hiệu lực')," +
-                "('TTV002', 'DG002', '2026-01-01', '2027-01-01', 'Còn hiệu lực')," +
-                "('TTV003', 'DG003', '2025-11-11', '2026-11-11', 'Còn hiệu lực')");
+                "('TTV001', 'DG001', '01/06/2025', '02/07/2025', 'Hết hiệu lực')," +
+                "('TTV002', 'DG002', '01/01/2026', '01/01/2027', 'Còn hiệu lực')," +
+                "('TTV003', 'DG003', '11/11/2025', '11/11/2026', 'Còn hiệu lực')");
     }
 }

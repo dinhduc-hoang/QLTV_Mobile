@@ -115,7 +115,7 @@ public class AddTheThuVienActivity extends AppCompatActivity {
     private void setDefaultDates() {
         Calendar calendar = Calendar.getInstance();
 
-        // Ngày cấp = hôm nay
+        
         String ngayCap = String.format(
                 Locale.getDefault(),
                 "%02d/%02d/%04d",

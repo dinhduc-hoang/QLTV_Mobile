@@ -106,18 +106,15 @@ public class MuonTraQuery {
         try {
             db.beginTransaction();
 
-            // Lấy danh sách sách và số lượng trong phiếu mượn
             Cursor cursor = db.rawQuery("SELECT MaSach, SoLuong FROM chitietmuontra WHERE MaMT = ?", new String[]{maMT});
             while (cursor.moveToNext()) {
                 String maSach = cursor.getString(0);
                 int soLuongMuon = cursor.getInt(1);
 
-                // Cập nhật tăng số lượng sách trong kho khi trả
                 db.execSQL("UPDATE sach SET SoLuong = SoLuong + ? WHERE MaSach = ?", new Object[]{soLuongMuon, maSach});
             }
             cursor.close();
 
-            // Cập nhật trạng thái phiếu mượn
             db.execSQL("UPDATE muontra SET TrangThai = 'Đã trả' WHERE MaMT = ?", new Object[]{maMT});
 
             db.setTransactionSuccessful();
@@ -149,7 +146,6 @@ public class MuonTraQuery {
 
     public String taoMaMuonTraMoi() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        // Lấy mã MT lớn nhất dựa trên giá trị số sau chữ "MT"
         Cursor cursor = db.rawQuery("SELECT MaMT FROM muontra ORDER BY CAST(SUBSTR(MaMT, 3) AS INTEGER) DESC LIMIT 1", null);
 
         String maMoi = "MT001";
@@ -157,11 +153,9 @@ public class MuonTraQuery {
         if (cursor.moveToFirst()) {
             String maHienTai = cursor.getString(0);
             try {
-                // Cắt bỏ "MT" và tăng số lên 1
                 int so = Integer.parseInt(maHienTai.substring(2)) + 1;
                 maMoi = String.format(Locale.getDefault(), "MT%03d", so);
             } catch (Exception e) {
-                // Nếu có lỗi định dạng, tạo mã ngẫu nhiên để tránh dừng app
                 maMoi = "MT" + (System.currentTimeMillis() % 100000);
             }
         }
@@ -184,11 +178,9 @@ public class MuonTraQuery {
                 String maSach = listMaSach.get(i);
                 int soLuong = listSoLuong.get(i);
 
-                // Thêm chi tiết mượn trả
                 db.execSQL("INSERT INTO chitietmuontra (MaMT, MaSach, SoLuong) VALUES (?, ?, ?)",
                         new Object[]{maMT, maSach, soLuong});
 
-                // Cập nhật giảm số lượng sách trong kho
                 db.execSQL("UPDATE sach SET SoLuong = SoLuong - ? WHERE MaSach = ?",
                         new Object[]{soLuong, maSach});
             }
@@ -234,7 +226,6 @@ public class MuonTraQuery {
         try {
             db.beginTransaction();
 
-            // 1. Hoàn trả số lượng sách cũ vào kho trước khi xóa chi tiết cũ
             Cursor cursor = db.rawQuery("SELECT MaSach, SoLuong FROM chitietmuontra WHERE MaMT = ?", new String[]{maMT});
             while (cursor.moveToNext()) {
                 db.execSQL("UPDATE sach SET SoLuong = SoLuong + ? WHERE MaSach = ?",
@@ -242,14 +233,11 @@ public class MuonTraQuery {
             }
             cursor.close();
 
-            // 2. Xóa chi tiết cũ
             db.delete("chitietmuontra", "MaMT = ?", new String[]{maMT});
 
-            // 3. Cập nhật thông tin chung
             db.execSQL("UPDATE muontra SET MaDG = ?, MaNV = ?, NgayMuon = ?, HanTra = ?, TrangThai = ? WHERE MaMT = ?",
                     new Object[]{maDG, maNV, ngayMuon, hanTra, trangThai, maMT});
 
-            // 4. Thêm chi tiết mới và trừ kho
             for (int i = 0; i < listMaSach.size(); i++) {
                 db.execSQL("INSERT INTO chitietmuontra (MaMT, MaSach, SoLuong) VALUES (?, ?, ?)",
                         new Object[]{maMT, listMaSach.get(i), listSoLuong.get(i)});
@@ -283,5 +271,23 @@ public class MuonTraQuery {
         cursor.close();
         db.close();
         return list;
+    }
+
+    public boolean kiemTraDocGiaCoTheThuVien(String maDG) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM thethuvien WHERE MaDG = ? AND TrangThai = 'Còn hiệu lực'", new String[]{maDG});
+        boolean result = cursor.getCount() > 0;
+        cursor.close();
+        db.close();
+        return result;
+    }
+
+    public boolean kiemTraDocGiaDangMuonSach(String maDG) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM muontra WHERE MaDG = ? AND TrangThai = 'Chưa trả'", new String[]{maDG});
+        boolean result = cursor.getCount() > 0;
+        cursor.close();
+        db.close();
+        return result;
     }
 }

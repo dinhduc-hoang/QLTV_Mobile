@@ -101,7 +101,7 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
                     setSpinner(spnLop, docGiaQuery.layDanhSachLopTheoKhoa(""));
                 }
 
-                // Nếu đang load dữ liệu cũ, chọn lại lớp cũ ngay sau khi nạp danh sách lớp
+                
                 if (pendingMaLop != null) {
                     setSpinnerSelected(spnLop, pendingMaLop);
                     pendingMaLop = null;
@@ -148,10 +148,10 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
         edtSdt.setText(item.getSdt());
         setGioiTinhSelected(item.getGioiTinh());
 
-        // Lưu mã lớp cần chọn trước
+        
         pendingMaLop = item.getMaLop();
 
-        // Chọn khoa, listener của spnKhoa sẽ tự load lớp và chọn pendingMaLop
+        
         setSpinnerSelected(spnKhoa, item.getMaKhoa());
 
         isLoadingData = false;

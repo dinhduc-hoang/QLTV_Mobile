@@ -48,7 +48,7 @@ public class TopDocGiaActivity extends AppCompatActivity {
     private void loadData() {
         SQLiteDatabase db = new SQLiteHelper(this).getReadableDatabase();
 
-        // SQL: Lấy mã DG, tên, khoa, lớp và đếm số phiếu mượn (lượt mượn)
+        
         String sql = "SELECT d.MaDG, d.TenDG, k.TenKhoa, l.TenLop, COUNT(m.MaMT) as SoLuot " +
                 "FROM docgia d " +
                 "JOIN khoa k ON d.MaKhoa = k.MaKhoa " +
@@ -61,7 +61,7 @@ public class TopDocGiaActivity extends AppCompatActivity {
 
         list.clear();
         while (c.moveToNext()) {
-            // Định dạng: Tên DG|Mã DG|Khoa - Lớp|Số lượt mượn
+            
             String info = c.getString(1) + "|" +
                          "Mã ĐG: " + c.getString(0) + "|" +
                          "Khoa: " + c.getString(2) + " - Lớp: " + c.getString(3) + "|" +

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#DDE3EC">
 
-    <!-- Header -->
+    
     <LinearLayout
         android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <!-- Body -->
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -52,7 +52,7 @@
         android:paddingEnd="16dp"
         android:paddingBottom="8dp">
 
-        <!-- Search + Add -->
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
