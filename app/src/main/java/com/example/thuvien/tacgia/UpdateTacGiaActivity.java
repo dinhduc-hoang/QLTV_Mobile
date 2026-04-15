@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.thuvien.R;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class UpdateTacGiaActivity extends AppCompatActivity {
 
@@ -119,6 +120,15 @@ public class UpdateTacGiaActivity extends AppCompatActivity {
             edtQuocTich.setError("Nhập quốc tịch");
             edtQuocTich.requestFocus();
             return;
+        }
+
+        List<TacGia> list = tacGiaQuery.layDanhSachTacGia();
+        for (TacGia tg : list) {
+            if (tg.getTenTG().equalsIgnoreCase(tenTG) && !tg.getMaTG().equals(maTG)) {
+                edtTenTG.setError("Tên tác giả đã tồn tại");
+                edtTenTG.requestFocus();
+                return;
+            }
         }
 
         TacGia item = new TacGia();

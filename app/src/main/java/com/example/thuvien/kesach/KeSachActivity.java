@@ -119,13 +119,7 @@ public class KeSachActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = keSachQuery.xoaKeSach(maViTri);
-                                if (result) {
-                                    Toast.makeText(KeSachActivity.this, "Xóa kệ sách thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(KeSachActivity.this, "Xóa kệ sách thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaKeSach(maViTri);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class KeSachActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaKeSach(String maViTri) {
+        if (keSachQuery.keSachDangDuocSuDung(maViTri)) {
+            Toast.makeText(this, "Không thể xóa! Kệ sách này đang chứa sách.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = keSachQuery.xoaKeSach(maViTri);
+        if (result) {
+            Toast.makeText(this, "Xóa kệ sách thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa kệ sách thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -159,6 +159,28 @@ public class DocGiaQuery {
         }
     }
 
+    public boolean docGiaDangMuonSach(String maDG) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+
+        Cursor cursor = db.rawQuery("SELECT 1 FROM muontra WHERE MaDG = ? AND TrangThai = 'Chưa trả' LIMIT 1", new String[]{maDG});
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+
+        if (!result) {
+            Cursor cursorTTV = db.rawQuery("SELECT 1 FROM thethuvien WHERE MaDG = ? LIMIT 1", new String[]{maDG});
+            if (cursorTTV.moveToFirst()) {
+                result = true;
+            }
+            cursorTTV.close();
+        }
+
+        db.close();
+        return result;
+    }
+
     public List<SpinnerItem> layDanhSachSpinner(String tableName, String idCol, String nameCol, String title) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT " + idCol + ", " + nameCol + " FROM " + tableName, null);

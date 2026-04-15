@@ -84,7 +84,6 @@ public class AddNhanVienActivity extends AppCompatActivity {
         String tenNV = edtTenNV.getText().toString().trim();
         String queQuan = edtQueQuan.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
-        int namSinhInt = Integer.parseInt(namSinh);
         String email = edtEmail.getText().toString().trim();
         String sdt = edtSdt.getText().toString().trim();
         String user = edtUser.getText().toString().trim();
@@ -107,6 +106,16 @@ public class AddNhanVienActivity extends AppCompatActivity {
             edtNamSinh.requestFocus();
             return;
         }
+
+        int namSinhInt;
+        try {
+            namSinhInt = Integer.parseInt(namSinh);
+        } catch (NumberFormatException e) {
+            edtNamSinh.setError("Năm sinh phải là số");
+            edtNamSinh.requestFocus();
+            return;
+        }
+
         if (namSinhInt < 1900 || namSinhInt > year || (year - namSinhInt) < 18 ) {
             edtNamSinh.setError("Năm sinh không hợp lệ");
             edtNamSinh.requestFocus();

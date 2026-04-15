@@ -69,7 +69,6 @@ public class AddTacGiaActivity extends AppCompatActivity {
         int year = calendar.get(Calendar.YEAR);
         String tenTG = edtTenTG.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
-        int namSinhInt = Integer.parseInt(namSinh);
         String quocTich = edtQuocTich.getText().toString().trim();
         String gioiTinh = spnGioiTinh.getSelectedItem().toString();
 
@@ -81,6 +80,15 @@ public class AddTacGiaActivity extends AppCompatActivity {
 
         if (namSinh.isEmpty()) {
             edtNamSinh.setError("Nhập năm sinh");
+            edtNamSinh.requestFocus();
+            return;
+        }
+
+        int namSinhInt;
+        try {
+            namSinhInt = Integer.parseInt(namSinh);
+        } catch (NumberFormatException e) {
+            edtNamSinh.setError("Năm sinh phải là số");
             edtNamSinh.requestFocus();
             return;
         }

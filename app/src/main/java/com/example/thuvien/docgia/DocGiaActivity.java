@@ -119,13 +119,7 @@ public class DocGiaActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = docGiaQuery.xoaDocGia(maDG);
-                                if (result) {
-                                    Toast.makeText(DocGiaActivity.this, "Xóa độc giả thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(DocGiaActivity.this, "Xóa độc giả thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaDocGia(maDG);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class DocGiaActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaDocGia(String maDG) {
+        if (docGiaQuery.docGiaDangMuonSach(maDG)) {
+            Toast.makeText(this, "Không thể xóa! Độc giả đang mượn sách hoặc có thẻ thư viện.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = docGiaQuery.xoaDocGia(maDG);
+        if (result) {
+            Toast.makeText(this, "Xóa độc giả thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa độc giả thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

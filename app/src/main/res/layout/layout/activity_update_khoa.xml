@@ -6,7 +6,7 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
         <LinearLayout android:layout_width="match_parent" android:layout_height="180dp" android:background="@drawable/bg_header_gradient" android:orientation="vertical" android:paddingStart="18dp" android:paddingTop="18dp" android:paddingEnd="18dp">
             <RelativeLayout android:layout_width="match_parent" android:layout_height="56dp">
-                <ImageView android:id="@+id/imgBack" android:layout_width="24dp" android:layout_height="24dp" android:layout_centerVertical="true" android:src="@android:drawable/ic_media_previous" android:tint="@android:color/white" />
+                <ImageView android:id="@+id/imgBack" android:layout_width="24dp" android:layout_height="24dp" android:layout_centerVertical="true" android:src="@drawable/ic_arrow_back" android:tint="@android:color/white" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerInParent="true" android:text="Cập nhật Khoa" android:textColor="@android:color/white" android:textSize="24sp" android:textStyle="bold" />
             </RelativeLayout>
         </LinearLayout>
@@ -18,3 +18,4 @@
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
+

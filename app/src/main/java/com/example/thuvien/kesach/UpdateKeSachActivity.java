@@ -78,7 +78,7 @@ public class UpdateKeSachActivity extends AppCompatActivity {
         }
 
         for (KeSach ks : list) {
-            if (ks.getTenKe().equalsIgnoreCase(tenKe)) {
+            if (ks.getTenKe().equalsIgnoreCase(tenKe) && !ks.getMaViTri().equals(maViTri)) {
                 edtTenKe.setError("Tên kệ đã tồn tại");
                 edtTenKe.requestFocus();
                 return;

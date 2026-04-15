@@ -128,8 +128,9 @@ public class UpdateSachActivity extends AppCompatActivity {
         }
         List<Sach> list = sachQuery.layDanhSachSach();
 
-        for(Sach sach : list)
-        {
+        for (Sach sach : list) {
+            if (sach.getMaSach().equals(maSach)) continue;
+
             if (sach.getTenSach().equalsIgnoreCase(ten)) {
                 edtTenSach.setError("Tên sách đã tồn tại");
                 edtTenSach.requestFocus();

@@ -104,6 +104,7 @@ public class UpdateNXBActivity extends AppCompatActivity {
         List<NXB> list = nxbQuery.layDanhSachNXB();
 
         for (NXB nxb : list) {
+            if (nxb.getMaNXB().equals(maNXB)) continue;
 
             if (nxb.getTenNXB().equalsIgnoreCase(ten)) {
                 edtTen.setError("Tên NXB đã tồn tại");

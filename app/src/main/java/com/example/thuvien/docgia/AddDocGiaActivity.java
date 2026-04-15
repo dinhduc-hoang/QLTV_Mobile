@@ -118,7 +118,6 @@ public class AddDocGiaActivity extends AppCompatActivity {
         int year = calendar.get(Calendar.YEAR);
         String tenDG = edtTenDG.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
-        int namSinhInt = Integer.parseInt(namSinh);
         String gioiTinh = spnGioiTinh.getSelectedItem().toString();
         String diaChi = edtDiaChi.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
@@ -134,6 +133,16 @@ public class AddDocGiaActivity extends AppCompatActivity {
             edtNamSinh.requestFocus();
             return;
         }
+
+        int namSinhInt;
+        try {
+            namSinhInt = Integer.parseInt(namSinh);
+        } catch (NumberFormatException e) {
+            edtNamSinh.setError("Năm sinh phải là số");
+            edtNamSinh.requestFocus();
+            return;
+        }
+
         if (namSinhInt < 1900 || namSinhInt > year) {
             edtNamSinh.setError("Năm sinh không hợp lệ");
             edtNamSinh.requestFocus();

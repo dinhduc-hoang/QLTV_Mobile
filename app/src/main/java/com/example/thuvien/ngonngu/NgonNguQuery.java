@@ -122,4 +122,16 @@ public class NgonNguQuery {
             return false;
         }
     }
+
+    public boolean ngonNguDangDuocSuDung(String maNN) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+        Cursor cursor = db.rawQuery("SELECT 1 FROM sach WHERE MaNN = ? LIMIT 1", new String[]{maNN});
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
 }

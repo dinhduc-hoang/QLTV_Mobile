@@ -85,13 +85,12 @@ public class AddSachActivity extends AppCompatActivity {
         String ten = edtTenSach.getText().toString().trim();
         String strSoLuong = edtSoLuong.getText().toString().trim();
         String strNamXB = edtNamXB.getText().toString().trim();
-        int namXB = Integer.parseInt(strNamXB);
+
         if (ten.isEmpty()) {
             edtTenSach.setError("Nhập tên sách");
             edtTenSach.requestFocus();
             return;
         }
-
 
         if (strSoLuong.isEmpty()) {
             edtSoLuong.setError("Nhập số lượng");
@@ -104,17 +103,20 @@ public class AddSachActivity extends AppCompatActivity {
             edtNamXB.requestFocus();
             return;
         }
-        if (namXB < 1900 || namXB > year) {
-            edtNamXB.setError("Năm xuất bản không hợp lệ");
-            edtNamXB.requestFocus();
-            return;
-        }
+
         int soLuong;
+        int namXB;
         try {
             soLuong = Integer.parseInt(strSoLuong);
             namXB = Integer.parseInt(strNamXB);
         } catch (Exception e) {
             Toast.makeText(this, "Số lượng và năm xuất bản phải là số", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (namXB < 1900 || namXB > year) {
+            edtNamXB.setError("Năm xuất bản không hợp lệ");
+            edtNamXB.requestFocus();
             return;
         }
 

@@ -113,6 +113,10 @@ public class NhanVienActivity extends AppCompatActivity {
             }
 
             if (title.equals("Xóa")) {
+                if (nhanVienQuery.nhanVienDangDuocSuDung(maNV)) {
+                    Toast.makeText(NhanVienActivity.this, "Không thể xóa nhân viên này vì đang có phiếu mượn liên quan!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
                 new AlertDialog.Builder(NhanVienActivity.this)
                         .setTitle("Xóa nhân viên")
                         .setMessage("Bạn có chắc muốn xóa nhân viên này không?")

@@ -122,4 +122,26 @@ public class KhoaQuery {
             return false;
         }
     }
+
+    public boolean khoaDangDuocSuDung(String maKhoa) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+
+        Cursor cursorLop = db.rawQuery("SELECT 1 FROM lop WHERE MaKhoa = ? LIMIT 1", new String[]{maKhoa});
+        if (cursorLop.moveToFirst()) {
+            result = true;
+        }
+        cursorLop.close();
+
+        if (!result) {
+            Cursor cursorDG = db.rawQuery("SELECT 1 FROM docgia WHERE MaKhoa = ? LIMIT 1", new String[]{maKhoa});
+            if (cursorDG.moveToFirst()) {
+                result = true;
+            }
+            cursorDG.close();
+        }
+
+        db.close();
+        return result;
+    }
 }

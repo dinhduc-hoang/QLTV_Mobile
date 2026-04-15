@@ -14,7 +14,7 @@
         android:paddingTop="18dp"
         android:paddingEnd="18dp">
         <RelativeLayout android:layout_width="match_parent" android:layout_height="56dp">
-            <ImageView android:id="@+id/imgBack" android:layout_width="24dp" android:layout_height="24dp" android:layout_centerVertical="true" android:src="@android:drawable/ic_media_previous" android:tint="@android:color/white" />
+            <ImageView android:id="@+id/imgBack" android:layout_width="24dp" android:layout_height="24dp" android:layout_centerVertical="true" android:src="@drawable/ic_arrow_back" android:tint="@android:color/white" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerInParent="true" android:text="Quản lý Kệ sách" android:textColor="@android:color/white" android:textSize="20sp" android:textStyle="bold" />
         </RelativeLayout>
     </LinearLayout>
@@ -33,3 +33,4 @@
     </LinearLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@+id/btnAdd" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:layout_alignParentBottom="true" android:layout_margin="20dp" android:src="@android:drawable/ic_input_add" app:backgroundTint="#18B9A7" app:tint="@android:color/white" />
 </RelativeLayout>
+

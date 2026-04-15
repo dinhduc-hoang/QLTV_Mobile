@@ -119,13 +119,7 @@ public class TheLoaiActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = theLoaiQuery.xoaTheLoai(maTL);
-                                if (result) {
-                                    Toast.makeText(TheLoaiActivity.this, "Xóa thể loại thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(TheLoaiActivity.this, "Xóa thể loại thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaTheLoai(maTL);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class TheLoaiActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaTheLoai(String maTL) {
+        if (theLoaiQuery.theLoaiDangDuocSuDung(maTL)) {
+            Toast.makeText(this, "Không thể xóa! Thể loại này đang có sách.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = theLoaiQuery.xoaTheLoai(maTL);
+        if (result) {
+            Toast.makeText(this, "Xóa thể loại thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa thể loại thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

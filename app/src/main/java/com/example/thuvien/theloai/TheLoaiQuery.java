@@ -122,4 +122,16 @@ public class TheLoaiQuery {
             return false;
         }
     }
+
+    public boolean theLoaiDangDuocSuDung(String maTL) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+        Cursor cursor = db.rawQuery("SELECT 1 FROM sach WHERE MaTL = ? LIMIT 1", new String[]{maTL});
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
 }

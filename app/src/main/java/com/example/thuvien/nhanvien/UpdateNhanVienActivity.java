@@ -176,6 +176,7 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
         List<NhanVien> list = nhanVienQuery.layDanhSachNhanVien();
 
         for (NhanVien nv : list) {
+            if (nv.getMaNV().equals(maNV)) continue;
 
             if (nv.getSdt().equals(sdt)) {
                 edtSdt.setError("SĐT đã tồn tại");

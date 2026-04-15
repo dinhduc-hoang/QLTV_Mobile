@@ -161,6 +161,18 @@ public class NhanVienQuery {
         }
     }
 
+    public boolean nhanVienDangDuocSuDung(String maNV) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+        Cursor cursor = db.rawQuery("SELECT 1 FROM phieumuon WHERE MaNV = ? LIMIT 1", new String[]{maNV});
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
+
     public List<String> layDanhSachGioiTinh() {
         List<String> list = new ArrayList<>();
         list.add("Nam");

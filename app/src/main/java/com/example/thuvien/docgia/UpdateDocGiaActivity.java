@@ -248,6 +248,7 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
             return;
         }
         for (DocGia dg : list) {
+            if (dg.getMaDG().equals(maDG)) continue;
 
             if (dg.getSdt().equals(sdt)) {
                 edtSdt.setError("SĐT đã tồn tại");

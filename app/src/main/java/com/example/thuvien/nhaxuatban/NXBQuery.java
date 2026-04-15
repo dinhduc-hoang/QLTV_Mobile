@@ -136,4 +136,16 @@ public class NXBQuery {
         db.close();
         return row > 0;
     }
+
+    public boolean nxbDangDuocSuDung(String maNXB) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+        Cursor cursor = db.rawQuery("SELECT 1 FROM sach WHERE MaNXB = ? LIMIT 1", new String[]{maNXB});
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
 }

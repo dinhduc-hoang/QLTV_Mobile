@@ -68,7 +68,7 @@ public class UpdateNgonNguActivity extends AppCompatActivity {
         }
         List<NgonNgu> list = ngonNguQuery.layDanhSachNgonNgu();
         for (NgonNgu nn : list) {
-            if (nn.getTenNN().equalsIgnoreCase(tenNN)) {
+            if (nn.getTenNN().equalsIgnoreCase(tenNN) && !nn.getMaNN().equals(maNN)) {
                 edtTenNN.setError("Tên ngôn ngữ đã tồn tại");
                 edtTenNN.requestFocus();
                 return;

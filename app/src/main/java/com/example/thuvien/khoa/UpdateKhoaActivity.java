@@ -68,7 +68,7 @@ public class UpdateKhoaActivity extends AppCompatActivity {
             return;
         }
         for (Khoa k : list) {
-            if (k.getTenKhoa().equalsIgnoreCase(tenKhoa)) {
+            if (k.getTenKhoa().equalsIgnoreCase(tenKhoa) && !k.getMaKhoa().equals(maKhoa)) {
                 edtTenKhoa.setError("Tên khoa đã tồn tại");
                 edtTenKhoa.requestFocus();
                 return;

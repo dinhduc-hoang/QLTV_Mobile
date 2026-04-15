@@ -119,13 +119,7 @@ public class NXBActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = nxbQuery.xoa(maNXB);
-                                if (result) {
-                                    Toast.makeText(NXBActivity.this, "Xóa nhà xuất bản thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(NXBActivity.this, "Xóa nhà xuất bản thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaNXB(maNXB);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class NXBActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaNXB(String maNXB) {
+        if (nxbQuery.nxbDangDuocSuDung(maNXB)) {
+            Toast.makeText(this, "Không thể xóa! Nhà xuất bản này đang có sách.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = nxbQuery.xoa(maNXB);
+        if (result) {
+            Toast.makeText(this, "Xóa nhà xuất bản thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa nhà xuất bản thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

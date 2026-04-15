@@ -119,13 +119,7 @@ public class LopActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = lopQuery.xoaLop(maLop);
-                                if (result) {
-                                    Toast.makeText(LopActivity.this, "Xóa lớp thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(LopActivity.this, "Xóa lớp thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaLop(maLop);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class LopActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaLop(String maLop) {
+        if (lopQuery.lopDangDuocSuDung(maLop)) {
+            Toast.makeText(this, "Không thể xóa! Lớp này đang có độc giả thuộc về.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = lopQuery.xoaLop(maLop);
+        if (result) {
+            Toast.makeText(this, "Xóa lớp thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa lớp thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

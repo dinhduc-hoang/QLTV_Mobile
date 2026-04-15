@@ -124,4 +124,16 @@ public class KeSachQuery {
             return false;
         }
     }
+
+    public boolean keSachDangDuocSuDung(String maViTri) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+        Cursor cursor = db.rawQuery("SELECT 1 FROM sach WHERE MaViTri = ? LIMIT 1", new String[]{maViTri});
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
 }

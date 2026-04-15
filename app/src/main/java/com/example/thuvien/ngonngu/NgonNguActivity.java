@@ -119,13 +119,7 @@ public class NgonNguActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = ngonNguQuery.xoaNgonNgu(maNN);
-                                if (result) {
-                                    Toast.makeText(NgonNguActivity.this, "Xóa ngôn ngữ thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(NgonNguActivity.this, "Xóa ngôn ngữ thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaNgonNgu(maNN);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class NgonNguActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaNgonNgu(String maNN) {
+        if (ngonNguQuery.ngonNguDangDuocSuDung(maNN)) {
+            Toast.makeText(this, "Không thể xóa! Ngôn ngữ này đang được sử dụng cho sách.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = ngonNguQuery.xoaNgonNgu(maNN);
+        if (result) {
+            Toast.makeText(this, "Xóa ngôn ngữ thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa ngôn ngữ thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

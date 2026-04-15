@@ -128,6 +128,19 @@ public class LopQuery {
         }
     }
 
+    public boolean lopDangDuocSuDung(String maLop) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        boolean result = false;
+
+        Cursor cursor = db.rawQuery("SELECT 1 FROM docgia WHERE MaLop = ? LIMIT 1", new String[]{maLop});
+        if (cursor.moveToFirst()) {
+            result = true;
+        }
+        cursor.close();
+        db.close();
+        return result;
+    }
+
     public List<SpinnerItem> layDanhSachKhoaSpinner() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT MaKhoa, TenKhoa FROM khoa ORDER BY TenKhoa ASC", null);

@@ -69,9 +69,9 @@ public class UpdateTheLoaiActivity extends AppCompatActivity {
         List<TheLoai> list = theLoaiQuery.layDanhSachTheLoai();
         for(TheLoai theloai:list)
         {
-            if(theloai.getTenTL().equals(tenTL))
+            if(theloai.getTenTL().equalsIgnoreCase(tenTL) && !theloai.getMaTL().equals(maTL))
             {
-                edtTenTL.setError("Tn thể loại đã tồn tại");
+                edtTenTL.setError("Tên thể loại đã tồn tại");
                 edtTenTL.requestFocus();
                 return;
             }

@@ -119,13 +119,7 @@ public class TacGiaActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = tacGiaQuery.xoaTacGia(maTG);
-                                if (result) {
-                                    Toast.makeText(TacGiaActivity.this, "Xóa tác giả thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(TacGiaActivity.this, "Xóa tác giả thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaTacGia(maTG);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class TacGiaActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaTacGia(String maTG) {
+        if (tacGiaQuery.tacGiaDangDuocSuDung(maTG)) {
+            Toast.makeText(this, "Không thể xóa! Tác giả này đang có sách.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = tacGiaQuery.xoaTacGia(maTG);
+        if (result) {
+            Toast.makeText(this, "Xóa tác giả thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa tác giả thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

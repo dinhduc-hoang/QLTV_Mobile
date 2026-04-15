@@ -102,7 +102,7 @@ public class UpdateLopActivity extends AppCompatActivity {
             return;
         }
         for (Lop l : list) {
-            if (l.getTenLop().equalsIgnoreCase(tenLop)) {
+            if (l.getTenLop().equalsIgnoreCase(tenLop) && !l.getMaLop().equals(maLop)) {
                 edtTenLop.setError("Tên lớp đã tồn tại");
                 edtTenLop.requestFocus();
                 return;

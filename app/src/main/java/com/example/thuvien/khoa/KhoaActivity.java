@@ -119,13 +119,7 @@ public class KhoaActivity extends AppCompatActivity {
                         .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                boolean result = khoaQuery.xoaKhoa(maKhoa);
-                                if (result) {
-                                    Toast.makeText(KhoaActivity.this, "Xóa khoa thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(KhoaActivity.this, "Xóa khoa thất bại!", Toast.LENGTH_SHORT).show();
-                                }
+                                xoaKhoa(maKhoa);
                             }
                         })
                         .setNegativeButton("Hủy", null)
@@ -137,5 +131,20 @@ public class KhoaActivity extends AppCompatActivity {
         });
 
         popupMenu.show();
+    }
+
+    private void xoaKhoa(String maKhoa) {
+        if (khoaQuery.khoaDangDuocSuDung(maKhoa)) {
+            Toast.makeText(this, "Không thể xóa! Khoa này đang có lớp hoặc độc giả thuộc về.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = khoaQuery.xoaKhoa(maKhoa);
+        if (result) {
+            Toast.makeText(this, "Xóa khoa thành công!", Toast.LENGTH_SHORT).show();
+            loadDanhSach();
+        } else {
+            Toast.makeText(this, "Xóa khoa thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
