@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="3dp"
+    app:cardUseCompatPadding="false">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTrangThai"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
+            android:text="Chưa trả"
+            android:textColor="#D97706"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMaMT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/tvTrangThai"
+            android:layout_marginEnd="10dp"
+            android:text="Phiếu MT001"
+            android:textColor="#111827"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvDocGia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvMaMT"
+            android:layout_marginTop="8dp"
+            android:text="Độc giả: Nguyễn Văn A"
+            android:textColor="#4F46E5"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvNhanVien"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvDocGia"
+            android:layout_marginTop="4dp"
+            android:text="Nhân viên: Trần Thị B"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvNgayMuon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvNhanVien"
+            android:layout_marginTop="4dp"
+            android:text="Ngày mượn: 10/04/2026"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvHanTra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvNgayMuon"
+            android:layout_marginTop="4dp"
+            android:text="Hạn trả: 17/04/2026"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

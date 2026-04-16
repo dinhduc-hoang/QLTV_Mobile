@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="2dp"
+    app:cardUseCompatPadding="false">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tvSoLuong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/bg_badge_quantity"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="4dp"
+            android:text="SL: 20"
+            android:textColor="#D97706"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvTenSach"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/tvSoLuong"
+            android:layout_marginEnd="10dp"
+            android:text="Tên sách"
+            android:textColor="#111827"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMaSach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTenSach"
+            android:layout_marginTop="6dp"
+            android:text="Mã sách: S001"
+            android:textColor="#4F46E5"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvTacGia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvMaSach"
+            android:layout_marginTop="4dp"
+            android:text="Tác giả: Nguyễn Du"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvTheLoai"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTacGia"
+            android:layout_marginTop="2dp"
+            android:text="Thể loại: Công nghệ thông tin"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvNXB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTheLoai"
+            android:layout_marginTop="2dp"
+            android:text="Nhà xuất bản:"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvNgonNgu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvNXB"
+            android:layout_marginTop="2dp"
+            android:text="Ngôn ngữ: Tiếng Việt"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvNamXB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvNgonNgu"
+            android:layout_marginTop="2dp"
+            android:text="Năm XB: 2021"
+            android:textColor="#4B5563"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvViTri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvNamXB"
+            android:layout_marginTop="4dp"
+            android:text="Kệ sách: Kệ CNTT"
+            android:textColor="#0C6B37"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

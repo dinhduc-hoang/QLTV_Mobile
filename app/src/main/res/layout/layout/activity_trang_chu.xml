@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DDE3EC">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="230dp"
+            android:background="@drawable/bg_header_gradient"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xin chào"
+                    android:textColor="@android:color/white"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvLogout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="Đăng xuất"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvRole"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Vai trò"
+                android:textColor="#E8ECFF"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="Trang chủ hệ thống"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Chọn chức năng cần quản lý"
+                android:textColor="#E8ECFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-28dp"
+            android:background="@drawable/bg_body_top_round"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chức năng chính" android:textColor="#111827" android:textSize="18sp" android:textStyle="bold" />
+            <include layout="@layout/item_menu_trangchu_sach" />
+            <include layout="@layout/item_menu_trangchu_muontra" />
+            <include layout="@layout/item_menu_trangchu_thethuvien" />
+            <include layout="@layout/item_menu_trangchu_docgia" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:text="Dữ liệu danh mục" android:textColor="#111827" android:textSize="18sp" android:textStyle="bold" />
+            <include layout="@layout/item_menu_trangchu_tacgia" />
+            <include layout="@layout/item_menu_trangchu_theloai" />
+            <include layout="@layout/item_menu_trangchu_nxb" />
+            <include layout="@layout/item_menu_trangchu_ngonngu" />
+            <include layout="@layout/item_menu_trangchu_kesach" />
+            <include layout="@layout/item_menu_trangchu_lop" />
+            <include layout="@layout/item_menu_trangchu_khoa" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:text="Hệ thống" android:textColor="#111827" android:textSize="18sp" android:textStyle="bold" />
+            <include layout="@layout/item_menu_trangchu_nhanvien" />
+            <include layout="@layout/item_menu_trangchu_thongke" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
