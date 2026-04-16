@@ -4,13 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thuvien.R;
 import com.example.thuvien.sach.Sach;
@@ -21,7 +20,7 @@ import java.util.List;
 public class UserHomeActivity extends AppCompatActivity {
 
     private TextView tvWelcome, btnLogoutHome;
-    private RecyclerView rvFeaturedBooks;
+    private LinearLayout lnFeaturedBooks;
     private CardView cardBookList, cardCurrentBorrowing, cardHistory, cardProfile;
     private SachQuery sachQuery;
 
@@ -32,7 +31,7 @@ public class UserHomeActivity extends AppCompatActivity {
 
         tvWelcome = findViewById(R.id.tvWelcome);
         btnLogoutHome = findViewById(R.id.btnLogoutHome);
-        rvFeaturedBooks = findViewById(R.id.rvFeaturedBooks);
+        lnFeaturedBooks = findViewById(R.id.lnFeaturedBooks);
         cardBookList = findViewById(R.id.cardBookList);
         cardCurrentBorrowing = findViewById(R.id.cardCurrentBorrowing);
         cardHistory = findViewById(R.id.cardHistory);
@@ -68,8 +67,22 @@ public class UserHomeActivity extends AppCompatActivity {
             featuredBooks = featuredBooks.subList(0, 5);
         }
 
-        UserBookAdapter adapter = new UserBookAdapter(this, featuredBooks, true);
-        rvFeaturedBooks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rvFeaturedBooks.setAdapter(adapter);
+        lnFeaturedBooks.removeAllViews();
+        for (Sach sach : featuredBooks) {
+            View view = getLayoutInflater().inflate(R.layout.item_user_book_featured, lnFeaturedBooks, false);
+            TextView tvBookName = view.findViewById(R.id.tvBookName);
+            TextView tvAuthorName = view.findViewById(R.id.tvAuthorName);
+
+            tvBookName.setText(sach.getTenSach());
+            tvAuthorName.setText(sach.getTenTG());
+
+            view.setOnClickListener(v -> {
+                Intent intent = new Intent(this, UserBookDetailActivity.class);
+                intent.putExtra("MaSach", sach.getMaSach());
+                startActivity(intent);
+            });
+
+            lnFeaturedBooks.addView(view);
+        }
     }
 }

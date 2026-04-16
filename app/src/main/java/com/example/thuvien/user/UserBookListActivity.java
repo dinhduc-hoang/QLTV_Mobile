@@ -21,7 +21,7 @@ public class UserBookListActivity extends AppCompatActivity {
 
     private ImageView imgBack;
     private EditText edtSearch;
-    private RecyclerView rvBooks;
+    private ListView lvBooks;
     private SachQuery sachQuery;
     private UserBookAdapter adapter;
     private List<Sach> listSach = new ArrayList<>();
@@ -33,14 +33,16 @@ public class UserBookListActivity extends AppCompatActivity {
 
         imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        rvBooks = findViewById(R.id.rvBooks);
+        lvBooks = findViewById(R.id.lvBooks);
 
         sachQuery = new SachQuery(this);
         
         imgBack.setOnClickListener(v -> finish());
 
-        setupRecyclerView();
-        loadData("");
+        adapter = new UserBookAdapter(this, listSach);
+        lvBooks.setAdapter(adapter);
+
+        loadData();
 
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -48,7 +50,7 @@ public class UserBookListActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                loadData(s.toString());
+                loadData();
             }
 
             @Override
@@ -56,13 +58,8 @@ public class UserBookListActivity extends AppCompatActivity {
         });
     }
 
-    private void setupRecyclerView() {
-        rvBooks.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new UserBookAdapter(this, listSach, false);
-        rvBooks.setAdapter(adapter);
-    }
-
-    private void loadData(String keyword) {
+    private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listSach.clear();
         if (keyword.isEmpty()) {
             listSach.addAll(sachQuery.layDanhSachSach());

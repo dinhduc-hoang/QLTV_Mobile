@@ -74,11 +74,13 @@
             android:textSize="13sp" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHistory"
+    <ListView
+        android:id="@+id/lvHistory"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingHorizontal="16dp" />
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp"
+        android:paddingHorizontal="16dp"
+        android:clipToPadding="false" />
 
 </LinearLayout>

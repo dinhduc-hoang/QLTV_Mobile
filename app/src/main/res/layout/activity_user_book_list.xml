@@ -56,11 +56,13 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvBooks"
+    <ListView
+        android:id="@+id/lvBooks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="16dp" />
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp"
+        android:padding="16dp"
+        android:clipToPadding="false" />
 
 </LinearLayout>

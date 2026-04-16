@@ -3,11 +3,10 @@ package com.example.thuvien.user;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thuvien.R;
 import com.example.thuvien.muontra.MuonTra;
@@ -20,7 +19,7 @@ public class UserBorrowHistoryActivity extends AppCompatActivity {
 
     private ImageView imgBack;
     private TextView btnFilterAll, btnFilterReturned, btnFilterOverdue;
-    private RecyclerView rvHistory;
+    private ListView lvHistory;
     private MuonTraQuery muonTraQuery;
     private UserBorrowAdapter adapter;
     private List<MuonTra> listHistory = new ArrayList<>();
@@ -35,28 +34,22 @@ public class UserBorrowHistoryActivity extends AppCompatActivity {
         btnFilterAll = findViewById(R.id.btnFilterAll);
         btnFilterReturned = findViewById(R.id.btnFilterReturned);
         btnFilterOverdue = findViewById(R.id.btnFilterOverdue);
-        rvHistory = findViewById(R.id.rvHistory);
+        lvHistory = findViewById(R.id.lvHistory);
 
         muonTraQuery = new MuonTraQuery(this);
         imgBack.setOnClickListener(v -> finish());
 
-        setupRecyclerView();
+        adapter = new UserBorrowAdapter(this, listHistory);
+        lvHistory.setAdapter(adapter);
+
         setupFilters();
         loadData();
-    }
-
-    private void setupRecyclerView() {
-        rvHistory.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new UserBorrowAdapter(this, listHistory);
-        rvHistory.setAdapter(adapter);
     }
 
     private void setupFilters() {
         btnFilterAll.setOnClickListener(v -> updateFilter("Tất cả"));
         btnFilterReturned.setOnClickListener(v -> updateFilter("Đã trả"));
         btnFilterOverdue.setOnClickListener(v -> updateFilter("Quá hạn"));
-        
-        // Initialize filters UI
         updateFilterUI("Tất cả");
     }
 
@@ -68,17 +61,13 @@ public class UserBorrowHistoryActivity extends AppCompatActivity {
     }
 
     private void updateFilterUI(String filter) {
-        // Reset styles
         btnFilterAll.setBackgroundTintList(getColorStateList(R.color.line_soft));
         btnFilterAll.setTextColor(getResources().getColor(R.color.text_gray));
-        
         btnFilterReturned.setBackgroundTintList(getColorStateList(R.color.line_soft));
         btnFilterReturned.setTextColor(getResources().getColor(R.color.text_gray));
-        
         btnFilterOverdue.setBackgroundTintList(getColorStateList(R.color.line_soft));
         btnFilterOverdue.setTextColor(getResources().getColor(R.color.text_gray));
 
-        // Apply active style
         TextView activeBtn = btnFilterAll;
         if (filter.equals("Đã trả")) activeBtn = btnFilterReturned;
         else if (filter.equals("Quá hạn")) activeBtn = btnFilterOverdue;

@@ -5,73 +5,67 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thuvien.R;
 import com.example.thuvien.sach.Sach;
 
 import java.util.List;
 
-public class UserBookAdapter extends RecyclerView.Adapter<UserBookAdapter.ViewHolder> {
+public class UserBookAdapter extends BaseAdapter {
 
     private Context context;
     private List<Sach> list;
-    private boolean isFeatured;
 
-    public UserBookAdapter(Context context, List<Sach> list, boolean isFeatured) {
+    public UserBookAdapter(Context context, List<Sach> list) {
         this.context = context;
         this.list = list;
-        this.isFeatured = isFeatured;
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        int layoutId = isFeatured ? R.layout.item_user_book_featured : R.layout.item_user_book_list;
-        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
-        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Sach sach = list.get(position);
-        holder.tvBookName.setText(sach.getTenSach());
-        holder.tvAuthorName.setText(sach.getTenTG());
+    public int getCount() {
+        return list.size();
+    }
 
-        if (!isFeatured) {
-            holder.tvStatus.setText("Còn " + sach.getSoLuong());
-            if (sach.getSoLuong() <= 0) {
-                holder.tvStatus.setText("Hết sách");
-                holder.tvStatus.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
-            } else {
-                holder.tvStatus.setTextColor(context.getResources().getColor(R.color.orange_primary));
-            }
+    @Override
+    public Object getItem(int position) {
+        return list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.item_user_book_list, parent, false);
         }
 
-        holder.itemView.setOnClickListener(v -> {
+        Sach sach = list.get(position);
+        TextView tvBookName = convertView.findViewById(R.id.tvBookName);
+        TextView tvAuthorName = convertView.findViewById(R.id.tvAuthorName);
+        TextView tvStatus = convertView.findViewById(R.id.tvStatus);
+
+        tvBookName.setText(sach.getTenSach());
+        tvAuthorName.setText(sach.getTenTG());
+
+        if (sach.getSoLuong() <= 0) {
+            tvStatus.setText("Hết sách");
+            tvStatus.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
+        } else {
+            tvStatus.setText("Còn " + sach.getSoLuong());
+            tvStatus.setTextColor(context.getResources().getColor(R.color.orange_primary));
+        }
+
+        convertView.setOnClickListener(v -> {
             Intent intent = new Intent(context, UserBookDetailActivity.class);
             intent.putExtra("MaSach", sach.getMaSach());
             context.startActivity(intent);
         });
-    }
 
-    @Override
-    public int getItemCount() {
-        return list.size();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvBookName, tvAuthorName, tvStatus;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvBookName = itemView.findViewById(R.id.tvBookName);
-            tvAuthorName = itemView.findViewById(R.id.tvAuthorName);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
-        }
+        return convertView;
     }
 }
