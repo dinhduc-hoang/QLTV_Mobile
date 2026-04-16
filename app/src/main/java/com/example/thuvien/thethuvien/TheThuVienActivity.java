@@ -66,7 +66,7 @@ public class TheThuVienActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -90,42 +90,24 @@ public class TheThuVienActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(theThuVienQuery.layDanhSachThe());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(theThuVienQuery.layDanhSachThe());
+        } else {
+            listGoc.addAll(theThuVienQuery.timKiemThe(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            TheThuVien the = listGoc.get(i);
-
-            String maThe = the.getMaThe();
-            String tenDG = the.getTenDG();
-            String trangThai = the.getTrangThai();
-
-            if (maThe == null) maThe = "";
-            if (tenDG == null) tenDG = "";
-            if (trangThai == null) trangThai = "";
-
-            if (tuKhoa.equals("")
-                    || maThe.toLowerCase().contains(tuKhoa)
-                    || tenDG.toLowerCase().contains(tuKhoa)
-                    || trangThai.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(the);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Logic moved to loadData using SQL
+        loadData();
     }
 
     @Override

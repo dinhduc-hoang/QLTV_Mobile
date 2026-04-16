@@ -64,4 +64,7 @@ public class DocGia {
 
     public String getTenLop() { return tenLop; }
     public void setTenLop(String tenLop) { this.tenLop = tenLop; }
+
+    public void setMatKhau(String string) {
+    }
 }

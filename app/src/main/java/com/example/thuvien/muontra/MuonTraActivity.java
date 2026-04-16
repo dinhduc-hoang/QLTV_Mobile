@@ -66,7 +66,7 @@ public class MuonTraActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -90,46 +90,21 @@ public class MuonTraActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(muonTraQuery.layDanhSachMuonTra());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(muonTraQuery.layDanhSachMuonTra());
+        } else {
+            listGoc.addAll(muonTraQuery.timKiemMuonTra(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            MuonTra mt = listGoc.get(i);
-
-            String maMT = mt.getMaMT();
-            String tenDG = mt.getTenDG();
-            String tenNV = mt.getTenNV();
-            String trangThai = mt.getTrangThai();
-
-            if (maMT == null) maMT = "";
-            if (tenDG == null) tenDG = "";
-            if (tenNV == null) tenNV = "";
-            if (trangThai == null) trangThai = "";
-
-            if (tuKhoa.equals("")
-                    || maMT.toLowerCase().contains(tuKhoa)
-                    || tenDG.toLowerCase().contains(tuKhoa)
-                    || tenNV.toLowerCase().contains(tuKhoa)
-                    || trangThai.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(mt);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
     }
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

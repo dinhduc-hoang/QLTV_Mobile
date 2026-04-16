@@ -65,7 +65,7 @@ public class DocGiaActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -89,43 +89,24 @@ public class DocGiaActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(docGiaQuery.layDanhSachDocGia());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(docGiaQuery.layDanhSachDocGia());
+        } else {
+            listGoc.addAll(docGiaQuery.timKiemDocGia(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            DocGia dg = listGoc.get(i);
-
-            String tenDG = dg.getTenDG();
-            if (tenDG == null) {
-                tenDG = "";
-            }
-
-            String maDG = dg.getMaDG();
-            if (maDG == null) {
-                maDG = "";
-            }
-
-            if (tuKhoa.equals("")
-                    || tenDG.toLowerCase().contains(tuKhoa)
-                    || maDG.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(dg);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Logic moved to loadData using SQL
+        loadData();
     }
 
     @Override

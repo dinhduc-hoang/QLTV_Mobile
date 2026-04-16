@@ -66,7 +66,7 @@ public class LopActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -90,42 +90,24 @@ public class LopActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(lopQuery.layDanhSachLop());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(lopQuery.layDanhSachLop());
+        } else {
+            listGoc.addAll(lopQuery.timKiemLop(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            Lop lop = listGoc.get(i);
-
-            String maLop = lop.getMaLop();
-            String tenLop = lop.getTenLop();
-            String tenKhoa = lop.getTenKhoa();
-
-            if (maLop == null) maLop = "";
-            if (tenLop == null) tenLop = "";
-            if (tenKhoa == null) tenKhoa = "";
-
-            if (tuKhoa.equals("")
-                    || maLop.toLowerCase().contains(tuKhoa)
-                    || tenLop.toLowerCase().contains(tuKhoa)
-                    || tenKhoa.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(lop);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Logic moved to loadData using SQL
+        loadData();
     }
 
     @Override

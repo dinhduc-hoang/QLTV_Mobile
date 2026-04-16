@@ -74,7 +74,7 @@ public class NhanVienActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -101,43 +101,24 @@ public class NhanVienActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        // Xóa hết rồi chép mảng vào
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(nhanVienQuery.layDanhSachNhanVien());
+        if (keyword.isEmpty()) {
+            listGoc.addAll(nhanVienQuery.layDanhSachNhanVien());
+        } else {
+            listGoc.addAll(nhanVienQuery.timKiemNhanVien(keyword));
+        }
         
-        // Gọi hàm lọc để đổ danh sách ra
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
         listHienThi.clear();
-
-        // Xử lý chuỗi tìm kiếm (đổi về chữ in thường)
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        // Chạy vòng lặp for cơ bản duyệt mảng NhanVien
-        for (int i = 0; i < listGoc.size(); i++) {
-            NhanVien nv = listGoc.get(i);
-            
-            String tenNV = nv.getTenNV();
-            if (tenNV == null) {
-                tenNV = "";
-            }
-            
-            // So sánh tên (đã in thường) với từ khóa
-            if (tuKhoa.equals("") || tenNV.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(nv);
-            }
-        }
-
-        // Báo Adapter cập nhật hiển thị mảng
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Chuyển sang dùng SQL trong loadData
+        loadData();
     }
 
     @Override

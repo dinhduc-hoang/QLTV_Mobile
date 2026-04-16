@@ -290,7 +290,50 @@ public class MuonTraQuery {
         db.close();
         return result;
     }
+    public List<MuonTra> layDanhSachMuonTraTheoDocGia(String maDG, String trangThai) {
+        List<MuonTra> list = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+        String sql = "SELECT mt.MaMT, mt.MaDG, mt.MaNV, mt.NgayMuon, mt.HanTra, mt.TrangThai, " +
+                "d.TenDG, nv.TenNV " +
+                "FROM muontra mt " +
+                "JOIN docgia d ON mt.MaDG = d.MaDG " +
+                "LEFT JOIN nhanvien nv ON mt.MaNV = nv.MaNV " +
+                "WHERE mt.MaDG = ?";
+
+        List<String> args = new ArrayList<>();
+        args.add(maDG);
+
+        if (trangThai != null) {
+            if (trangThai.equals("Đã trả") || trangThai.equals("Chưa trả")) {
+                sql += " AND mt.TrangThai = ?";
+                args.add(trangThai);
+            } else if (trangThai.equals("Quá hạn")) {
+                sql += " AND mt.TrangThai = 'Chưa trả' AND mt.HanTra < date('now')";
+            }
+        }
+
+        sql += " ORDER BY mt.NgayMuon DESC";
+
+        Cursor cursor = db.rawQuery(sql, args.toArray(new String[0]));
+
+        while (cursor.moveToNext()) {
+            MuonTra item = new MuonTra();
+            item.setMaMT(cursor.getString(0));
+            item.setMaDG(cursor.getString(1));
+            item.setMaNV(cursor.getString(2));
+            item.setNgayMuon(cursor.getString(3));
+            item.setHanTra(cursor.getString(4));
+            item.setTrangThai(cursor.getString(5));
+            item.setTenDG(cursor.getString(6));
+            item.setTenNV(cursor.getString(7));
+            list.add(item);
+        }
+
+        cursor.close();
+        db.close();
+        return list;
+    }
     public List<MuonTra> timKiemMuonTra(String query) {
         List<MuonTra> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();

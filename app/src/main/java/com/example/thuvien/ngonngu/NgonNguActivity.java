@@ -73,7 +73,7 @@ public class NgonNguActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -90,39 +90,24 @@ public class NgonNguActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(ngonNguQuery.layDanhSachNgonNgu());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(ngonNguQuery.layDanhSachNgonNgu());
+        } else {
+            listGoc.addAll(ngonNguQuery.timKiemNgonNgu(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            NgonNgu ngonNgu = listGoc.get(i);
-
-            String maNN = ngonNgu.getMaNN();
-            String tenNN = ngonNgu.getTenNN();
-
-            if (maNN == null) maNN = "";
-            if (tenNN == null) tenNN = "";
-
-            if (tuKhoa.equals("")
-                    || maNN.toLowerCase().contains(tuKhoa)
-                    || tenNN.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(ngonNgu);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Logic moved to loadData using SQL
+        loadData();
     }
 
     @Override

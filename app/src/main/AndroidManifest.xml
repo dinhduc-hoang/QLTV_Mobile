@@ -89,7 +89,15 @@
         <activity android:name=".thongke.ThongKeActivity" />
         <activity android:name=".thongke.TopDocGiaActivity"/>
         <activity android:name=".thongke.TopSachActivity"/>
-        <activity android:name=".thongke.QuaHanActivity"/>
+        <activity android:name=".thongke.QuaHanActivity" />
+
+        <activity android:name=".user.UserHomeActivity" />
+        <activity android:name=".user.UserBookListActivity" />
+        <activity android:name=".user.UserBookDetailActivity" />
+        <activity android:name=".user.UserBorrowSuccessActivity" />
+        <activity android:name=".user.UserCurrentBorrowingActivity" />
+        <activity android:name=".user.UserBorrowHistoryActivity" />
+        <activity android:name=".user.UserProfileActivity" />
     </application>
 
 </manifest>

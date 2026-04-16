@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "qltv.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     public SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -60,6 +60,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "DiaChi TEXT NOT NULL," +
                 "Email TEXT NOT NULL," +
                 "Sdt TEXT NOT NULL," +
+                "MatKhau TEXT NOT NULL DEFAULT '123456'," +
                 "FOREIGN KEY(MaKhoa) REFERENCES khoa(MaKhoa)," +
                 "FOREIGN KEY(MaLop) REFERENCES lop(MaLop))");
 
@@ -215,14 +216,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "('L036', '74DKTVT01', 'KH006')," +
                 "('L037', '74DKTVT02', 'KH006')");
 
-        db.execSQL("INSERT OR IGNORE INTO docgia (MaDG, MaKhoa, MaLop, TenDG, NamSinh, GioiTinh, DiaChi, Email, Sdt) VALUES " +
-                "('DG001', 'KH001', 'L004', 'Ngọc Bích', '2005', 'Nữ', 'Hà Nội', 'nb@gmail.com', '0393916176')," +
-                "('DG002', 'KH001', 'L001', 'Nguyễn Ngọc Bích', '2004', 'Nữ', 'Hà Nội', 'bichnn02@gmail.com', '0393916177')," +
-                "('DG003', 'KH001', 'L001', 'Nguyễn Ngọc Linh', '2004', 'Nữ', 'Hà Nội', 'linhnn05@gmail.com', '0367123456')," +
-                "('DG004', 'KH001', 'L002', 'Lưu Đức Anh Dũng', '2003', 'Nam', 'Hà Nội', 'dunglda06@gmail.com', '0356123456')," +
-                "('DG005', 'KH001', 'L003', 'Đinh Hoàng Đức', '2003', 'Nam', 'Hà Nội', 'ducdh07@gmail.com', '0345123456')," +
-                "('DG006', 'KH001', 'L001', 'Nguyễn Nam Khánh', '2003', 'Nam', 'Hà Nội', 'khanhnn08@gmail.com', '0334123456')," +
-                "('DG007', 'KH001', 'L005', '123', '2005', 'Nam', '213', '22@gmail.com', '0945088052')");
+        db.execSQL("INSERT OR IGNORE INTO docgia (MaDG, MaKhoa, MaLop, TenDG, NamSinh, GioiTinh, DiaChi, Email, Sdt, MatKhau) VALUES " +
+                "('DG001', 'KH001', 'L004', 'Ngọc Bích', '2005', 'Nữ', 'Hà Nội', 'nb@gmail.com', '0393916176', '123456')," +
+                "('DG002', 'KH001', 'L001', 'Nguyễn Ngọc Bích', '2004', 'Nữ', 'Hà Nội', 'bichnn02@gmail.com', '0393916177', '123456')," +
+                "('DG003', 'KH001', 'L001', 'Nguyễn Ngọc Linh', '2004', 'Nữ', 'Hà Nội', 'linhnn05@gmail.com', '0367123456', '123456')," +
+                "('DG004', 'KH001', 'L002', 'Lưu Đức Anh Dũng', '2003', 'Nam', 'Hà Nội', 'dunglda06@gmail.com', '0356123456', '123456')," +
+                "('DG005', 'KH001', 'L003', 'Đinh Hoàng Đức', '2003', 'Nam', 'Hà Nội', 'ducdh07@gmail.com', '0345123456', '123456')," +
+                "('DG006', 'KH001', 'L001', 'Nguyễn Nam Khánh', '2003', 'Nam', 'Hà Nội', 'khanhnn08@gmail.com', '0334123456', '123456')," +
+                "('DG007', 'KH001', 'L005', '123', '2005', 'Nam', '213', '22@gmail.com', '0945088052', '123456')");
 
         db.execSQL("INSERT OR IGNORE INTO kesach (MaViTri, TenKe, MoTa) VALUES " +
                 "('KS001', 'Kệ CNTT', 'Sách Công nghệ thông tin')," +

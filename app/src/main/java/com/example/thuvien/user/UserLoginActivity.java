@@ -1,4 +1,4 @@
-package com.example.thuvien.login;
+package com.example.thuvien.user;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,9 +18,8 @@ import com.example.thuvien.docgia.DocGia;
 import com.example.thuvien.docgia.DocGiaQuery;
 import com.example.thuvien.login.TaiKhoanQuery;
 import com.example.thuvien.trangchu.TrangChuActivity;
-import com.example.thuvien.user.UserHomeActivity;
 
-public class LoginActivity extends AppCompatActivity {
+public class UserLoginActivity extends AppCompatActivity {
 
     private EditText edtUsername, edtPassword;
     private Button btnLogin;
@@ -32,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_user_login);
 
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
@@ -42,19 +41,17 @@ public class LoginActivity extends AppCompatActivity {
         docGiaQuery = new DocGiaQuery(this);
         taiKhoanQuery = new TaiKhoanQuery(this);
 
-        if (imgShowPassword != null) {
-            imgShowPassword.setOnClickListener(v -> {
-                isPasswordVisible = !isPasswordVisible;
-                if (isPasswordVisible) {
-                    edtPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    imgShowPassword.setImageResource(R.drawable.view);
-                } else {
-                    edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    imgShowPassword.setImageResource(R.drawable.hide);
-                }
-                edtPassword.setSelection(edtPassword.getText().length());
-            });
-        }
+        imgShowPassword.setOnClickListener(v -> {
+            isPasswordVisible = !isPasswordVisible;
+            if (isPasswordVisible) {
+                edtPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                imgShowPassword.setImageResource(R.drawable.ic_book); // Use a different icon if available
+            } else {
+                edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                imgShowPassword.setImageResource(R.drawable.ic_book_blue);
+            }
+            edtPassword.setSelection(edtPassword.getText().length());
+        });
 
         btnLogin.setOnClickListener(v -> {
             String username = edtUsername.getText().toString().trim();
@@ -75,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            // 2. Kiểm tra quyền User/DocGia
             DocGia docGia = docGiaQuery.dangNhap(username, password);
             if (docGia != null) {
                 saveUserSession(docGia);

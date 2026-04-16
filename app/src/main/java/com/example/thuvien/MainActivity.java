@@ -15,17 +15,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences sp = getSharedPreferences("UserSession", MODE_PRIVATE);
-        String maNV = sp.getString("MaNV", null);
-
-        if (maNV != null) {
-            Intent intent = new Intent(MainActivity.this, TrangChuActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-        }
-
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
         finish();
     }
 }

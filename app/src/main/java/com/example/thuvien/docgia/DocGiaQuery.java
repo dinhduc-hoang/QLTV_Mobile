@@ -126,7 +126,91 @@ public class DocGiaQuery {
             return false;
         }
     }
+    public DocGia dangNhap(String user, String pass) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT MaDG FROM docgia WHERE (MaDG = ? OR Email = ?) AND MatKhau = ? LIMIT 1",
+                new String[]{user, user, pass}
+        );
 
+        DocGia docGia = null;
+        if (cursor.moveToFirst()) {
+            String maDG = cursor.getString(0);
+            docGia = layThongTinTheoMa(maDG);
+        }
+
+        cursor.close();
+        db.close();
+        return docGia;
+    }
+    public List<DocGia> timKiemDocGia(String keyword) {
+        List<DocGia> list = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String key = "%" + keyword + "%";
+        
+        Cursor cursor = db.rawQuery(
+                "SELECT d.MaDG, d.MaKhoa, d.MaLop, d.TenDG, d.NamSinh, d.GioiTinh, d.DiaChi, d.Email, d.Sdt, d.MatKhau, k.TenKhoa, l.TenLop " +
+                        "FROM docgia d " +
+                        "JOIN khoa k ON d.MaKhoa = k.MaKhoa " +
+                        "JOIN lop l ON d.MaLop = l.MaLop " +
+                        "WHERE d.MaDG LIKE ? OR d.TenDG LIKE ? OR d.Email LIKE ? OR d.Sdt LIKE ?",
+                new String[]{key, key, key, key}
+        );
+
+        while (cursor.moveToNext()) {
+            DocGia item = new DocGia();
+            item.setMaDG(cursor.getString(0));
+            item.setMaKhoa(cursor.getString(1));
+            item.setMaLop(cursor.getString(2));
+            item.setTenDG(cursor.getString(3));
+            item.setNamSinh(cursor.getString(4));
+            item.setGioiTinh(cursor.getString(5));
+            item.setDiaChi(cursor.getString(6));
+            item.setEmail(cursor.getString(7));
+            item.setSdt(cursor.getString(8));
+            item.setMatKhau(cursor.getString(9));
+            item.setTenKhoa(cursor.getString(10));
+            item.setTenLop(cursor.getString(11));
+            list.add(item);
+        }
+
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public DocGia layThongTinTheoMa(String maDG) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT d.MaDG, d.MaKhoa, d.MaLop, d.TenDG, d.NamSinh, d.GioiTinh, d.DiaChi, d.Email, d.Sdt, d.MatKhau, k.TenKhoa, l.TenLop " +
+                        "FROM docgia d " +
+                        "JOIN khoa k ON d.MaKhoa = k.MaKhoa " +
+                        "JOIN lop l ON d.MaLop = l.MaLop " +
+                        "WHERE d.MaDG = ?",
+                new String[]{maDG}
+        );
+
+        DocGia item = null;
+        if (cursor.moveToFirst()) {
+            item = new DocGia();
+            item.setMaDG(cursor.getString(0));
+            item.setMaKhoa(cursor.getString(1));
+            item.setMaLop(cursor.getString(2));
+            item.setTenDG(cursor.getString(3));
+            item.setNamSinh(cursor.getString(4));
+            item.setGioiTinh(cursor.getString(5));
+            item.setDiaChi(cursor.getString(6));
+            item.setEmail(cursor.getString(7));
+            item.setSdt(cursor.getString(8));
+            item.setMatKhau(cursor.getString(9));
+            item.setTenKhoa(cursor.getString(10));
+            item.setTenLop(cursor.getString(11));
+        }
+
+        cursor.close();
+        db.close();
+        return item;
+    }
     public boolean docGiaDangMuonSach(String maDG) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         boolean dangMuon = false;

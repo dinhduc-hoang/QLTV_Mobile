@@ -66,7 +66,7 @@ public class TacGiaActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -90,42 +90,24 @@ public class TacGiaActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(tacGiaQuery.layDanhSachTacGia());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(tacGiaQuery.layDanhSachTacGia());
+        } else {
+            listGoc.addAll(tacGiaQuery.timKiemTacGia(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            TacGia tg = listGoc.get(i);
-
-            String maTG = tg.getMaTG();
-            String tenTG = tg.getTenTG();
-            String quocTich = tg.getQuocTich();
-
-            if (maTG == null) maTG = "";
-            if (tenTG == null) tenTG = "";
-            if (quocTich == null) quocTich = "";
-
-            if (tuKhoa.equals("")
-                    || maTG.toLowerCase().contains(tuKhoa)
-                    || tenTG.toLowerCase().contains(tuKhoa)
-                    || quocTich.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(tg);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Logic moved to loadData using SQL
+        loadData();
     }
 
     @Override

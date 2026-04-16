@@ -66,7 +66,7 @@ public class TheLoaiActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -90,39 +90,24 @@ public class TheLoaiActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(theLoaiQuery.layDanhSachTheLoai());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(theLoaiQuery.layDanhSachTheLoai());
+        } else {
+            listGoc.addAll(theLoaiQuery.timKiemTheLoai(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            TheLoai tl = listGoc.get(i);
-
-            String maTL = tl.getMaTL();
-            String tenTL = tl.getTenTL();
-
-            if (maTL == null) maTL = "";
-            if (tenTL == null) tenTL = "";
-
-            if (tuKhoa.equals("")
-                    || maTL.toLowerCase().contains(tuKhoa)
-                    || tenTL.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(tl);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Logic moved to loadData using SQL
+        loadData();
     }
 
     @Override

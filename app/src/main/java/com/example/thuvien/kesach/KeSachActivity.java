@@ -66,7 +66,7 @@ public class KeSachActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -90,42 +90,24 @@ public class KeSachActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(keSachQuery.layDanhSachKeSach());
-        filterData(edtSearch.getText().toString());
-    }
-
-    private void filterData(String keyword) {
+        if (keyword.isEmpty()) {
+            listGoc.addAll(keSachQuery.layDanhSachKeSach());
+        } else {
+            listGoc.addAll(keSachQuery.timKiemKeSach(keyword));
+        }
+        
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            KeSach keSach = listGoc.get(i);
-
-            String maViTri = keSach.getMaViTri();
-            String tenKe = keSach.getTenKe();
-            String moTa = keSach.getMoTa();
-
-            if (maViTri == null) maViTri = "";
-            if (tenKe == null) tenKe = "";
-            if (moTa == null) moTa = "";
-
-            if (tuKhoa.equals("")
-                    || maViTri.toLowerCase().contains(tuKhoa)
-                    || tenKe.toLowerCase().contains(tuKhoa)
-                    || moTa.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(keSach);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void filterData(String keyword) {
+        // Logic moved to loadData using SQL
+        loadData();
     }
 
     @Override

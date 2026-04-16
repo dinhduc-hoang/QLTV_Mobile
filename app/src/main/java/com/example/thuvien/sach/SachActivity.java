@@ -66,7 +66,7 @@ public class SachActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterData(s.toString());
+                loadData();
             }
 
             @Override
@@ -91,46 +91,21 @@ public class SachActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
-        listGoc.addAll(sachQuery.layDanhSachSach());
-        filterData(edtSearch.getText().toString());
-    }
+        if (keyword.isEmpty()) {
+            listGoc.addAll(sachQuery.layDanhSachSach());
+        } else {
+            listGoc.addAll(sachQuery.timKiemSach(keyword));
+        }
 
-    private void filterData(String keyword) {
         listHienThi.clear();
-
-        String tuKhoa = keyword;
-        if (tuKhoa == null) {
-            tuKhoa = "";
-        }
-        tuKhoa = tuKhoa.trim().toLowerCase();
-
-        for (int i = 0; i < listGoc.size(); i++) {
-            Sach sach = listGoc.get(i);
-
-            String maSach = sach.getMaSach();
-            String tenSach = sach.getTenSach();
-            String tenTG = sach.getTenTG();
-            String tenTL = sach.getTenTL();
-
-            if (maSach == null) maSach = "";
-            if (tenSach == null) tenSach = "";
-            if (tenTG == null) tenTG = "";
-            if (tenTL == null) tenTL = "";
-
-            if (tuKhoa.equals("")
-                    || maSach.toLowerCase().contains(tuKhoa)
-                    || tenSach.toLowerCase().contains(tuKhoa)
-                    || tenTG.toLowerCase().contains(tuKhoa)
-                    || tenTL.toLowerCase().contains(tuKhoa)) {
-                listHienThi.add(sach);
-            }
-        }
-
+        listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
     }
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

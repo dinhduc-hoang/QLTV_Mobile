@@ -104,10 +104,17 @@ public class SachQuery {
     public Sach layThongTinSachTheoMa(String maSach) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(
-                "SELECT MaSach, MaTG, MaNXB, MaTL, TenSach, MaNN, MaViTri, NamXB, SoLuong FROM sach WHERE MaSach = ?",
-                new String[]{maSach}
-        );
+        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, " +
+                "tg.TenTG, tl.TenTL, nxb.TenNXB, nn.TenNN, ks.TenKe " +
+                "FROM sach s " +
+                "JOIN tacgia tg ON s.MaTG = tg.MaTG " +
+                "JOIN theloai tl ON s.MaTL = tl.MaTL " +
+                "JOIN nhaxuatban nxb ON s.MaNXB = nxb.MaNXB " +
+                "JOIN ngonngu nn ON s.MaNN = nn.MaNN " +
+                "JOIN kesach ks ON s.MaViTri = ks.MaViTri " +
+                "WHERE s.MaSach = ?";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{maSach});
 
         Sach sach = null;
 
@@ -122,6 +129,11 @@ public class SachQuery {
             sach.setMaViTri(cursor.getString(6));
             sach.setNamXB(cursor.getInt(7));
             sach.setSoLuong(cursor.getInt(8));
+            sach.setTenTG(cursor.getString(9));
+            sach.setTenTL(cursor.getString(10));
+            sach.setTenNXB(cursor.getString(11));
+            sach.setTenNN(cursor.getString(12));
+            sach.setTenViTri(cursor.getString(13));
         }
 
         cursor.close();
@@ -225,7 +237,54 @@ public class SachQuery {
         db.close();
         return row > 0;
     }
+    public List<Sach> layDanhSachSachMuonNhieu() {
+        List<Sach> list = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, " +
+                "tg.TenTG, tl.TenTL, nxb.TenNXB, nn.TenNN, ks.TenKe, SUM(ct.SoLuong) as TongMuon " +
+                "FROM sach s " +
+                "JOIN tacgia tg ON s.MaTG = tg.MaTG " +
+                "JOIN theloai tl ON s.MaTL = tl.MaTL " +
+                "JOIN nhaxuatban nxb ON s.MaNXB = nxb.MaNXB " +
+                "JOIN ngonngu nn ON s.MaNN = nn.MaNN " +
+                "JOIN kesach ks ON s.MaViTri = ks.MaViTri " +
+                "JOIN chitietmuontra ct ON s.MaSach = ct.MaSach " +
+                "GROUP BY s.MaSach " +
+                "ORDER BY TongMuon DESC " +
+                "LIMIT 10";
+
+        Cursor cursor = db.rawQuery(sql, null);
+
+        while (cursor.moveToNext()) {
+            Sach sach = new Sach();
+            sach.setMaSach(cursor.getString(0));
+            sach.setMaTG(cursor.getString(1));
+            sach.setMaNXB(cursor.getString(2));
+            sach.setMaTL(cursor.getString(3));
+            sach.setTenSach(cursor.getString(4));
+            sach.setMaNN(cursor.getString(5));
+            sach.setMaViTri(cursor.getString(6));
+            sach.setNamXB(cursor.getInt(7));
+            sach.setSoLuong(cursor.getInt(8));
+            sach.setTenTG(cursor.getString(9));
+            sach.setTenTL(cursor.getString(10));
+            sach.setTenNXB(cursor.getString(11));
+            sach.setTenNN(cursor.getString(12));
+            sach.setTenViTri(cursor.getString(13));
+            list.add(sach);
+        }
+
+        cursor.close();
+        db.close();
+
+        // Nếu danh sách vẫn trống (rất hiếm khi xảy ra), lấy danh sách sách mặc định
+        if (list.isEmpty()) {
+            return layDanhSachSach();
+        }
+
+        return list;
+    }
     public List<SpinnerItem> layDanhSachSpinner(String tableName, String idCol, String nameCol, String title) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT " + idCol + ", " + nameCol + " FROM " + tableName, null);
