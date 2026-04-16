@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
 
 import com.example.thuvien.R;
 
@@ -25,112 +24,151 @@ import java.util.List;
 
 public class SachActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvSach;
+    ImageView btnAdd;
+    ListView lvData;
+
+    SachQuery sachQuery;
+
+    List<Sach> listGoc = new ArrayList<>();
+    List<Sach> listHienThi = new ArrayList<>();
 
     SachAdapter adapter;
-    List<Sach> list;
-    SachQuery sachQuery;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sach);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        lvSach = findViewById(R.id.lvSach);
+        lvData = findViewById(R.id.lvSach);
         btnAdd = findViewById(R.id.btnAdd);
 
         sachQuery = new SachQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new SachAdapter(this, list);
-
-        lvSach.setAdapter(adapter);
-        registerForContextMenu(lvSach);
-        loadDanhSach();
-
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
+        adapter = new SachAdapter(this, R.layout.item_sach, listHienThi);
+        lvData.setAdapter(adapter);
+
+        loadData();
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Intent intent = new Intent(SachActivity.this, AddSachActivity.class);
                 startActivity(intent);
             }
         });
 
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Gọi SQL tìm kiếm và cập nhật thẳng vào adapter
-                List<Sach> ketQua = sachQuery.timKiemSach(charSequence.toString());
-                adapter.capNhatDuLieu(ketQua);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = sachQuery.layDanhSachSach();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(sachQuery.layDanhSachSach());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            Sach sach = listGoc.get(i);
+
+            String maSach = sach.getMaSach();
+            String tenSach = sach.getTenSach();
+            String tenTG = sach.getTenTG();
+            String tenTL = sach.getTenTL();
+
+            if (maSach == null) maSach = "";
+            if (tenSach == null) tenSach = "";
+            if (tenTG == null) tenTG = "";
+            if (tenTL == null) tenTL = "";
+
+            if (tuKhoa.equals("")
+                    || maSach.toLowerCase().contains(tuKhoa)
+                    || tenSach.toLowerCase().contains(tuKhoa)
+                    || tenTG.toLowerCase().contains(tuKhoa)
+                    || tenTL.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(sach);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 0, "Xóa");
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Sach sachSelect = (Sach) adapter.getItem(info.position);
-        final String maSach = sachSelect.getMaSach();
-
-        switch (item.getItemId()) {
-            case 1: // Sửa
-                Intent intent = new Intent(SachActivity.this, UpdateSachActivity.class);
-                intent.putExtra("MaSach", maSach);
-                startActivity(intent);
-                return true;
-            case 2: // Xóa
-                new AlertDialog.Builder(SachActivity.this)
-                        .setTitle("Xóa sách")
-                        .setMessage("Bạn có chắc muốn xóa sách này không?")
-                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                xoaSach(maSach);
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
+
+        final Sach sachEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(SachActivity.this, UpdateSachActivity.class);
+            intent.putExtra("MaSach", sachEdit.getMaSach());
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Sách này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    xoaSach(sachEdit.getMaSach());
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 
     private void xoaSach(String maSach) {
@@ -140,10 +178,9 @@ public class SachActivity extends AppCompatActivity {
         }
 
         boolean result = sachQuery.xoaSach(maSach);
-
         if (result) {
             Toast.makeText(this, "Xóa sách thành công!", Toast.LENGTH_SHORT).show();
-            loadDanhSach();
+            loadData();
         } else {
             Toast.makeText(this, "Xóa sách thất bại!", Toast.LENGTH_SHORT).show();
         }

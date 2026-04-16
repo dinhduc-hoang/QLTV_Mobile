@@ -75,12 +75,25 @@ public class AddLopActivity extends AppCompatActivity {
             return;
         }
 
-        if (khoa.getId().isEmpty()) {
+        if (tenLop.length() < 2 || tenLop.length() > 50) {
+            edtTenLop.setError("Tên lớp phải từ 2-50 ký tự");
+            edtTenLop.requestFocus();
+            return;
+        }
+
+        if (!tenLop.matches("[\\p{L}0-9\\s._-]+")) {
+            edtTenLop.setError("Tên lớp chứa ký tự không hợp lệ");
+            edtTenLop.requestFocus();
+            return;
+        }
+
+        if (khoa == null || khoa.getId() == null || khoa.getId().isEmpty()) {
             Toast.makeText(this, "Vui lòng chọn khoa", Toast.LENGTH_SHORT).show();
             return;
         }
+
         for (Lop l : list) {
-            if (l.getTenLop().equalsIgnoreCase(tenLop)) {
+            if (l.getTenLop() != null && l.getTenLop().equalsIgnoreCase(tenLop)) {
                 edtTenLop.setError("Tên lớp đã tồn tại");
                 edtTenLop.requestFocus();
                 return;

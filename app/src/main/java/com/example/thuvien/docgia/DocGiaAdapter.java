@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DocGiaAdapter extends BaseAdapter {
 
     private Context context;
-    private List<DocGia> list;
+    private int layout_id;
+    private List<DocGia> listDocGia;
 
-    public DocGiaAdapter(Context context, List<DocGia> list) {
+    public DocGiaAdapter(Context context, int layout_id, List<DocGia> listDocGia) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<DocGia> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listDocGia = listDocGia;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listDocGia.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listDocGia.get(position);
     }
 
     @Override
@@ -44,40 +40,34 @@ public class DocGiaAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_docgia, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenDG = convertView.findViewById(R.id.tvTenDG);
-            holder.tvMaDG = convertView.findViewById(R.id.tvMaDG);
-            holder.tvGioiTinh = convertView.findViewById(R.id.tvGioiTinh);
-            holder.tvNamSinh = convertView.findViewById(R.id.tvNamSinh);
-            holder.tvLop = convertView.findViewById(R.id.tvLop);
-            holder.tvKhoa = convertView.findViewById(R.id.tvKhoa);
-            holder.tvDiaChi = convertView.findViewById(R.id.tvDiaChi);
-            holder.tvEmail = convertView.findViewById(R.id.tvEmail);
-            holder.tvSdt = convertView.findViewById(R.id.tvSdt);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final DocGia item = list.get(position);
+        DocGia dg = listDocGia.get(position);
 
-        holder.tvTenDG.setText(item.getTenDG());
-        holder.tvMaDG.setText("Mã độc giả: " + item.getMaDG());
-        holder.tvGioiTinh.setText("Giới tính: " + item.getGioiTinh());
-        holder.tvNamSinh.setText("Năm sinh: " + item.getNamSinh());
-        holder.tvLop.setText("Lớp: " + item.getTenLop());
-        holder.tvKhoa.setText("Khoa: " + item.getTenKhoa());
-        holder.tvDiaChi.setText("Địa chỉ: " + item.getDiaChi());
-        holder.tvEmail.setText("Email: " + item.getEmail());
-        holder.tvSdt.setText("SĐT: " + item.getSdt());
+        TextView tvTenDG = view.findViewById(R.id.tvTenDG);
+        TextView tvMaDG = view.findViewById(R.id.tvMaDG);
+        TextView tvGioiTinh = view.findViewById(R.id.tvGioiTinh);
+        TextView tvNamSinh = view.findViewById(R.id.tvNamSinh);
+        TextView tvLop = view.findViewById(R.id.tvLop);
+        TextView tvKhoa = view.findViewById(R.id.tvKhoa);
+        TextView tvDiaChi = view.findViewById(R.id.tvDiaChi);
+        TextView tvEmail = view.findViewById(R.id.tvEmail);
+        TextView tvSdt = view.findViewById(R.id.tvSdt);
 
-        return convertView;
-    }
+        tvTenDG.setText(dg.getTenDG());
+        tvMaDG.setText("Mã độc giả: " + dg.getMaDG());
+        tvGioiTinh.setText("Giới tính: " + dg.getGioiTinh());
+        tvNamSinh.setText("Năm sinh: " + dg.getNamSinh());
+        tvLop.setText("Lớp: " + dg.getTenLop());
+        tvKhoa.setText("Khoa: " + dg.getTenKhoa());
+        tvDiaChi.setText("Địa chỉ: " + dg.getDiaChi());
+        tvEmail.setText("Email: " + dg.getEmail());
+        tvSdt.setText("SĐT: " + dg.getSdt());
 
-    private static class ViewHolder {
-        TextView tvTenDG, tvMaDG, tvGioiTinh, tvNamSinh, tvLop, tvKhoa, tvDiaChi, tvEmail, tvSdt;
+        return view;
     }
 }

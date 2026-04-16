@@ -91,19 +91,37 @@ public class UpdateLopActivity extends AppCompatActivity {
         String tenLop = edtTenLop.getText().toString().trim();
         SpinnerItem khoa = (SpinnerItem) spnKhoa.getSelectedItem();
 
+        if (maLop == null || maLop.trim().isEmpty()) {
+            Toast.makeText(this, "Lỗi mã lớp!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (tenLop.isEmpty()) {
             edtTenLop.setError("Nhập tên lớp");
             edtTenLop.requestFocus();
             return;
         }
 
-        if (khoa.getId().isEmpty()) {
+        if (tenLop.length() < 2 || tenLop.length() > 50) {
+            edtTenLop.setError("Tên lớp phải từ 2-50 ký tự");
+            edtTenLop.requestFocus();
+            return;
+        }
+
+        if (!tenLop.matches("[\\p{L}0-9\\s._-]+")) {
+            edtTenLop.setError("Tên lớp chứa ký tự không hợp lệ");
+            edtTenLop.requestFocus();
+            return;
+        }
+
+        if (khoa == null || khoa.getId() == null || khoa.getId().isEmpty()) {
             Toast.makeText(this, "Vui lòng chọn khoa", Toast.LENGTH_SHORT).show();
             return;
         }
+
         for (Lop l : list) {
-            if (l.getMaLop().equals(maLop)) continue;
-            if (l.getTenLop().equalsIgnoreCase(tenLop)) {
+            if (l.getMaLop() != null && l.getMaLop().equals(maLop)) continue;
+            if (l.getTenLop() != null && l.getTenLop().equalsIgnoreCase(tenLop)) {
                 edtTenLop.setError("Tên lớp đã tồn tại");
                 edtTenLop.requestFocus();
                 return;

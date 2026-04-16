@@ -1,5 +1,6 @@
 package com.example.thuvien.docgia;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,73 +21,95 @@ import java.util.List;
 
 public class UpdateDocGiaActivity extends AppCompatActivity {
 
-    private ImageView imgBack;
-    private EditText edtTenDG, edtNamSinh, edtDiaChi, edtEmail, edtSdt;
-    private Spinner spnGioiTinh, spnKhoa, spnLop;
-    private Button btnUpdateDocGia;
+    EditText edtTenDG, edtNamSinh, edtDiaChi, edtEmail, edtSdt;
+    Spinner spnGioiTinh, spnKhoa, spnLop;
+    Button btnUpdate;
 
-    private String maDG;
-    private DocGiaQuery docGiaQuery;
+    DocGiaQuery docGiaQuery;
 
-    private boolean isLoadingData = false;
-    private String pendingMaLop = null;
+    String maDG;
+    String maKhoaCu;
+    String maLopCu;
+
+    String[] arrGioiTinh = {"Nam", "Nữ"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_docgia);
 
-        initViews();
-
-        docGiaQuery = new DocGiaQuery(this);
-        maDG = getIntent().getStringExtra("MaDG");
-
-        loadKhoaSpinner();
-        loadGioiTinhSpinner();
-        setupKhoaLopDependency();
-        loadThongTin();
-
-        imgBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
-        btnUpdateDocGia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                capNhatDocGia();
-            }
-        });
-    }
-
-    private void initViews() {
-        imgBack = findViewById(R.id.imgBack);
         edtTenDG = findViewById(R.id.edtTenDG);
         edtNamSinh = findViewById(R.id.edtNamSinh);
         edtDiaChi = findViewById(R.id.edtDiaChi);
         edtEmail = findViewById(R.id.edtEmail);
         edtSdt = findViewById(R.id.edtSdt);
+
         spnGioiTinh = findViewById(R.id.spnGioiTinh);
         spnKhoa = findViewById(R.id.spnKhoa);
         spnLop = findViewById(R.id.spnLop);
-        btnUpdateDocGia = findViewById(R.id.btnUpdateDocGia);
+
+        btnUpdate = findViewById(R.id.btnUpdateDocGia);
+        docGiaQuery = new DocGiaQuery(this);
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        Intent intent = getIntent();
+        maDG = intent.getStringExtra("maDG");
+        maKhoaCu = intent.getStringExtra("maKhoa");
+        maLopCu = intent.getStringExtra("maLop");
+        edtTenDG.setText(intent.getStringExtra("tenDG"));
+        edtNamSinh.setText(intent.getStringExtra("namSinh"));
+        edtDiaChi.setText(intent.getStringExtra("diaChi"));
+        edtEmail.setText(intent.getStringExtra("email"));
+        edtSdt.setText(intent.getStringExtra("sdt"));
+
+        String gioiTinhCu = intent.getStringExtra("gioiTinh");
+
+        setupGioiTinhSpinner(gioiTinhCu);
+        loadKhoaSpinner(maKhoaCu);
+        loadLopSpinner(maKhoaCu, maLopCu);
+        setupKhoaLopDependency();
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                suaDocGia();
+            }
+        });
     }
 
-    private void loadKhoaSpinner() {
-        setSpinner(spnKhoa, docGiaQuery.layDanhSachKhoaSpinner());
-        setSpinner(spnLop, docGiaQuery.layDanhSachLopTheoKhoa(""));
-    }
-
-    private void loadGioiTinhSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                docGiaQuery.layDanhSachGioiTinh()
-        );
+    private void setupGioiTinhSpinner(String gioiTinhCu) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrGioiTinh);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnGioiTinh.setAdapter(adapter);
+
+        if (gioiTinhCu != null && gioiTinhCu.equals("Nữ")) {
+            spnGioiTinh.setSelection(1);
+        } else {
+            spnGioiTinh.setSelection(0);
+        }
+    }
+
+    private void loadKhoaSpinner(String maKhoaCanChon) {
+        List<SpinnerItem> listKhoa = docGiaQuery.layDanhSachKhoaSpinner();
+        ArrayAdapter<SpinnerItem> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listKhoa);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnKhoa.setAdapter(adapter);
+        setSpinnerSelected(spnKhoa, maKhoaCanChon);
+    }
+
+    private void loadLopSpinner(String maKhoa, String maLopCanChon) {
+        List<SpinnerItem> listLop = docGiaQuery.layDanhSachLopTheoKhoa(maKhoa);
+        ArrayAdapter<SpinnerItem> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listLop);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnLop.setAdapter(adapter);
+        setSpinnerSelected(spnLop, maLopCanChon);
     }
 
     private void setupKhoaLopDependency() {
@@ -94,79 +117,28 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SpinnerItem khoa = (SpinnerItem) spnKhoa.getSelectedItem();
-
-                if (khoa != null && !khoa.getId().isEmpty()) {
-                    setSpinner(spnLop, docGiaQuery.layDanhSachLopTheoKhoa(khoa.getId()));
+                if (khoa != null) {
+                    loadLopSpinner(khoa.getId(), "");
                 } else {
-                    setSpinner(spnLop, docGiaQuery.layDanhSachLopTheoKhoa(""));
-                }
-
-                
-                if (pendingMaLop != null) {
-                    setSpinnerSelected(spnLop, pendingMaLop);
-                    pendingMaLop = null;
+                    loadLopSpinner("", "");
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
 
-    private void setSpinner(Spinner spinner, List<SpinnerItem> list) {
-        ArrayAdapter<SpinnerItem> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                list
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-    }
-
-    private void loadThongTin() {
-        if (maDG == null || maDG.trim().isEmpty()) {
-            Toast.makeText(this, "Không tìm thấy mã độc giả", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        DocGia item = docGiaQuery.layThongTinTheoMa(maDG);
-
-        if (item == null) {
-            Toast.makeText(this, "Không tải được thông tin độc giả", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        isLoadingData = true;
-
-        edtTenDG.setText(item.getTenDG());
-        edtNamSinh.setText(item.getNamSinh());
-        edtDiaChi.setText(item.getDiaChi());
-        edtEmail.setText(item.getEmail());
-        edtSdt.setText(item.getSdt());
-        setGioiTinhSelected(item.getGioiTinh());
-
-        
-        pendingMaLop = item.getMaLop();
-
-        
-        setSpinnerSelected(spnKhoa, item.getMaKhoa());
-
-        isLoadingData = false;
-    }
-
     private void setSpinnerSelected(Spinner spinner, String selectedId) {
-        if (selectedId == null) return;
-
-        String normalizedSelectedId = selectedId.trim();
+        if (selectedId == null) {
+            return;
+        }
 
         for (int i = 0; i < spinner.getCount(); i++) {
             Object obj = spinner.getItemAtPosition(i);
             if (obj instanceof SpinnerItem) {
-                SpinnerItem item = (SpinnerItem) obj;
-                if (item.getId() != null && item.getId().trim().equalsIgnoreCase(normalizedSelectedId)) {
+                SpinnerItem spin = (SpinnerItem) obj;
+                if (spin.getId() != null && spin.getId().equalsIgnoreCase(selectedId.trim())) {
                     spinner.setSelection(i);
                     return;
                 }
@@ -174,33 +146,21 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
         }
     }
 
-    private void setGioiTinhSelected(String gioiTinh) {
-        if (gioiTinh == null) return;
-
-        String normalized = gioiTinh.trim();
-
-        for (int i = 0; i < spnGioiTinh.getCount(); i++) {
-            String item = spnGioiTinh.getItemAtPosition(i).toString();
-            if (item.trim().equalsIgnoreCase(normalized)) {
-                spnGioiTinh.setSelection(i);
-                return;
-            }
-        }
-    }
-
-    private void capNhatDocGia() {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
+    private void suaDocGia() {
         List<DocGia> list = docGiaQuery.layDanhSachDocGia();
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+
         String tenDG = edtTenDG.getText().toString().trim();
         String namSinh = edtNamSinh.getText().toString().trim();
-        int namSinhInt = Integer.parseInt(namSinh);
         String diaChi = edtDiaChi.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
         String sdt = edtSdt.getText().toString().trim();
-        String gioiTinh = spnGioiTinh.getSelectedItem() != null
-                ? spnGioiTinh.getSelectedItem().toString()
-                : "";
+        String gioiTinh = "";
+
+        if (maDG == null || maDG.equals("")) {
+            Toast.makeText(this, "Lỗi mã độc giả!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (tenDG.isEmpty()) {
             edtTenDG.setError("Nhập tên độc giả");
@@ -213,11 +173,22 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
             edtNamSinh.requestFocus();
             return;
         }
+
+        int namSinhInt;
+        try {
+            namSinhInt = Integer.parseInt(namSinh);
+        } catch (NumberFormatException e) {
+            edtNamSinh.setError("Năm sinh phải là số");
+            edtNamSinh.requestFocus();
+            return;
+        }
+
         if (namSinhInt < 1900 || namSinhInt > year) {
             edtNamSinh.setError("Năm sinh không hợp lệ");
             edtNamSinh.requestFocus();
             return;
         }
+
         if (diaChi.isEmpty()) {
             edtDiaChi.setError("Nhập địa chỉ");
             edtDiaChi.requestFocus();
@@ -230,7 +201,7 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
             return;
         }
 
-        if (!email.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
+        if (!email.matches("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
             edtEmail.setError("Email không đúng định dạng");
             edtEmail.requestFocus();
             return;
@@ -242,61 +213,61 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
             return;
         }
 
-        if (!sdt.matches("0\\d{9}")) {
-            edtSdt.setError("SĐT phải 10 số, bắt đầu bằng 0");
+        if (!sdt.matches("0\\d{9,11}")) {
+            edtSdt.setError("SĐT phải từ 10-12 số, bắt đầu bằng 0");
             edtSdt.requestFocus();
             return;
         }
-        for (DocGia dg : list) {
-            if (dg.getMaDG().equals(maDG)) continue;
 
-            if (dg.getSdt().equals(sdt)) {
+        for (DocGia dgCheck : list) {
+            if (dgCheck.getMaDG() != null && dgCheck.getMaDG().equals(maDG)) {
+                continue;
+            }
+
+            if (dgCheck.getSdt() != null && dgCheck.getSdt().equals(sdt)) {
                 edtSdt.setError("SĐT đã tồn tại");
                 edtSdt.requestFocus();
                 return;
             }
 
-            if (dg.getEmail().equalsIgnoreCase(email)) {
+            if (dgCheck.getEmail() != null && dgCheck.getEmail().equalsIgnoreCase(email)) {
                 edtEmail.setError("Email đã tồn tại");
                 edtEmail.requestFocus();
                 return;
             }
         }
-        SpinnerItem khoa = spnKhoa.getSelectedItem() instanceof SpinnerItem
-                ? (SpinnerItem) spnKhoa.getSelectedItem()
-                : null;
-        SpinnerItem lop = spnLop.getSelectedItem() instanceof SpinnerItem
-                ? (SpinnerItem) spnLop.getSelectedItem()
-                : null;
 
-        if (khoa == null || khoa.getId().isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn khoa", Toast.LENGTH_SHORT).show();
+        if (arrGioiTinh.length == 0 || spnGioiTinh.getSelectedItemPosition() < 0) {
+            Toast.makeText(this, "Vui lòng chọn giới tính!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        gioiTinh = arrGioiTinh[spnGioiTinh.getSelectedItemPosition()];
+
+        SpinnerItem khoa = (SpinnerItem) spnKhoa.getSelectedItem();
+        SpinnerItem lop = (SpinnerItem) spnLop.getSelectedItem();
+        if (khoa == null || lop == null || khoa.getId().equals("") || lop.getId().equals("")) {
+            Toast.makeText(this, "Vui lòng chọn khoa và lớp!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (lop == null || lop.getId().isEmpty()) {
-            Toast.makeText(this, "Vui lòng chọn lớp", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        DocGia dg = new DocGia();
+        dg.setMaDG(maDG);
+        dg.setMaKhoa(khoa.getId());
+        dg.setMaLop(lop.getId());
+        dg.setTenDG(tenDG);
+        dg.setNamSinh(namSinh);
+        dg.setGioiTinh(gioiTinh);
+        dg.setDiaChi(diaChi);
+        dg.setEmail(email);
+        dg.setSdt(sdt);
 
-        DocGia item = new DocGia();
-        item.setMaDG(maDG);
-        item.setMaKhoa(khoa.getId());
-        item.setMaLop(lop.getId());
-        item.setTenDG(tenDG);
-        item.setNamSinh(namSinh);
-        item.setGioiTinh(gioiTinh);
-        item.setDiaChi(diaChi);
-        item.setEmail(email);
-        item.setSdt(sdt);
-
-        boolean result = docGiaQuery.capNhatDocGia(item);
+        boolean result = docGiaQuery.suaDocGia(dg);
 
         if (result) {
-            Toast.makeText(this, "Cập nhật độc giả thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            Toast.makeText(this, "Cập nhật độc giả thất bại!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cập nhật thất bại!", Toast.LENGTH_SHORT).show();
         }
     }
 }

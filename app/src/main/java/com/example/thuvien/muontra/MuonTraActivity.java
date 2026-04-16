@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
 
 import com.example.thuvien.R;
 
@@ -25,75 +24,111 @@ import java.util.List;
 
 public class MuonTraActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvMuonTra;
+    ImageView btnAdd;
+    ListView lvData;
+
+    MuonTraQuery muonTraQuery;
+
+    List<MuonTra> listGoc = new ArrayList<>();
+    List<MuonTra> listHienThi = new ArrayList<>();
 
     MuonTraAdapter adapter;
-    List<MuonTra> list;
-    MuonTraQuery muonTraQuery;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_muontra);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        lvMuonTra = findViewById(R.id.lvMuonTra);
+        lvData = findViewById(R.id.lvMuonTra);
         btnAdd = findViewById(R.id.btnAdd);
 
         muonTraQuery = new MuonTraQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new MuonTraAdapter(this, list);
-
-        lvMuonTra.setAdapter(adapter);
-        registerForContextMenu(lvMuonTra);
-        loadDanhSach();
-
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
+        adapter = new MuonTraAdapter(this, R.layout.item_muontra, listHienThi);
+        lvData.setAdapter(adapter);
+
+        loadData();
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 startActivity(new Intent(MuonTraActivity.this, AddMuonTraActivity.class));
             }
         });
 
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s.toString();
-                list = muonTraQuery.timKiemMuonTra(query);
-                adapter.capNhatDuLieu(list);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = muonTraQuery.layDanhSachMuonTra();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(muonTraQuery.layDanhSachMuonTra());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            MuonTra mt = listGoc.get(i);
+
+            String maMT = mt.getMaMT();
+            String tenDG = mt.getTenDG();
+            String tenNV = mt.getTenNV();
+            String trangThai = mt.getTrangThai();
+
+            if (maMT == null) maMT = "";
+            if (tenDG == null) tenDG = "";
+            if (tenNV == null) tenNV = "";
+            if (trangThai == null) trangThai = "";
+
+            if (tuKhoa.equals("")
+                    || maMT.toLowerCase().contains(tuKhoa)
+                    || tenDG.toLowerCase().contains(tuKhoa)
+                    || tenNV.toLowerCase().contains(tuKhoa)
+                    || trangThai.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(mt);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -102,57 +137,67 @@ public class MuonTraActivity extends AppCompatActivity {
         menu.add(0, 1, 0, "Trả sách");
         menu.add(0, 2, 0, "Sửa");
         menu.add(0, 3, 0, "Xóa");
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        MuonTra mtSelect = (MuonTra) adapter.getItem(info.position);
-        final String maMT = mtSelect.getMaMT();
-
-        switch (item.getItemId()) {
-            case 1: // Trả sách
-                if ("Đã trả".equals(mtSelect.getTrangThai())) {
-                    Toast.makeText(this, "Phiếu này đã được trả rồi!", Toast.LENGTH_SHORT).show();
-                } else {
-                    new AlertDialog.Builder(this)
-                            .setTitle("Xác nhận trả sách")
-                            .setMessage("Bạn có chắc chắn muốn xác nhận trả sách cho phiếu " + maMT + "?\nSố lượng sách trong kho sẽ được cập nhật lại.")
-                            .setPositiveButton("Xác nhận", (dialog, which) -> {
-                                boolean result = muonTraQuery.capNhatTrangThaiDaTra(maMT);
-                                if (result) {
-                                    Toast.makeText(this, "Trả sách thành công!", Toast.LENGTH_SHORT).show();
-                                    loadDanhSach();
-                                } else {
-                                    Toast.makeText(this, "Trả sách thất bại!", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .setNegativeButton("Hủy", null)
-                            .show();
-                }
-                return true;
-            case 2: // Sửa
-                Intent intent = new Intent(MuonTraActivity.this, UpdateMuonTraActivity.class);
-                intent.putExtra("MaMT", maMT);
-                startActivity(intent);
-                return true;
-            case 3: // Xóa
-                new AlertDialog.Builder(MuonTraActivity.this)
-                        .setTitle("Xóa phiếu mượn")
-                        .setMessage("Bạn có chắc muốn xóa phiếu mượn này không?")
-                        .setPositiveButton("Xóa", (dialogInterface, i) -> {
-                            boolean result = muonTraQuery.xoaPhieuMuon(maMT);
-                            if (result) {
-                                Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thành công!", Toast.LENGTH_SHORT).show();
-                                loadDanhSach();
-                            } else {
-                                Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thất bại!", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
+
+        final MuonTra mtEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == 1) {
+            if ("Đã trả".equals(mtEdit.getTrangThai())) {
+                Toast.makeText(this, "Phiếu này đã được trả rồi!", Toast.LENGTH_SHORT).show();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Xác nhận trả sách");
+                builder.setMessage("Bạn có chắc chắn muốn xác nhận trả sách cho phiếu " + mtEdit.getMaMT() + "?");
+                builder.setPositiveButton("Xác nhận", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        boolean result = muonTraQuery.capNhatTrangThaiDaTra(mtEdit.getMaMT());
+                        if (result) {
+                            Toast.makeText(MuonTraActivity.this, "Trả sách thành công!", Toast.LENGTH_SHORT).show();
+                            loadData();
+                        } else {
+                            Toast.makeText(MuonTraActivity.this, "Trả sách thất bại!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                builder.setNegativeButton("Hủy", null);
+                builder.show();
+            }
+
+        } else if (item.getItemId() == 2) {
+            Intent intent = new Intent(MuonTraActivity.this, UpdateMuonTraActivity.class);
+            intent.putExtra("MaMT", mtEdit.getMaMT());
+            startActivity(intent);
+
+        } else if (item.getItemId() == 3) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Phiếu mượn này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    boolean result = muonTraQuery.xoaPhieuMuon(mtEdit.getMaMT());
+                    if (result) {
+                        Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thành công!", Toast.LENGTH_SHORT).show();
+                        loadData();
+                    } else {
+                        Toast.makeText(MuonTraActivity.this, "Xóa phiếu mượn thất bại!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 }

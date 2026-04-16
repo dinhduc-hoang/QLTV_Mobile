@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
@@ -25,111 +24,147 @@ import java.util.List;
 
 public class LopActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvLop;
+    ImageView btnAdd;
+    ListView lvData;
+
+    LopQuery lopQuery;
+
+    List<Lop> listGoc = new ArrayList<>();
+    List<Lop> listHienThi = new ArrayList<>();
 
     LopAdapter adapter;
-    List<Lop> list;
-    LopQuery lopQuery;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lop);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        lvLop = findViewById(R.id.lvLop);
+        lvData = findViewById(R.id.lvLop);
         btnAdd = findViewById(R.id.btnAdd);
 
         lopQuery = new LopQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new LopAdapter(this, list);
-
-        lvLop.setAdapter(adapter);
-        registerForContextMenu(lvLop);
-        loadDanhSach();
-
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
+        adapter = new LopAdapter(this, R.layout.item_lop, listHienThi);
+        lvData.setAdapter(adapter);
+
+        loadData();
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 startActivity(new Intent(LopActivity.this, AddLopActivity.class));
             }
         });
 
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-                List<Lop> ketQua = lopQuery.timKiemLop(s.toString());
-                adapter.capNhatDuLieu(ketQua);
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-            }
-        });
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("Chọn hành động");
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 1, "Xóa");
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Lop selectedLop = (Lop) adapter.getItem(info.position);
-
-        switch (item.getItemId()) {
-            case 1:
-                Intent intent = new Intent(LopActivity.this, UpdateLopActivity.class);
-                intent.putExtra("MaLop", selectedLop.getMaLop());
-                startActivity(intent);
-                return true;
-            case 2:
-                new AlertDialog.Builder(LopActivity.this)
-                        .setTitle("Xóa lớp")
-                        .setMessage("Bạn có chắc muốn xóa lớp này không?")
-                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                xoaLop(selectedLop.getMaLop());
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = lopQuery.layDanhSachLop();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(lopQuery.layDanhSachLop());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            Lop lop = listGoc.get(i);
+
+            String maLop = lop.getMaLop();
+            String tenLop = lop.getTenLop();
+            String tenKhoa = lop.getTenKhoa();
+
+            if (maLop == null) maLop = "";
+            if (tenLop == null) tenLop = "";
+            if (tenKhoa == null) tenKhoa = "";
+
+            if (tuKhoa.equals("")
+                    || maLop.toLowerCase().contains(tuKhoa)
+                    || tenLop.toLowerCase().contains(tuKhoa)
+                    || tenKhoa.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(lop);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
+        }
+
+        final Lop lopEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(LopActivity.this, UpdateLopActivity.class);
+            intent.putExtra("MaLop", lopEdit.getMaLop());
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Lớp này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    xoaLop(lopEdit.getMaLop());
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 
     private void xoaLop(String maLop) {
@@ -141,7 +176,7 @@ public class LopActivity extends AppCompatActivity {
         boolean result = lopQuery.xoaLop(maLop);
         if (result) {
             Toast.makeText(this, "Xóa lớp thành công!", Toast.LENGTH_SHORT).show();
-            loadDanhSach();
+            loadData();
         } else {
             Toast.makeText(this, "Xóa lớp thất bại!", Toast.LENGTH_SHORT).show();
         }

@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TheLoaiAdapter extends BaseAdapter {
 
     private Context context;
-    private List<TheLoai> list;
+    private int layout_id;
+    private List<TheLoai> listTheLoai;
 
-    public TheLoaiAdapter(Context context, List<TheLoai> list) {
+    public TheLoaiAdapter(Context context, int layout_id, List<TheLoai> listTheLoai) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<TheLoai> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listTheLoai = listTheLoai;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listTheLoai.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listTheLoai.get(position);
     }
 
     @Override
@@ -44,25 +40,20 @@ public class TheLoaiAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_theloai, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenTL = convertView.findViewById(R.id.tvTenTL);
-            holder.tvMaTL = convertView.findViewById(R.id.tvMaTL);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final TheLoai item = list.get(position);
-        holder.tvTenTL.setText(item.getTenTL());
-        holder.tvMaTL.setText("Mã thể loại: " + item.getMaTL());
+        TheLoai tl = listTheLoai.get(position);
 
-        return convertView;
-    }
+        TextView tvTenTL = view.findViewById(R.id.tvTenTL);
+        TextView tvMaTL = view.findViewById(R.id.tvMaTL);
 
-    private static class ViewHolder {
-        TextView tvTenTL, tvMaTL;
+        tvTenTL.setText(tl.getTenTL());
+        tvMaTL.setText("Mã thể loại: " + tl.getMaTL());
+
+        return view;
     }
 }

@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class NgonNguAdapter extends BaseAdapter {
 
     private Context context;
-    private List<NgonNgu> list;
+    private int layout_id;
+    private List<NgonNgu> listNgonNgu;
 
-    public NgonNguAdapter(Context context, List<NgonNgu> list) {
+    public NgonNguAdapter(Context context, int layout_id, List<NgonNgu> listNgonNgu) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<NgonNgu> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listNgonNgu = listNgonNgu;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listNgonNgu.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listNgonNgu.get(position);
     }
 
     @Override
@@ -44,25 +40,20 @@ public class NgonNguAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_ngonngu, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenNN = convertView.findViewById(R.id.tvTenNN);
-            holder.tvMaNN = convertView.findViewById(R.id.tvMaNN);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final NgonNgu item = list.get(position);
-        holder.tvTenNN.setText(item.getTenNN());
-        holder.tvMaNN.setText("Mã ngôn ngữ: " + item.getMaNN());
+        NgonNgu ngonNgu = listNgonNgu.get(position);
 
-        return convertView;
-    }
+        TextView tvTenNN = view.findViewById(R.id.tvTenNN);
+        TextView tvMaNN = view.findViewById(R.id.tvMaNN);
 
-    private static class ViewHolder {
-        TextView tvTenNN, tvMaNN;
+        tvTenNN.setText(ngonNgu.getTenNN());
+        tvMaNN.setText("Mã ngôn ngữ: " + ngonNgu.getMaNN());
+
+        return view;
     }
 }

@@ -1,8 +1,6 @@
 package com.example.thuvien.thethuvien;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,33 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class TheThuVienAdapter extends BaseAdapter {
 
     private Context context;
-    private List<TheThuVien> list;
+    private int layout_id;
+    private List<TheThuVien> listThe;
 
-    public TheThuVienAdapter(Context context, List<TheThuVien> list) {
+    public TheThuVienAdapter(Context context, int layout_id, List<TheThuVien> listThe) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<TheThuVien> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listThe = listThe;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listThe.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listThe.get(position);
     }
 
     @Override
@@ -47,49 +40,27 @@ public class TheThuVienAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_thethuvien, parent, false);
-            holder = new ViewHolder();
-            holder.tvMaThe = convertView.findViewById(R.id.tvMaThe);
-            holder.tvTenDG = convertView.findViewById(R.id.tvTenDG);
-            holder.tvNgayCap = convertView.findViewById(R.id.tvNgayCap);
-            holder.tvNgayHetHan = convertView.findViewById(R.id.tvNgayHetHan);
-            holder.tvTrangThai = convertView.findViewById(R.id.tvTrangThai);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final TheThuVien item = list.get(position);
+        TheThuVien the = listThe.get(position);
 
-        String ngayCapStr = dinhDangNgay(item.getNgayCap());
-        String ngayHHStr = dinhDangNgay(item.getNgayHetHan());
+        TextView tvMaThe = view.findViewById(R.id.tvMaThe);
+        TextView tvTenDG = view.findViewById(R.id.tvTenDG);
+        TextView tvNgayCap = view.findViewById(R.id.tvNgayCap);
+        TextView tvNgayHetHan = view.findViewById(R.id.tvNgayHetHan);
+        TextView tvTrangThai = view.findViewById(R.id.tvTrangThai);
 
-        // Tự động tính toán trạng thái thực tế dựa trên ngày hiện tại
-        String trangThai = "Còn hiệu lực";
-        try {
-            String[] p = ngayHHStr.split("/");
-            if (p.length == 3) {
-                Calendar c = Calendar.getInstance();
-                c.set(Integer.parseInt(p[2]), Integer.parseInt(p[1]) - 1, Integer.parseInt(p[0]), 23, 59);
-                if (c.before(Calendar.getInstance())) {
-                    trangThai = "Hết hiệu lực";
-                }
-            }
-        } catch (Exception e) {
-            trangThai = item.getTrangThai();
-        }
+        tvMaThe.setText("Thẻ " + the.getMaThe());
+        tvTenDG.setText("Độc giả: " + the.getTenDG());
+        tvNgayCap.setText("Ngày cấp: " + dinhDangNgay(the.getNgayCap()));
+        tvNgayHetHan.setText("Ngày hết hạn: " + dinhDangNgay(the.getNgayHetHan()));
+        tvTrangThai.setText(the.getTrangThai());
 
-        holder.tvMaThe.setText("Thẻ " + item.getMaThe());
-        holder.tvTenDG.setText("Độc giả: " + item.getTenDG());
-        holder.tvNgayCap.setText("Ngày cấp: " + ngayCapStr);
-        holder.tvNgayHetHan.setText("Ngày hết hạn: " + ngayHHStr);
-        holder.tvTrangThai.setText(trangThai);
-
-        setTrangThaiStyle(holder.tvTrangThai, trangThai);
-
-        return convertView;
+        return view;
     }
 
     private String dinhDangNgay(String ngay) {
@@ -100,24 +71,5 @@ public class TheThuVienAdapter extends BaseAdapter {
             }
         }
         return ngay;
-    }
-
-    private void setTrangThaiStyle(TextView textView, String trangThai) {
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setCornerRadius(100f);
-
-        if ("Hết hiệu lực".equalsIgnoreCase(trangThai)) {
-            drawable.setColor(Color.parseColor("#FEE2E2"));
-            textView.setTextColor(Color.parseColor("#DC2626"));
-        } else {
-            drawable.setColor(Color.parseColor("#D1FAE5"));
-            textView.setTextColor(Color.parseColor("#16A34A"));
-        }
-
-        textView.setBackground(drawable);
-    }
-
-    private static class ViewHolder {
-        TextView tvMaThe, tvTenDG, tvNgayCap, tvNgayHetHan, tvTrangThai;
     }
 }

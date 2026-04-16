@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
 
 import com.example.thuvien.R;
 
@@ -25,109 +24,161 @@ import java.util.List;
 
 public class TheThuVienActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
+    ImageView btnAdd;
     ListView lvData;
 
-    TheThuVienAdapter adapter;
-    List<TheThuVien> list;
     TheThuVienQuery theThuVienQuery;
+
+    List<TheThuVien> listGoc = new ArrayList<>();
+    List<TheThuVien> listHienThi = new ArrayList<>();
+
+    TheThuVienAdapter adapter;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thethuvien);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
         lvData = findViewById(R.id.lvData);
         btnAdd = findViewById(R.id.btnAdd);
 
         theThuVienQuery = new TheThuVienQuery(this);
 
-        list = new ArrayList<>();
+        ImageView imgBack = findViewById(R.id.imgBack);
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
-        adapter = new TheThuVienAdapter(this, list);
-
+        adapter = new TheThuVienAdapter(this, R.layout.item_thethuvien, listHienThi);
         lvData.setAdapter(adapter);
-        registerForContextMenu(lvData);
-        loadDanhSach();
 
-        imgBack.setOnClickListener(v -> finish());
-
-        btnAdd.setOnClickListener(v ->
-                startActivity(new Intent(TheThuVienActivity.this, AddTheThuVienActivity.class))
-        );
+        loadData();
 
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-                list = theThuVienQuery.timKiemThe(s.toString());
-                adapter.capNhatDuLieu(list);
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
             }
 
             @Override
-            public void afterTextChanged(Editable e) {}
+            public void afterTextChanged(Editable s) {}
         });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(TheThuVienActivity.this, AddTheThuVienActivity.class));
+            }
+        });
+
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = theThuVienQuery.layDanhSachThe();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(theThuVienQuery.layDanhSachThe());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            TheThuVien the = listGoc.get(i);
+
+            String maThe = the.getMaThe();
+            String tenDG = the.getTenDG();
+            String trangThai = the.getTrangThai();
+
+            if (maThe == null) maThe = "";
+            if (tenDG == null) tenDG = "";
+            if (trangThai == null) trangThai = "";
+
+            if (tuKhoa.equals("")
+                    || maThe.toLowerCase().contains(tuKhoa)
+                    || tenDG.toLowerCase().contains(tuKhoa)
+                    || trangThai.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(the);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 0, "Xóa");
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        TheThuVien theSelect = (TheThuVien) adapter.getItem(info.position);
-        final String id = theSelect.getMaThe();
-
-        switch (item.getItemId()) {
-            case 1: // Sửa
-                Intent intent = new Intent(TheThuVienActivity.this, UpdateTheThuVienActivity.class);
-                intent.putExtra("MaThe", id);
-                startActivity(intent);
-                return true;
-            case 2: // Xóa
-                new AlertDialog.Builder(TheThuVienActivity.this)
-                        .setTitle("Xóa thẻ thư viện")
-                        .setMessage("Bạn có chắc muốn xóa không?")
-                        .setPositiveButton("Xóa", (dialogInterface, i) -> {
-                            if (theThuVienQuery.dangMuonSach(theSelect.getMaDG())) {
-                                Toast.makeText(TheThuVienActivity.this,
-                                        "Độc giả đang mượn sách, không thể xóa!",
-                                        Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            boolean result = theThuVienQuery.xoaThe(id);
-                            if (result) {
-                                Toast.makeText(TheThuVienActivity.this, "Xóa thành công!", Toast.LENGTH_SHORT).show();
-                                loadDanhSach();
-                            } else {
-                                Toast.makeText(TheThuVienActivity.this, "Xóa thất bại!", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
+
+        final TheThuVien theEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(TheThuVienActivity.this, UpdateTheThuVienActivity.class);
+            intent.putExtra("MaThe", theEdit.getMaThe());
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Thẻ thư viện này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    xoaThe(theEdit.getMaThe(), theEdit.getMaDG());
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
+    }
+
+    private void xoaThe(String maThe, String maDG) {
+        if (theThuVienQuery.dangMuonSach(maDG)) {
+            Toast.makeText(this, "Độc giả đang mượn sách, không thể xóa!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean result = theThuVienQuery.xoaThe(maThe);
+        if (result) {
+            Toast.makeText(this, "Xóa thành công!", Toast.LENGTH_SHORT).show();
+            loadData();
+        } else {
+            Toast.makeText(this, "Xóa thất bại!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TacGiaAdapter extends BaseAdapter {
 
     private Context context;
-    private List<TacGia> list;
+    private int layout_id;
+    private List<TacGia> listTacGia;
 
-    public TacGiaAdapter(Context context, List<TacGia> list) {
+    public TacGiaAdapter(Context context, int layout_id, List<TacGia> listTacGia) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<TacGia> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listTacGia = listTacGia;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listTacGia.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listTacGia.get(position);
     }
 
     @Override
@@ -44,31 +40,26 @@ public class TacGiaAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_tacgia, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenTG = convertView.findViewById(R.id.tvTenTG);
-            holder.tvMaTG = convertView.findViewById(R.id.tvMaTG);
-            holder.tvNamSinh = convertView.findViewById(R.id.tvNamSinh);
-            holder.tvGioiTinh = convertView.findViewById(R.id.tvGioiTinh);
-            holder.tvQuocTich = convertView.findViewById(R.id.tvQuocTich);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final TacGia item = list.get(position);
-        holder.tvTenTG.setText(item.getTenTG());
-        holder.tvMaTG.setText("Mã tác giả: " + item.getMaTG());
-        holder.tvNamSinh.setText("Năm sinh: " + item.getNamSinh());
-        holder.tvGioiTinh.setText("Giới tính: " + item.getGioiTinh());
-        holder.tvQuocTich.setText("Quốc tịch: " + item.getQuocTich());
+        TacGia tg = listTacGia.get(position);
 
-        return convertView;
-    }
+        TextView tvTenTG = view.findViewById(R.id.tvTenTG);
+        TextView tvMaTG = view.findViewById(R.id.tvMaTG);
+        TextView tvNamSinh = view.findViewById(R.id.tvNamSinh);
+        TextView tvGioiTinh = view.findViewById(R.id.tvGioiTinh);
+        TextView tvQuocTich = view.findViewById(R.id.tvQuocTich);
 
-    private static class ViewHolder {
-        TextView tvTenTG, tvMaTG, tvNamSinh, tvGioiTinh, tvQuocTich;
+        tvTenTG.setText(tg.getTenTG());
+        tvMaTG.setText("Mã tác giả: " + tg.getMaTG());
+        tvNamSinh.setText("Năm sinh: " + tg.getNamSinh());
+        tvGioiTinh.setText("Giới tính: " + tg.getGioiTinh());
+        tvQuocTich.setText("Quốc tịch: " + tg.getQuocTich());
+
+        return view;
     }
 }

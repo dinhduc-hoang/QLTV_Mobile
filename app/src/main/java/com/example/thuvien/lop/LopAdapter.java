@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LopAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Lop> list;
+    private int layout_id;
+    private List<Lop> listLop;
 
-    public LopAdapter(Context context, List<Lop> list) {
+    public LopAdapter(Context context, int layout_id, List<Lop> listLop) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<Lop> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listLop = listLop;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listLop.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listLop.get(position);
     }
 
     @Override
@@ -44,28 +40,22 @@ public class LopAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_lop, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenLop = convertView.findViewById(R.id.tvTenLop);
-            holder.tvMaLop = convertView.findViewById(R.id.tvMaLop);
-            holder.tvKhoa = convertView.findViewById(R.id.tvKhoa);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final Lop item = list.get(position);
+        Lop lop = listLop.get(position);
 
-        holder.tvTenLop.setText(item.getTenLop());
-        holder.tvMaLop.setText("Mã lớp: " + item.getMaLop());
-        holder.tvKhoa.setText("Khoa: " + item.getTenKhoa());
+        TextView tvTenLop = view.findViewById(R.id.tvTenLop);
+        TextView tvMaLop = view.findViewById(R.id.tvMaLop);
+        TextView tvKhoa = view.findViewById(R.id.tvKhoa);
 
-        return convertView;
-    }
+        tvTenLop.setText(lop.getTenLop());
+        tvMaLop.setText("Mã lớp: " + lop.getMaLop());
+        tvKhoa.setText("Khoa: " + lop.getTenKhoa());
 
-    private static class ViewHolder {
-        TextView tvTenLop, tvMaLop, tvKhoa;
+        return view;
     }
 }

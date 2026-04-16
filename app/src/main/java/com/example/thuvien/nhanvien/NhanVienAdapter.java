@@ -9,32 +9,27 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class NhanVienAdapter extends BaseAdapter {
-
     private Context context;
-    private List<NhanVien> list;
+    private int layout_id;
+    private List<NhanVien> listNhanVien;
 
-    public NhanVienAdapter(Context context, List<NhanVien> list) {
+    public NhanVienAdapter(Context context, int layout_id, List<NhanVien> listNhanVien) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<NhanVien> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listNhanVien = listNhanVien;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listNhanVien.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listNhanVien.get(position);
     }
 
     @Override
@@ -44,40 +39,34 @@ public class NhanVienAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_nhanvien, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenNV = convertView.findViewById(R.id.tvTenNV);
-            holder.tvMaNV = convertView.findViewById(R.id.tvMaNV);
-            holder.tvVaiTro = convertView.findViewById(R.id.tvVaiTro);
-            holder.tvGioiTinh = convertView.findViewById(R.id.tvGioiTinh);
-            holder.tvNamSinh = convertView.findViewById(R.id.tvNamSinh);
-            holder.tvQueQuan = convertView.findViewById(R.id.tvQueQuan);
-            holder.tvEmail = convertView.findViewById(R.id.tvEmail);
-            holder.tvSdt = convertView.findViewById(R.id.tvSdt);
-            holder.tvUser = convertView.findViewById(R.id.tvUser);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final NhanVien item = list.get(position);
+        NhanVien nv = listNhanVien.get(position);
 
-        holder.tvTenNV.setText(item.getTenNV());
-        holder.tvMaNV.setText("Mã nhân viên: " + item.getMaNV());
-        holder.tvVaiTro.setText("Vai trò: " + item.getVaiTro());
-        holder.tvGioiTinh.setText("Giới tính: " + item.getGioiTinh());
-        holder.tvNamSinh.setText("Năm sinh: " + item.getNamSinh());
-        holder.tvQueQuan.setText("Quê quán: " + item.getQueQuan());
-        holder.tvEmail.setText("Email: " + item.getEmail());
-        holder.tvSdt.setText("SĐT: " + item.getSdt());
-        holder.tvUser.setText("User: " + item.getUser());
+        TextView tvTenNV = view.findViewById(R.id.tvTenNV);
+        TextView tvMaNV = view.findViewById(R.id.tvMaNV);
+        TextView tvVaiTro = view.findViewById(R.id.tvVaiTro);
+        TextView tvGioiTinh = view.findViewById(R.id.tvGioiTinh);
+        TextView tvNamSinh = view.findViewById(R.id.tvNamSinh);
+        TextView tvQueQuan = view.findViewById(R.id.tvQueQuan);
+        TextView tvEmail = view.findViewById(R.id.tvEmail);
+        TextView tvSdt = view.findViewById(R.id.tvSdt);
+        TextView tvUser = view.findViewById(R.id.tvUser);
 
-        return convertView;
-    }
+        tvTenNV.setText(nv.getTenNV());
+        tvMaNV.setText("Mã nhân viên: " + nv.getMaNV());
+        tvVaiTro.setText("Vai trò: " + nv.getVaiTro());
+        tvGioiTinh.setText("Giới tính: " + nv.getGioiTinh());
+        tvNamSinh.setText("Năm sinh: " + nv.getNamSinh());
+        tvQueQuan.setText("Quê quán: " + nv.getQueQuan());
+        tvEmail.setText("Email: " + nv.getEmail());
+        tvSdt.setText("SĐT: " + nv.getSdt());
+        tvUser.setText("Tài khoản: " + nv.getUser());
 
-    private static class ViewHolder {
-        TextView tvTenNV, tvMaNV, tvVaiTro, tvGioiTinh, tvNamSinh, tvQueQuan, tvEmail, tvSdt, tvUser;
+        return view;
     }
 }

@@ -62,14 +62,32 @@ public class UpdateKhoaActivity extends AppCompatActivity {
         List<Khoa> list = khoaQuery.layDanhSachKhoa();
         String tenKhoa = edtTenKhoa.getText().toString().trim();
 
+        if (maKhoa == null || maKhoa.trim().isEmpty()) {
+            Toast.makeText(this, "Lỗi mã khoa!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (tenKhoa.isEmpty()) {
             edtTenKhoa.setError("Nhập tên khoa");
             edtTenKhoa.requestFocus();
             return;
         }
+
+        if (tenKhoa.length() < 2 || tenKhoa.length() > 100) {
+            edtTenKhoa.setError("Tên khoa phải từ 2-100 ký tự");
+            edtTenKhoa.requestFocus();
+            return;
+        }
+
+        if (!tenKhoa.matches("[\\p{L}0-9\\s.&-]+")) {
+            edtTenKhoa.setError("Tên khoa chứa ký tự không hợp lệ");
+            edtTenKhoa.requestFocus();
+            return;
+        }
+
         for (Khoa k : list) {
-            if (k.getMaKhoa().equals(maKhoa)) continue;
-            if (k.getTenKhoa().equalsIgnoreCase(tenKhoa)) {
+            if (k.getMaKhoa() != null && k.getMaKhoa().equals(maKhoa)) continue;
+            if (k.getTenKhoa() != null && k.getTenKhoa().equalsIgnoreCase(tenKhoa)) {
                 edtTenKhoa.setError("Tên khoa đã tồn tại");
                 edtTenKhoa.requestFocus();
                 return;

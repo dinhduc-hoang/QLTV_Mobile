@@ -1,8 +1,6 @@
 package com.example.thuvien.muontra;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MuonTraAdapter extends BaseAdapter {
 
     private Context context;
-    private List<MuonTra> list;
+    private int layout_id;
+    private List<MuonTra> listMuonTra;
 
-    public MuonTraAdapter(Context context, List<MuonTra> list) {
+    public MuonTraAdapter(Context context, int layout_id, List<MuonTra> listMuonTra) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<MuonTra> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listMuonTra = listMuonTra;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listMuonTra.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listMuonTra.get(position);
     }
 
     @Override
@@ -46,51 +40,28 @@ public class MuonTraAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_muontra, parent, false);
-            holder = new ViewHolder();
-            holder.tvMaMT = convertView.findViewById(R.id.tvMaMT);
-            holder.tvDocGia = convertView.findViewById(R.id.tvDocGia);
-            holder.tvNhanVien = convertView.findViewById(R.id.tvNhanVien);
-            holder.tvNgayMuon = convertView.findViewById(R.id.tvNgayMuon);
-            holder.tvHanTra = convertView.findViewById(R.id.tvHanTra);
-            holder.tvTrangThai = convertView.findViewById(R.id.tvTrangThai);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final MuonTra item = list.get(position);
+        MuonTra mt = listMuonTra.get(position);
 
-        holder.tvMaMT.setText("Phiếu " + item.getMaMT());
-        holder.tvDocGia.setText("Độc giả: " + item.getTenDG());
-        holder.tvNhanVien.setText("Nhân viên: " + item.getTenNV());
-        holder.tvNgayMuon.setText("Ngày mượn: " + item.getNgayMuon());
-        holder.tvHanTra.setText("Hạn trả: " + item.getHanTra());
-        holder.tvTrangThai.setText(item.getTrangThai());
+        TextView tvMaMT = view.findViewById(R.id.tvMaMT);
+        TextView tvDocGia = view.findViewById(R.id.tvDocGia);
+        TextView tvNhanVien = view.findViewById(R.id.tvNhanVien);
+        TextView tvNgayMuon = view.findViewById(R.id.tvNgayMuon);
+        TextView tvHanTra = view.findViewById(R.id.tvHanTra);
+        TextView tvTrangThai = view.findViewById(R.id.tvTrangThai);
 
-        setTrangThaiStyle(holder.tvTrangThai, item.getTrangThai());
+        tvMaMT.setText("Phiếu " + mt.getMaMT());
+        tvDocGia.setText("Độc giả: " + mt.getTenDG());
+        tvNhanVien.setText("Nhân viên: " + mt.getTenNV());
+        tvNgayMuon.setText("Ngày mượn: " + mt.getNgayMuon());
+        tvHanTra.setText("Hạn trả: " + mt.getHanTra());
+        tvTrangThai.setText(mt.getTrangThai());
 
-        return convertView;
-    }
-
-    private void setTrangThaiStyle(TextView textView, String trangThai) {
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setCornerRadius(100f);
-
-        if ("Đã trả".equalsIgnoreCase(trangThai)) {
-            drawable.setColor(Color.parseColor("#D1FAE5"));
-            textView.setTextColor(Color.parseColor("#065F46"));
-        } else {
-            drawable.setColor(Color.parseColor("#FEF3C7"));
-            textView.setTextColor(Color.parseColor("#D97706"));
-        }
-
-        textView.setBackground(drawable);
-    }
-
-    private static class ViewHolder {
-        TextView tvMaMT, tvDocGia, tvNhanVien, tvNgayMuon, tvHanTra, tvTrangThai;
+        return view;
     }
 }

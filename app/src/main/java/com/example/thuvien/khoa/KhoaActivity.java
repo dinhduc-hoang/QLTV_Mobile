@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
@@ -25,111 +24,144 @@ import java.util.List;
 
 public class KhoaActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvKhoa;
+    ImageView btnAdd;
+    ListView lvData;
+
+    KhoaQuery khoaQuery;
+
+    List<Khoa> listGoc = new ArrayList<>();
+    List<Khoa> listHienThi = new ArrayList<>();
 
     KhoaAdapter adapter;
-    List<Khoa> list;
-    KhoaQuery khoaQuery;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_khoa);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        lvKhoa = findViewById(R.id.lvKhoa);
+        lvData = findViewById(R.id.lvKhoa);
         btnAdd = findViewById(R.id.btnAdd);
 
         khoaQuery = new KhoaQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new KhoaAdapter(this, list);
-
-        lvKhoa.setAdapter(adapter);
-        registerForContextMenu(lvKhoa);
-        loadDanhSach();
-
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
+        adapter = new KhoaAdapter(this, R.layout.item_khoa, listHienThi);
+        lvData.setAdapter(adapter);
+
+        loadData();
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 startActivity(new Intent(KhoaActivity.this, AddKhoaActivity.class));
             }
         });
 
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-                List<Khoa> ketQua = khoaQuery.timKiemKhoa(s.toString());
-                adapter.capNhatDuLieu(ketQua);
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-            }
-        });
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("Chọn hành động");
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 1, "Xóa");
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Khoa selectedKhoa = (Khoa) adapter.getItem(info.position);
-
-        switch (item.getItemId()) {
-            case 1:
-                Intent intent = new Intent(KhoaActivity.this, UpdateKhoaActivity.class);
-                intent.putExtra("MaKhoa", selectedKhoa.getMaKhoa());
-                startActivity(intent);
-                return true;
-            case 2:
-                new AlertDialog.Builder(KhoaActivity.this)
-                        .setTitle("Xóa khoa")
-                        .setMessage("Bạn có chắc muốn xóa khoa này không?")
-                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                xoaKhoa(selectedKhoa.getMaKhoa());
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = khoaQuery.layDanhSachKhoa();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(khoaQuery.layDanhSachKhoa());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            Khoa khoa = listGoc.get(i);
+
+            String maKhoa = khoa.getMaKhoa();
+            String tenKhoa = khoa.getTenKhoa();
+
+            if (maKhoa == null) maKhoa = "";
+            if (tenKhoa == null) tenKhoa = "";
+
+            if (tuKhoa.equals("")
+                    || maKhoa.toLowerCase().contains(tuKhoa)
+                    || tenKhoa.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(khoa);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
+        }
+
+        final Khoa khoaEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(KhoaActivity.this, UpdateKhoaActivity.class);
+            intent.putExtra("MaKhoa", khoaEdit.getMaKhoa());
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Khoa này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    xoaKhoa(khoaEdit.getMaKhoa());
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 
     private void xoaKhoa(String maKhoa) {
@@ -141,7 +173,7 @@ public class KhoaActivity extends AppCompatActivity {
         boolean result = khoaQuery.xoaKhoa(maKhoa);
         if (result) {
             Toast.makeText(this, "Xóa khoa thành công!", Toast.LENGTH_SHORT).show();
-            loadDanhSach();
+            loadData();
         } else {
             Toast.makeText(this, "Xóa khoa thất bại!", Toast.LENGTH_SHORT).show();
         }

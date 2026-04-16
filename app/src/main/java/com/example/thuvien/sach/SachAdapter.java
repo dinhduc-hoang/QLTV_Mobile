@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SachAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Sach> list;
+    private int layout_id;
+    private List<Sach> listSach;
 
-    public SachAdapter(Context context, List<Sach> list) {
+    public SachAdapter(Context context, int layout_id, List<Sach> listSach) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<Sach> newList) {
-        this.list = newList;
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listSach = listSach;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listSach.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listSach.get(position);
     }
 
     @Override
@@ -44,40 +40,34 @@ public class SachAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_sach, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenSach = convertView.findViewById(R.id.tvTenSach);
-            holder.tvMaSach = convertView.findViewById(R.id.tvMaSach);
-            holder.tvTacGia = convertView.findViewById(R.id.tvTacGia);
-            holder.tvTheLoai = convertView.findViewById(R.id.tvTheLoai);
-            holder.tvNXB = convertView.findViewById(R.id.tvNXB);
-            holder.tvNgonNgu = convertView.findViewById(R.id.tvNgonNgu);
-            holder.tvViTri = convertView.findViewById(R.id.tvViTri);
-            holder.tvNamXB = convertView.findViewById(R.id.tvNamXB);
-            holder.tvSoLuong = convertView.findViewById(R.id.tvSoLuong);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final Sach sach = list.get(position);
+        Sach sach = listSach.get(position);
 
-        holder.tvTenSach.setText(sach.getTenSach());
-        holder.tvMaSach.setText("Mã sách: " + sach.getMaSach());
-        holder.tvTacGia.setText("Tác giả: " + sach.getTenTG());
-        holder.tvTheLoai.setText("Thể loại: " + sach.getTenTL());
-        holder.tvNXB.setText("Nhà xuất bản: " + sach.getTenNXB());
-        holder.tvNgonNgu.setText("Ngôn ngữ: " + sach.getTenNN());
-        holder.tvViTri.setText("Kệ sách: " + sach.getTenViTri());
-        holder.tvNamXB.setText("Năm XB: " + sach.getNamXB());
-        holder.tvSoLuong.setText("SL: " + sach.getSoLuong());
+        TextView tvTenSach = view.findViewById(R.id.tvTenSach);
+        TextView tvMaSach = view.findViewById(R.id.tvMaSach);
+        TextView tvTacGia = view.findViewById(R.id.tvTacGia);
+        TextView tvTheLoai = view.findViewById(R.id.tvTheLoai);
+        TextView tvNXB = view.findViewById(R.id.tvNXB);
+        TextView tvNgonNgu = view.findViewById(R.id.tvNgonNgu);
+        TextView tvViTri = view.findViewById(R.id.tvViTri);
+        TextView tvNamXB = view.findViewById(R.id.tvNamXB);
+        TextView tvSoLuong = view.findViewById(R.id.tvSoLuong);
 
-        return convertView;
-    }
+        tvTenSach.setText(sach.getTenSach());
+        tvMaSach.setText("Mã sách: " + sach.getMaSach());
+        tvTacGia.setText("Tác giả: " + sach.getTenTG());
+        tvTheLoai.setText("Thể loại: " + sach.getTenTL());
+        tvNXB.setText("Nhà xuất bản: " + sach.getTenNXB());
+        tvNgonNgu.setText("Ngôn ngữ: " + sach.getTenNN());
+        tvViTri.setText("Kệ sách: " + sach.getTenViTri());
+        tvNamXB.setText("Năm XB: " + sach.getNamXB());
+        tvSoLuong.setText("SL: " + sach.getSoLuong());
 
-    private static class ViewHolder {
-        TextView tvTenSach, tvMaSach, tvTacGia, tvTheLoai, tvNXB, tvNgonNgu, tvViTri, tvNamXB, tvSoLuong;
+        return view;
     }
 }

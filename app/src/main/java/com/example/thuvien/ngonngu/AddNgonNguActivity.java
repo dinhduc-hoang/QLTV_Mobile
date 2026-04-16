@@ -55,10 +55,22 @@ public class AddNgonNguActivity extends AppCompatActivity {
             return;
         }
 
+        if (tenNN.length() < 2 || tenNN.length() > 50) {
+            edtTenNN.setError("Tên ngôn ngữ phải từ 2-50 ký tự");
+            edtTenNN.requestFocus();
+            return;
+        }
+
+        if (!tenNN.matches("[\\p{L}0-9\\s.&-]+")) {
+            edtTenNN.setError("Tên ngôn ngữ chứa ký tự không hợp lệ");
+            edtTenNN.requestFocus();
+            return;
+        }
+
         List<NgonNgu> list = ngonNguQuery.layDanhSachNgonNgu();
 
         for (NgonNgu nn : list) {
-            if (nn.getTenNN().equalsIgnoreCase(tenNN)) {
+            if (nn.getTenNN() != null && nn.getTenNN().equalsIgnoreCase(tenNN)) {
                 edtTenNN.setError("Tên ngôn ngữ đã tồn tại");
                 edtTenNN.requestFocus();
                 return;

@@ -61,15 +61,33 @@ public class UpdateNgonNguActivity extends AppCompatActivity {
     private void capNhatNgonNgu() {
         String tenNN = edtTenNN.getText().toString().trim();
 
+        if (maNN == null || maNN.trim().isEmpty()) {
+            Toast.makeText(this, "Lỗi mã ngôn ngữ!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (tenNN.isEmpty()) {
             edtTenNN.setError("Nhập tên ngôn ngữ");
             edtTenNN.requestFocus();
             return;
         }
+
+        if (tenNN.length() < 2 || tenNN.length() > 50) {
+            edtTenNN.setError("Tên ngôn ngữ phải từ 2-50 ký tự");
+            edtTenNN.requestFocus();
+            return;
+        }
+
+        if (!tenNN.matches("[\\p{L}0-9\\s.&-]+")) {
+            edtTenNN.setError("Tên ngôn ngữ chứa ký tự không hợp lệ");
+            edtTenNN.requestFocus();
+            return;
+        }
+
         List<NgonNgu> list = ngonNguQuery.layDanhSachNgonNgu();
         for (NgonNgu nn : list) {
-            if (nn.getMaNN().equals(maNN)) continue;
-            if (nn.getTenNN().equalsIgnoreCase(tenNN)) {
+            if (nn.getMaNN() != null && nn.getMaNN().equals(maNN)) continue;
+            if (nn.getTenNN() != null && nn.getTenNN().equalsIgnoreCase(tenNN)) {
                 edtTenNN.setError("Tên ngôn ngữ đã tồn tại");
                 edtTenNN.requestFocus();
                 return;

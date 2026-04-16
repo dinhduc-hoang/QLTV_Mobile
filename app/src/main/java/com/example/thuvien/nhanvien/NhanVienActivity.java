@@ -10,13 +10,13 @@ import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
 
 import com.example.thuvien.R;
 
@@ -25,116 +25,178 @@ import java.util.List;
 
 public class NhanVienActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvNhanVien;
+    ImageView btnAdd;
+    ListView lvData;
+
+    NhanVienQuery nhanVienQuery;
+    
+    // Mảng lưu danh sách gốc
+    List<NhanVien> listGoc = new ArrayList<>();
+    
+    // Mảng lưu danh sách khi tìm kiếm
+    List<NhanVien> listHienThi = new ArrayList<>();
 
     NhanVienAdapter adapter;
-    List<NhanVien> list;
-    NhanVienQuery nhanVienQuery;
+
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nhanvien);
 
-        imgBack = findViewById(R.id.imgBack);
+        // Ánh xạ (Tìm view theo ID)
         edtSearch = findViewById(R.id.edtSearch);
-        lvNhanVien = findViewById(R.id.lvNhanVien);
         btnAdd = findViewById(R.id.btnAdd);
-
+        lvData = findViewById(R.id.lvNhanVien);
         nhanVienQuery = new NhanVienQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new NhanVienAdapter(this, list);
-
-        lvNhanVien.setAdapter(adapter);
-        registerForContextMenu(lvNhanVien);
-        loadDanhSach();
-
+        // Sự kiện ấn nút Back
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(NhanVienActivity.this, AddNhanVienActivity.class));
-            }
-        });
+        // Thiết lập Adapter cho ListView
+        adapter = new NhanVienAdapter(this, R.layout.item_nhanvien, listHienThi);
+        lvData.setAdapter(adapter);
 
+        loadData();
+
+        // Sự kiện tìm kiếm (Gõ chữ tới đâu hiển thị tới đó)
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-                List<NhanVien> ketQua = nhanVienQuery.timKiemNhanVien(s.toString());
-                adapter.capNhatDuLieu(ketQua);
-            }
+            public void afterTextChanged(Editable s) {}
+        });
 
+        // Chuyển sang màn hình thêm khi bấm nút Add
+        btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void afterTextChanged(Editable e) {
+            public void onClick(View v) {
+                Intent intent = new Intent(NhanVienActivity.this, AddNhanVienActivity.class);
+                startActivity(intent);
             }
         });
+
+        // Đăng ký Context menu (Menu giữ đè)
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData(); // Tải lại danh sách sau khi quay về trang này
     }
 
-    private void loadDanhSach() {
-        list = nhanVienQuery.layDanhSachNhanVien();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        // Xóa hết rồi chép mảng vào
+        listGoc.clear();
+        listGoc.addAll(nhanVienQuery.layDanhSachNhanVien());
+        
+        // Gọi hàm lọc để đổ danh sách ra
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        // Xử lý chuỗi tìm kiếm (đổi về chữ in thường)
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        // Chạy vòng lặp for cơ bản duyệt mảng NhanVien
+        for (int i = 0; i < listGoc.size(); i++) {
+            NhanVien nv = listGoc.get(i);
+            
+            String tenNV = nv.getTenNV();
+            if (tenNV == null) {
+                tenNV = "";
+            }
+            
+            // So sánh tên (đã in thường) với từ khóa
+            if (tuKhoa.equals("") || tenNV.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(nv);
+            }
+        }
+
+        // Báo Adapter cập nhật hiển thị mảng
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 0, "Xóa");
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+        
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        NhanVien nvSelect = (NhanVien) adapter.getItem(info.position);
-        final String maNV = nvSelect.getMaNV();
-
-        switch (item.getItemId()) {
-            case 1: // Sửa
-                Intent intent = new Intent(NhanVienActivity.this, UpdateNhanVienActivity.class);
-                intent.putExtra("MaNV", maNV);
-                startActivity(intent);
-                return true;
-            case 2: // Xóa
-                if (nhanVienQuery.nhanVienDangDuocSuDung(maNV)) {
-                    Toast.makeText(NhanVienActivity.this, "Không thể xóa nhân viên này vì đang có phiếu mượn liên quan!", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                new AlertDialog.Builder(NhanVienActivity.this)
-                        .setTitle("Xóa nhân viên")
-                        .setMessage("Bạn có chắc muốn xóa nhân viên này không?")
-                        .setPositiveButton("Xóa", (dialogInterface, i) -> {
-                            boolean result = nhanVienQuery.xoaNhanVien(maNV);
-                            if (result) {
-                                Toast.makeText(NhanVienActivity.this, "Xóa nhân viên thành công!", Toast.LENGTH_SHORT).show();
-                                loadDanhSach();
-                            } else {
-                                Toast.makeText(NhanVienActivity.this, "Xóa nhân viên thất bại!", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
+
+        // Lấy nhân viên đang được click
+        NhanVien nvEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            // Chuyển sang màng hình Update
+            Intent intent = new Intent(NhanVienActivity.this, UpdateNhanVienActivity.class);
+            
+            // Đẩy dữ liệu qua bằng intent
+            intent.putExtra("maNV", nvEdit.getMaNV());
+            intent.putExtra("tenNV", nvEdit.getTenNV());
+            intent.putExtra("queQuan", nvEdit.getQueQuan());
+            intent.putExtra("gioiTinh", nvEdit.getGioiTinh());
+            intent.putExtra("namSinh", nvEdit.getNamSinh());
+            intent.putExtra("vaiTro", nvEdit.getVaiTro());
+            intent.putExtra("email", nvEdit.getEmail());
+            intent.putExtra("sdt", nvEdit.getSdt());
+            intent.putExtra("user", nvEdit.getUser());
+            intent.putExtra("pass", nvEdit.getPass());
+            
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            // Xoá
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Nhân viên này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    boolean kq = nhanVienQuery.xoaNhanVien(nvEdit.getMaNV());
+                    if (kq == true) {
+                        Toast.makeText(NhanVienActivity.this, "Đã xóa!", Toast.LENGTH_SHORT).show();
+                        loadData(); // Tải lại danh sách
+                    } else {
+                        Toast.makeText(NhanVienActivity.this, "Xóa thất bại!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 }

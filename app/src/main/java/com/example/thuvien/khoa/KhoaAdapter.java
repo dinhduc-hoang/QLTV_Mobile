@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class KhoaAdapter extends BaseAdapter {
 
     private Context context;
-    private List<Khoa> list;
+    private int layout_id;
+    private List<Khoa> listKhoa;
 
-    public KhoaAdapter(Context context, List<Khoa> list) {
+    public KhoaAdapter(Context context, int layout_id, List<Khoa> listKhoa) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<Khoa> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listKhoa = listKhoa;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listKhoa.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listKhoa.get(position);
     }
 
     @Override
@@ -44,26 +40,20 @@ public class KhoaAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_khoa, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenKhoa = convertView.findViewById(R.id.tvTenKhoa);
-            holder.tvMaKhoa = convertView.findViewById(R.id.tvMaKhoa);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final Khoa item = list.get(position);
+        Khoa khoa = listKhoa.get(position);
 
-        holder.tvTenKhoa.setText(item.getTenKhoa());
-        holder.tvMaKhoa.setText("Mã khoa: " + item.getMaKhoa());
+        TextView tvTenKhoa = view.findViewById(R.id.tvTenKhoa);
+        TextView tvMaKhoa = view.findViewById(R.id.tvMaKhoa);
 
-        return convertView;
-    }
+        tvTenKhoa.setText(khoa.getTenKhoa());
+        tvMaKhoa.setText("Mã khoa: " + khoa.getMaKhoa());
 
-    private static class ViewHolder {
-        TextView tvTenKhoa, tvMaKhoa;
+        return view;
     }
 }

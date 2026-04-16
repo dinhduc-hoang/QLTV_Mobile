@@ -16,9 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thuvien.R;
 
@@ -27,110 +24,144 @@ import java.util.List;
 
 public class NgonNguActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvNgonNgu;
+    ImageView btnAdd;
+    ListView lvData;
+
+    NgonNguQuery ngonNguQuery;
+
+    List<NgonNgu> listGoc = new ArrayList<>();
+    List<NgonNgu> listHienThi = new ArrayList<>();
 
     NgonNguAdapter adapter;
-    List<NgonNgu> list;
-    NgonNguQuery ngonNguQuery;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ngonngu);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        lvNgonNgu = findViewById(R.id.lvNgonNgu);
+        lvData = findViewById(R.id.lvNgonNgu);
         btnAdd = findViewById(R.id.btnAdd);
 
         ngonNguQuery = new NgonNguQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new NgonNguAdapter(this, list);
-
-        lvNgonNgu.setAdapter(adapter);
-        registerForContextMenu(lvNgonNgu);
-        loadDanhSach();
-
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
+        adapter = new NgonNguAdapter(this, R.layout.item_ngonngu, listHienThi);
+        lvData.setAdapter(adapter);
+
+        loadData();
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 startActivity(new Intent(NgonNguActivity.this, AddNgonNguActivity.class));
             }
         });
 
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-                List<NgonNgu> ketQua = ngonNguQuery.timKiemNgonNgu(s.toString());
-                adapter.capNhatDuLieu(ketQua);
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
+
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = ngonNguQuery.layDanhSachNgonNgu();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(ngonNguQuery.layDanhSachNgonNgu());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            NgonNgu ngonNgu = listGoc.get(i);
+
+            String maNN = ngonNgu.getMaNN();
+            String tenNN = ngonNgu.getTenNN();
+
+            if (maNN == null) maNN = "";
+            if (tenNN == null) tenNN = "";
+
+            if (tuKhoa.equals("")
+                    || maNN.toLowerCase().contains(tuKhoa)
+                    || tenNN.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(ngonNgu);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 0, "Xóa");
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        NgonNgu nnSelect = (NgonNgu) adapter.getItem(info.position);
-        final String maNN = nnSelect.getMaNN();
-
-        switch (item.getItemId()) {
-            case 1: // Sửa
-                Intent intent = new Intent(NgonNguActivity.this, UpdateNgonNguActivity.class);
-                intent.putExtra("MaNN", maNN);
-                startActivity(intent);
-                return true;
-            case 2: // Xóa
-                new AlertDialog.Builder(NgonNguActivity.this)
-                        .setTitle("Xóa ngôn ngữ")
-                        .setMessage("Bạn có chắc muốn xóa ngôn ngữ này không?")
-                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                xoaNgonNgu(maNN);
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
+
+        final NgonNgu nnEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(NgonNguActivity.this, UpdateNgonNguActivity.class);
+            intent.putExtra("MaNN", nnEdit.getMaNN());
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Ngôn ngữ này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    xoaNgonNgu(nnEdit.getMaNN());
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 
     private void xoaNgonNgu(String maNN) {
@@ -142,7 +173,7 @@ public class NgonNguActivity extends AppCompatActivity {
         boolean result = ngonNguQuery.xoaNgonNgu(maNN);
         if (result) {
             Toast.makeText(this, "Xóa ngôn ngữ thành công!", Toast.LENGTH_SHORT).show();
-            loadDanhSach();
+            loadData();
         } else {
             Toast.makeText(this, "Xóa ngôn ngữ thất bại!", Toast.LENGTH_SHORT).show();
         }

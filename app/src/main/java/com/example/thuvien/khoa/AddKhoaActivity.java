@@ -56,8 +56,21 @@ public class AddKhoaActivity extends AppCompatActivity {
             edtTenKhoa.requestFocus();
             return;
         }
+
+        if (tenKhoa.length() < 2 || tenKhoa.length() > 100) {
+            edtTenKhoa.setError("Tên khoa phải từ 2-100 ký tự");
+            edtTenKhoa.requestFocus();
+            return;
+        }
+
+        if (!tenKhoa.matches("[\\p{L}0-9\\s.&-]+")) {
+            edtTenKhoa.setError("Tên khoa chứa ký tự không hợp lệ");
+            edtTenKhoa.requestFocus();
+            return;
+        }
+
         for (Khoa k : list) {
-            if (k.getTenKhoa().equalsIgnoreCase(tenKhoa)) {
+            if (k.getTenKhoa() != null && k.getTenKhoa().equalsIgnoreCase(tenKhoa)) {
                 edtTenKhoa.setError("Tên khoa đã tồn tại");
                 edtTenKhoa.requestFocus();
                 return;

@@ -16,9 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thuvien.R;
 
@@ -27,110 +24,147 @@ import java.util.List;
 
 public class TacGiaActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvTacGia;
+    ImageView btnAdd;
+    ListView lvData;
+
+    TacGiaQuery tacGiaQuery;
+
+    List<TacGia> listGoc = new ArrayList<>();
+    List<TacGia> listHienThi = new ArrayList<>();
 
     TacGiaAdapter adapter;
-    List<TacGia> list;
-    TacGiaQuery tacGiaQuery;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tacgia);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        lvTacGia = findViewById(R.id.lvTacGia);
+        lvData = findViewById(R.id.lvTacGia);
         btnAdd = findViewById(R.id.btnAdd);
 
         tacGiaQuery = new TacGiaQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new TacGiaAdapter(this, list);
-
-        lvTacGia.setAdapter(adapter);
-        registerForContextMenu(lvTacGia);
-        loadDanhSach();
-
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
+        adapter = new TacGiaAdapter(this, R.layout.item_tacgia, listHienThi);
+        lvData.setAdapter(adapter);
+
+        loadData();
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 startActivity(new Intent(TacGiaActivity.this, AddTacGiaActivity.class));
             }
         });
 
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-                List<TacGia> ketQua = tacGiaQuery.timKiemTacGia(s.toString());
-                adapter.capNhatDuLieu(ketQua);
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-            }
-        });
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = tacGiaQuery.layDanhSachTacGia();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(tacGiaQuery.layDanhSachTacGia());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            TacGia tg = listGoc.get(i);
+
+            String maTG = tg.getMaTG();
+            String tenTG = tg.getTenTG();
+            String quocTich = tg.getQuocTich();
+
+            if (maTG == null) maTG = "";
+            if (tenTG == null) tenTG = "";
+            if (quocTich == null) quocTich = "";
+
+            if (tuKhoa.equals("")
+                    || maTG.toLowerCase().contains(tuKhoa)
+                    || tenTG.toLowerCase().contains(tuKhoa)
+                    || quocTich.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(tg);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 0, "Xóa");
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        TacGia tgSelect = (TacGia) adapter.getItem(info.position);
-        final String maTG = tgSelect.getMaTG();
-
-        switch (item.getItemId()) {
-            case 1: // Sửa
-                Intent intent = new Intent(TacGiaActivity.this, UpdateTacGiaActivity.class);
-                intent.putExtra("MaTG", maTG);
-                startActivity(intent);
-                return true;
-            case 2: // Xóa
-                new AlertDialog.Builder(TacGiaActivity.this)
-                        .setTitle("Xóa tác giả")
-                        .setMessage("Bạn có chắc muốn xóa tác giả này không?")
-                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                xoaTacGia(maTG);
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
+
+        final TacGia tgEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(TacGiaActivity.this, UpdateTacGiaActivity.class);
+            intent.putExtra("MaTG", tgEdit.getMaTG());
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Tác giả này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    xoaTacGia(tgEdit.getMaTG());
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 
     private void xoaTacGia(String maTG) {
@@ -142,7 +176,7 @@ public class TacGiaActivity extends AppCompatActivity {
         boolean result = tacGiaQuery.xoaTacGia(maTG);
         if (result) {
             Toast.makeText(this, "Xóa tác giả thành công!", Toast.LENGTH_SHORT).show();
-            loadDanhSach();
+            loadData();
         } else {
             Toast.makeText(this, "Xóa tác giả thất bại!", Toast.LENGTH_SHORT).show();
         }

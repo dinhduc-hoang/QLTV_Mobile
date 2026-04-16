@@ -9,32 +9,28 @@ import android.widget.TextView;
 
 import com.example.thuvien.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class KeSachAdapter extends BaseAdapter {
 
     private Context context;
-    private List<KeSach> list;
+    private int layout_id;
+    private List<KeSach> listKeSach;
 
-    public KeSachAdapter(Context context, List<KeSach> list) {
+    public KeSachAdapter(Context context, int layout_id, List<KeSach> listKeSach) {
         this.context = context;
-        this.list = list;
-    }
-
-    public void capNhatDuLieu(List<KeSach> newList) {
-        this.list = new ArrayList<>(newList);
-        notifyDataSetChanged();
+        this.layout_id = layout_id;
+        this.listKeSach = listKeSach;
     }
 
     @Override
     public int getCount() {
-        return list != null ? list.size() : 0;
+        return listKeSach.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return listKeSach.get(position);
     }
 
     @Override
@@ -44,28 +40,22 @@ public class KeSachAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_kesach, parent, false);
-            holder = new ViewHolder();
-            holder.tvTenKe = convertView.findViewById(R.id.tvTenKe);
-            holder.tvMaViTri = convertView.findViewById(R.id.tvMaViTri);
-            holder.tvMoTa = convertView.findViewById(R.id.tvMoTa);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(layout_id, null);
         }
 
-        final KeSach item = list.get(position);
+        KeSach keSach = listKeSach.get(position);
 
-        holder.tvTenKe.setText(item.getTenKe());
-        holder.tvMaViTri.setText("Mã vị trí: " + item.getMaViTri());
-        holder.tvMoTa.setText("Mô tả: " + item.getMoTa());
+        TextView tvTenKe = view.findViewById(R.id.tvTenKe);
+        TextView tvMaViTri = view.findViewById(R.id.tvMaViTri);
+        TextView tvMoTa = view.findViewById(R.id.tvMoTa);
 
-        return convertView;
-    }
+        tvTenKe.setText(keSach.getTenKe());
+        tvMaViTri.setText("Mã vị trí: " + keSach.getMaViTri());
+        tvMoTa.setText("Mô tả: " + keSach.getMoTa());
 
-    private static class ViewHolder {
-        TextView tvTenKe, tvMaViTri, tvMoTa;
+        return view;
     }
 }

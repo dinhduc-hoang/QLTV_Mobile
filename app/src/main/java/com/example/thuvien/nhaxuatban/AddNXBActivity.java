@@ -62,8 +62,20 @@ public class AddNXBActivity extends AppCompatActivity {
             return;
         }
 
+        if (ten.length() < 2 || ten.length() > 100) {
+            edtTen.setError("Tên nhà xuất bản phải từ 2-100 ký tự");
+            edtTen.requestFocus();
+            return;
+        }
+
         if (diaChi.isEmpty()) {
             edtDiaChi.setError("Nhập địa chỉ");
+            edtDiaChi.requestFocus();
+            return;
+        }
+
+        if (diaChi.length() < 4 || diaChi.length() > 200) {
+            edtDiaChi.setError("Địa chỉ phải từ 4-200 ký tự");
             edtDiaChi.requestFocus();
             return;
         }
@@ -86,23 +98,29 @@ public class AddNXBActivity extends AppCompatActivity {
             return;
         }
 
+        if (!sdt.matches("0\\d{9,11}")) {
+            edtSdt.setError("SĐT phải từ 10-12 số, bắt đầu bằng 0");
+            edtSdt.requestFocus();
+            return;
+        }
+
         List<NXB> list = nxbQuery.layDanhSachNXB();
 
         for (NXB nxb : list) {
 
-            if (nxb.getTenNXB().equalsIgnoreCase(ten)) {
+            if (nxb.getTenNXB() != null && nxb.getTenNXB().equalsIgnoreCase(ten)) {
                 edtTen.setError("Tên NXB đã tồn tại");
                 edtTen.requestFocus();
                 return;
             }
 
-            if (nxb.getEmail().equalsIgnoreCase(email)) {
+            if (nxb.getEmail() != null && nxb.getEmail().equalsIgnoreCase(email)) {
                 edtEmail.setError("Email đã tồn tại");
                 edtEmail.requestFocus();
                 return;
             }
 
-            if (nxb.getSdt().equals(sdt)) {
+            if (nxb.getSdt() != null && nxb.getSdt().equals(sdt)) {
                 edtSdt.setError("SĐT đã tồn tại");
                 edtSdt.requestFocus();
                 return;

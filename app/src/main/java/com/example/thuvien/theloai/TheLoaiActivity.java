@@ -13,13 +13,9 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thuvien.R;
 
@@ -28,110 +24,144 @@ import java.util.List;
 
 public class TheLoaiActivity extends AppCompatActivity {
 
-    ImageView imgBack, btnAdd;
     EditText edtSearch;
-    ListView lvTheLoai;
+    ImageView btnAdd;
+    ListView lvData;
+
+    TheLoaiQuery theLoaiQuery;
+
+    List<TheLoai> listGoc = new ArrayList<>();
+    List<TheLoai> listHienThi = new ArrayList<>();
 
     TheLoaiAdapter adapter;
-    List<TheLoai> list;
-    TheLoaiQuery theLoaiQuery;
+    int selectedPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_theloai);
 
-        imgBack = findViewById(R.id.imgBack);
         edtSearch = findViewById(R.id.edtSearch);
-        lvTheLoai = findViewById(R.id.lvTheLoai);
+        lvData = findViewById(R.id.lvTheLoai);
         btnAdd = findViewById(R.id.btnAdd);
 
         theLoaiQuery = new TheLoaiQuery(this);
 
-        list = new ArrayList<>();
-
-        adapter = new TheLoaiAdapter(this, list);
-
-        lvTheLoai.setAdapter(adapter);
-        registerForContextMenu(lvTheLoai);
-        loadDanhSach();
-
+        ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 finish();
             }
         });
 
+        adapter = new TheLoaiAdapter(this, R.layout.item_theloai, listHienThi);
+        lvData.setAdapter(adapter);
+
+        loadData();
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterData(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 startActivity(new Intent(TheLoaiActivity.this, AddTheLoaiActivity.class));
             }
         });
 
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int a, int b, int c) {
-                List<TheLoai> ketQua = theLoaiQuery.timKiemTheLoai(s.toString());
-                adapter.capNhatDuLieu(ketQua);
-            }
-
-            @Override
-            public void afterTextChanged(Editable e) {
-            }
-        });
+        registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadDanhSach();
+        loadData();
     }
 
-    private void loadDanhSach() {
-        list = theLoaiQuery.layDanhSachTheLoai();
-        adapter.capNhatDuLieu(list);
+    private void loadData() {
+        listGoc.clear();
+        listGoc.addAll(theLoaiQuery.layDanhSachTheLoai());
+        filterData(edtSearch.getText().toString());
+    }
+
+    private void filterData(String keyword) {
+        listHienThi.clear();
+
+        String tuKhoa = keyword;
+        if (tuKhoa == null) {
+            tuKhoa = "";
+        }
+        tuKhoa = tuKhoa.trim().toLowerCase();
+
+        for (int i = 0; i < listGoc.size(); i++) {
+            TheLoai tl = listGoc.get(i);
+
+            String maTL = tl.getMaTL();
+            String tenTL = tl.getTenTL();
+
+            if (maTL == null) maTL = "";
+            if (tenTL == null) tenTL = "";
+
+            if (tuKhoa.equals("")
+                    || maTL.toLowerCase().contains(tuKhoa)
+                    || tenTL.toLowerCase().contains(tuKhoa)) {
+                listHienThi.add(tl);
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, 1, 0, "Sửa");
-        menu.add(0, 2, 0, "Xóa");
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedPosition = info.position;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        TheLoai tlSelect = (TheLoai) adapter.getItem(info.position);
-        final String maTL = tlSelect.getMaTL();
-
-        switch (item.getItemId()) {
-            case 1: // Sửa
-                Intent intent = new Intent(TheLoaiActivity.this, UpdateTheLoaiActivity.class);
-                intent.putExtra("MaTL", maTL);
-                startActivity(intent);
-                return true;
-            case 2: // Xóa
-                new AlertDialog.Builder(TheLoaiActivity.this)
-                        .setTitle("Xóa thể loại")
-                        .setMessage("Bạn có chắc muốn xóa thể loại này không?")
-                        .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                xoaTheLoai(maTL);
-                            }
-                        })
-                        .setNegativeButton("Hủy", null)
-                        .show();
-                return true;
+        if (selectedPosition < 0 || selectedPosition >= listHienThi.size()) {
+            return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
+
+        final TheLoai tlEdit = listHienThi.get(selectedPosition);
+
+        if (item.getItemId() == R.id.menu_update) {
+            Intent intent = new Intent(TheLoaiActivity.this, UpdateTheLoaiActivity.class);
+            intent.putExtra("MaTL", tlEdit.getMaTL());
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_delete) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Xác nhận xóa");
+            builder.setMessage("Bạn có chắc xóa Thể loại này?");
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    xoaTheLoai(tlEdit.getMaTL());
+                }
+            });
+            builder.setNegativeButton("Không", null);
+            builder.show();
+        }
+
+        return true;
     }
 
     private void xoaTheLoai(String maTL) {
@@ -143,7 +173,7 @@ public class TheLoaiActivity extends AppCompatActivity {
         boolean result = theLoaiQuery.xoaTheLoai(maTL);
         if (result) {
             Toast.makeText(this, "Xóa thể loại thành công!", Toast.LENGTH_SHORT).show();
-            loadDanhSach();
+            loadData();
         } else {
             Toast.makeText(this, "Xóa thể loại thất bại!", Toast.LENGTH_SHORT).show();
         }
