@@ -35,7 +35,7 @@ public class TopSachActivity extends AppCompatActivity {
         lvData = findViewById(R.id.lvData);
 
         list = new ArrayList<>();
-        adapter = new TopAdapter(this, list);
+        adapter = new TopAdapter(this, R.layout.item_top_sach, list);
         lvData.setAdapter(adapter);
 
         imgBack.setOnClickListener(v -> finish());
@@ -46,7 +46,7 @@ public class TopSachActivity extends AppCompatActivity {
     private void loadData() {
         SQLiteDatabase db = new SQLiteHelper(this).getReadableDatabase();
 
-        String sql = "SELECT s.MaSach, s.TenSach, t.TenTG, SUM(ct.SoLuong) as Tong " +
+        String sql = "SELECT s.MaSach, s.TenSach, t.TenTG, SUM(ct.SoLuong) as Tong, s.HinhAnh " +
                 "FROM sach s " +
                 "JOIN tacgia t ON s.MaTG = t.MaTG " +
                 "JOIN chitietmuontra ct ON s.MaSach = ct.MaSach " +
@@ -60,7 +60,8 @@ public class TopSachActivity extends AppCompatActivity {
             String info = c.getString(1) + "|" +
                          "Mã: " + c.getString(0) + "|" +
                          "Tác giả: " + c.getString(2) + "|" +
-                         c.getInt(3);
+                         c.getInt(3) + "|" +
+                         (c.getString(4) != null ? c.getString(4) : "");
             list.add(info);
         }
         c.close();

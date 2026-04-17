@@ -98,15 +98,11 @@ public class TacGiaActivity extends AppCompatActivity {
             listGoc.addAll(tacGiaQuery.timKiemTacGia(keyword));
         }
 
-        listHienThi.clear();
+        listHienThi.clear();//xóa danh sách
         listHienThi.addAll(listGoc);
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
-    }
-
-    private void filterData(String keyword) {
-        loadData();
     }
 
     @Override
@@ -125,7 +121,6 @@ public class TacGiaActivity extends AppCompatActivity {
         }
 
         final TacGia tgEdit = listHienThi.get(selectedPosition);
-
         if (item.getItemId() == R.id.menu_update) {
             Intent intent = new Intent(TacGiaActivity.this, UpdateTacGiaActivity.class);
             intent.putExtra("MaTG", tgEdit.getMaTG());
@@ -138,7 +133,7 @@ public class TacGiaActivity extends AppCompatActivity {
             builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    xoaTacGia(tgEdit.getMaTG());
+                        xoaTacGia(tgEdit.getMaTG());
                 }
             });
             builder.setNegativeButton("Không", null);
@@ -156,6 +151,8 @@ public class TacGiaActivity extends AppCompatActivity {
 
         boolean result = tacGiaQuery.xoaTacGia(maTG);
         if (result) {
+            listHienThi.remove(selectedPosition);
+            adapter.notifyDataSetChanged();
             Toast.makeText(this, "Xóa tác giả thành công!", Toast.LENGTH_SHORT).show();
             loadData();
         } else {

@@ -45,7 +45,6 @@ public class AddTacGiaActivity extends AppCompatActivity {
                 finish();
             }
         });
-
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -122,16 +122,6 @@ public class UpdateTacGiaActivity extends AppCompatActivity {
             return;
         }
 
-        List<TacGia> list = tacGiaQuery.layDanhSachTacGia();
-        for (TacGia tg : list) {
-            if (tg.getMaTG().equals(maTG)) continue;
-            if (tg.getTenTG().equalsIgnoreCase(tenTG)) {
-                edtTenTG.setError("Tên tác giả đã tồn tại");
-                edtTenTG.requestFocus();
-                return;
-            }
-        }
-
         TacGia item = new TacGia();
         item.setMaTG(maTG);
         item.setTenTG(tenTG);

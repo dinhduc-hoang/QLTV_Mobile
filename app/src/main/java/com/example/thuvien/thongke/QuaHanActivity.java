@@ -35,7 +35,7 @@ public class QuaHanActivity extends AppCompatActivity {
         lvData = findViewById(R.id.lvData);
 
         list = new ArrayList<>();
-        adapter = new TopAdapter(this, list);
+        adapter = new TopAdapter(this, R.layout.item_simple, list);
         lvData.setAdapter(adapter);
 
         imgBack.setOnClickListener(v -> finish());
