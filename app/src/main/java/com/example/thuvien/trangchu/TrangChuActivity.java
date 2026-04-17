@@ -16,6 +16,7 @@ import com.example.thuvien.khoa.KhoaActivity;
 import com.example.thuvien.login.LoginActivity;
 import com.example.thuvien.lop.LopActivity;
 import com.example.thuvien.muontra.MuonTraActivity;
+import com.example.thuvien.muontra.MuonTraQuery;
 import com.example.thuvien.ngonngu.NgonNguActivity;
 import com.example.thuvien.nhanvien.NhanVienActivity;
 import com.example.thuvien.nhaxuatban.NXBActivity;
@@ -23,6 +24,7 @@ import com.example.thuvien.sach.SachActivity;
 import com.example.thuvien.tacgia.TacGiaActivity;
 import com.example.thuvien.theloai.TheLoaiActivity;
 import com.example.thuvien.thethuvien.TheThuVienActivity;
+import com.example.thuvien.thethuvien.TheThuVienQuery;
 import com.example.thuvien.thongke.ThongKeActivity;
 
 public class TrangChuActivity extends AppCompatActivity {
@@ -58,6 +60,10 @@ public class TrangChuActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences("UserSession", MODE_PRIVATE);
         tvWelcome.setText("Xin chào, " + sp.getString("TenNV", "Nhân viên"));
         tvRole.setText("Vai trò: " + sp.getString("VaiTro", "Không rõ"));
+
+        // Tự động cập nhật trạng thái thẻ thư viện và phiếu mượn quá hạn
+        new TheThuVienQuery(this).tuDongCapNhatTrangThaiThe();
+        new MuonTraQuery(this).tuDongCapNhatTrangThaiQuaHan();
 
         tvLogout.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {

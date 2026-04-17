@@ -48,6 +48,11 @@ public class RecoverPasswordActivity extends AppCompatActivity {
                     edtUser.requestFocus();
                     return;
                 }
+                if(user.length() < 4){
+                    edtUser.setError("Tên đăng nhập tối thiểu 4 ký tự");
+                    edtUser.requestFocus();
+                    return;
+                }
 
                 if (email.isEmpty()) {
                     edtEmail.setError("Nhập email");

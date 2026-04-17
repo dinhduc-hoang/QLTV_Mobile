@@ -113,6 +113,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "SoLuong INTEGER," +
                 "MaNN TEXT NOT NULL," +
                 "MaViTri TEXT NOT NULL," +
+                "HinhAnh TEXT, " +
                 "FOREIGN KEY(MaTG) REFERENCES tacgia(MaTG)," +
                 "FOREIGN KEY(MaNXB) REFERENCES nhaxuatban(MaNXB)," +
                 "FOREIGN KEY(MaTL) REFERENCES theloai(MaTL)," +
@@ -162,7 +163,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "TrangThai TEXT NOT NULL," +
                 "FOREIGN KEY(MaDG) REFERENCES docgia(MaDG))");
     }
-
     private void insertSampleData(SQLiteDatabase db) {
         db.execSQL("INSERT OR IGNORE INTO khoa (MaKhoa, TenKhoa) VALUES " +
                 "('KH001', 'Công nghệ thông tin')," +
@@ -306,31 +306,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "('TL018', 'Triết học')," +
                 "('TL019', 'Văn hóa – Xã hội')");
 
-        db.execSQL("INSERT OR IGNORE INTO sach (MaSach, MaTG, MaNXB, MaTL, TenSach, NamXB, SoLuong, MaNN, MaViTri) VALUES " +
-                "('S001', 'TG005', 'NXB001', 'TL006', 'Lập trình Java cơ bản', 2021, 20, 'NN001', 'KS001')," +
-                "('S002', 'TG006', 'NXB001', 'TL006', 'Lập trình Java nâng cao', 2022, 15, 'NN001', 'KS001')," +
-                "('S003', 'TG009', 'NXB009', 'TL006', 'Cơ sở dữ liệu', 2020, 18, 'NN001', 'KS001')," +
-                "('S004', 'TG009', 'NXB009', 'TL006', 'Hệ điều hành', 2019, 12, 'NN001', 'KS001')," +
-                "('S005', 'TG002', 'NXB004', 'TL005', 'Nguyên lý động cơ', 2018, 10, 'NN001', 'KS002')," +
-                "('S006', 'TG002', 'NXB004', 'TL005', 'Hệ thống truyền động', 2019, 8, 'NN001', 'KS002')," +
-                "('S007', 'TG003', 'NXB014', 'TL016', 'Kết cấu bê tông', 2020, 14, 'NN001', 'KS003')," +
-                "('S008', 'TG003', 'NXB014', 'TL016', 'Cơ học đất', 2019, 9, 'NN001', 'KS003')," +
-                "('S009', 'TG008', 'NXB006', 'TL007', 'Kinh tế vận tải', 2021, 16, 'NN001', 'KS004')," +
-                "('S010', 'TG008', 'NXB006', 'TL007', 'Logistics căn bản', 2022, 20, 'NN001', 'KS004')," +
-                "('S011', 'TG001', 'NXB005', 'TL001', 'Cho tôi xin một vé đi tuổi thơ', 2015, 25, 'NN001', 'KS006')," +
-                "('S012', 'TG002', 'NXB005', 'TL001', 'Chí Phèo', 2014, 30, 'NN001', 'KS006')," +
-                "('S013', 'TG006', 'NXB003', 'TL002', 'Harry Potter', 2010, 18, 'NN002', 'KS007')," +
-                "('S014', 'TG009', 'NXB003', 'TL002', 'The Da Vinci Code', 2012, 12, 'NN002', 'KS007')");
 
-        db.execSQL("INSERT OR IGNORE INTO muontra (MaMT, MaDG, MaNV, NgayMuon, HanTra, TrangThai) VALUES " +
-                "('MT01', 'DG001', 'NV001', '05/01/2026', '06/01/2026', 'Chưa trả')," +
-                "('MT02', 'DG002', 'NV001', '01/01/2026', '02/01/2026', 'Chưa trả')," +
-                "('MT03', 'DG002', 'NV001', '01/01/2026', '22/01/2026', 'Đã trả')");
-
-        db.execSQL("INSERT OR IGNORE INTO chitietmuontra (MaMT, MaSach, SoLuong) VALUES " +
-                "('MT01', 'S001', 1)," +
-                "('MT03', 'S001', 3)," +
-                "('MT03', 'S005', 3)");
 
         db.execSQL("INSERT OR IGNORE INTO thethuvien (MaThe, MaDG, NgayCap, NgayHetHan, TrangThai) VALUES " +
                 "('TTV001', 'DG001', '01/06/2025', '02/07/2025', 'Hết hiệu lực')," +

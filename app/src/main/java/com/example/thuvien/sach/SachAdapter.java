@@ -6,7 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.net.Uri;
+import android.widget.ImageView;
 
+import java.io.File;
 import com.example.thuvien.R;
 
 import java.util.List;
@@ -43,7 +46,7 @@ public class SachAdapter extends BaseAdapter {
         View view = convertView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(layout_id, null);
+            view = inflater.inflate(layout_id, parent, false);
         }
 
         Sach sach = listSach.get(position);
@@ -57,16 +60,30 @@ public class SachAdapter extends BaseAdapter {
         TextView tvViTri = view.findViewById(R.id.tvViTri);
         TextView tvNamXB = view.findViewById(R.id.tvNamXB);
         TextView tvSoLuong = view.findViewById(R.id.tvSoLuong);
+        ImageView imgSach = view.findViewById(R.id.imgSach);
 
-        tvTenSach.setText(sach.getTenSach());
-        tvMaSach.setText("Mã sách: " + sach.getMaSach());
-        tvTacGia.setText("Tác giả: " + sach.getTenTG());
-        tvTheLoai.setText("Thể loại: " + sach.getTenTL());
-        tvNXB.setText("Nhà xuất bản: " + sach.getTenNXB());
-        tvNgonNgu.setText("Ngôn ngữ: " + sach.getTenNN());
-        tvViTri.setText("Kệ sách: " + sach.getTenViTri());
-        tvNamXB.setText("Năm XB: " + sach.getNamXB());
-        tvSoLuong.setText("SL: " + sach.getSoLuong());
+        if (tvTenSach != null) tvTenSach.setText(sach.getTenSach());
+        if (tvMaSach != null) tvMaSach.setText("Mã sách: " + sach.getMaSach());
+        if (tvTacGia != null) tvTacGia.setText("Tác giả: " + sach.getTenTG());
+        if (tvTheLoai != null) tvTheLoai.setText("Thể loại: " + sach.getTenTL());
+        if (tvNXB != null) tvNXB.setText("Nhà xuất bản: " + sach.getTenNXB());
+        if (tvNgonNgu != null) tvNgonNgu.setText("Ngôn ngữ: " + sach.getTenNN());
+        if (tvViTri != null) tvViTri.setText("Kệ sách: " + sach.getTenViTri());
+        if (tvNamXB != null) tvNamXB.setText("Năm XB: " + sach.getNamXB());
+        if (tvSoLuong != null) tvSoLuong.setText("SL: " + sach.getSoLuong());
+        
+        if (imgSach != null) {
+            if (sach.getHinhAnh() != null && !sach.getHinhAnh().isEmpty()) {
+                File file = new File(sach.getHinhAnh());
+                if (file.exists()) {
+                    imgSach.setImageURI(Uri.fromFile(file));
+                } else {
+                    imgSach.setImageResource(R.drawable.ic_book);
+                }
+            } else {
+                imgSach.setImageResource(R.drawable.ic_book);
+            }
+        }
 
         return view;
     }

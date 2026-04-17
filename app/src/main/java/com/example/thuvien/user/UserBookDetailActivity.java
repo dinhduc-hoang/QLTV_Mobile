@@ -16,8 +16,8 @@ import com.example.thuvien.sach.SachQuery;
 
 public class UserBookDetailActivity extends AppCompatActivity {
 
-    private ImageView imgBack;
-    private TextView tvBookName, tvAuthorName, tvCategory, tvStockStatus, tvPublishYear, tvPublisher;
+    private ImageView imgBack, imgBook;
+    private TextView tvBookName, tvAuthorName, tvCategory, tvStockStatus, tvPublishYear, tvPublisher, tvLanguage;
     private Button btnBorrow;
     private SachQuery sachQuery;
     private MuonTraQuery muonTraQuery;
@@ -36,6 +36,8 @@ public class UserBookDetailActivity extends AppCompatActivity {
         tvStockStatus = findViewById(R.id.tvStockStatus);
         tvPublishYear = findViewById(R.id.tvPublishYear);
         tvPublisher = findViewById(R.id.tvPublisher);
+        tvLanguage = findViewById(R.id.tvLanguage);
+        imgBook = findViewById(R.id.imgBook);
         btnBorrow = findViewById(R.id.btnBorrow);
 
         sachQuery = new SachQuery(this);
@@ -87,6 +89,20 @@ public class UserBookDetailActivity extends AppCompatActivity {
             tvStockStatus.setText("Số lượng còn: " + currentSach.getSoLuong());
             tvPublishYear.setText(String.valueOf(currentSach.getNamXB()));
             tvPublisher.setText(currentSach.getTenNXB() != null ? currentSach.getTenNXB() : "Đang cập nhật");
+            tvLanguage.setText(currentSach.getTenNN() != null ? currentSach.getTenNN() : "Tiếng Việt");
+
+            if (imgBook != null) {
+                if (currentSach.getHinhAnh() != null && !currentSach.getHinhAnh().isEmpty()) {
+                    java.io.File file = new java.io.File(currentSach.getHinhAnh());
+                    if (file.exists()) {
+                        imgBook.setImageURI(android.net.Uri.fromFile(file));
+                    } else {
+                        imgBook.setImageResource(R.drawable.ic_book);
+                    }
+                } else {
+                    imgBook.setImageResource(R.drawable.ic_book);
+                }
+            }
             
             if (currentSach.getSoLuong() <= 0) {
                 btnBorrow.setEnabled(false);

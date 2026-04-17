@@ -29,7 +29,7 @@ public class UpdateNgonNguActivity extends AppCompatActivity {
 
         imgBack = findViewById(R.id.imgBack);
         edtTenNN = findViewById(R.id.edtTenNN);
-        btnUpdate = findViewById(R.id.btnUpdate);
+        btnUpdate = findViewById(R.id.btnSave);
 
         ngonNguQuery = new NgonNguQuery(this);
         maNN = getIntent().getStringExtra("MaNN");

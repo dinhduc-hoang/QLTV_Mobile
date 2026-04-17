@@ -77,6 +77,7 @@ public class UserBorrowHistoryActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        muonTraQuery.tuDongCapNhatTrangThaiQuaHan();
         SharedPreferences sp = getSharedPreferences("UserSession", MODE_PRIVATE);
         String maDG = sp.getString("MaDG", "");
 

@@ -90,6 +90,7 @@ public class MuonTraActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        muonTraQuery.tuDongCapNhatTrangThaiQuaHan();
         String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
         if (keyword.isEmpty()) {
@@ -97,7 +98,7 @@ public class MuonTraActivity extends AppCompatActivity {
         } else {
             listGoc.addAll(muonTraQuery.timKiemMuonTra(keyword));
         }
-        
+
         listHienThi.clear();
         listHienThi.addAll(listGoc);
         if (adapter != null) {

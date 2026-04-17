@@ -18,10 +18,14 @@ import com.example.thuvien.common.SpinnerItem;
 import com.example.thuvien.sach.Sach;
 import com.example.thuvien.sach.SachQuery;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AddMuonTraActivity extends AppCompatActivity {
 
@@ -133,9 +137,31 @@ public class AddMuonTraActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 AddMuonTraActivity.this,
                 (view, year, month, dayOfMonth) -> {
-                    String ngay = String.format(Locale.getDefault(), "%02d/%02d/%04d",
+                    String selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d",
                             dayOfMonth, month + 1, year);
-                    targetEditText.setText(ngay);
+
+                    // ====================== KIỂM TRA ĐIỀU KIỆN ======================
+                    if (targetEditText == edtHanTra) {           // Nếu đang chọn Hạn trả
+                        String ngayMuonStr = edtNgayMuon.getText().toString().trim();
+
+                        if (!ngayMuonStr.isEmpty()) {
+                            if (isDateBefore(ngayMuonStr, selectedDate)) {
+                                Toast.makeText(this,
+                                        "Hạn trả không được nhỏ hơn ngày mượn!",
+                                        Toast.LENGTH_LONG).show();
+                                return;        // Không cho set ngày
+                            }
+                        } else {
+                            Toast.makeText(this,
+                                    "Vui lòng chọn Ngày mượn trước!",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    // Nếu hợp lệ thì mới gán ngày vào EditText
+                    targetEditText.setText(selectedDate);
+
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -247,6 +273,19 @@ public class AddMuonTraActivity extends AppCompatActivity {
             finish();
         } else {
             Toast.makeText(this, "Lưu phiếu mượn thất bại!", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private boolean isDateBefore(String dateStr1, String dateStr2) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date date1 = sdf.parse(dateStr1);
+            Date date2 = sdf.parse(dateStr2);
+
+            if (date1 == null || date2 == null) return false;
+            return date1.after(date2);   // date1 (ngày mượn) sau date2 (hạn trả) → không hợp lệ
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

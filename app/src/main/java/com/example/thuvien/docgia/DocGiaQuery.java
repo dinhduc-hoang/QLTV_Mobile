@@ -126,28 +126,11 @@ public class DocGiaQuery {
             return false;
         }
     }
-    public DocGia dangNhap(String user, String pass) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery(
-                "SELECT MaDG FROM docgia WHERE (MaDG = ? OR Email = ?) AND MatKhau = ? LIMIT 1",
-                new String[]{user, user, pass}
-        );
-
-        DocGia docGia = null;
-        if (cursor.moveToFirst()) {
-            String maDG = cursor.getString(0);
-            docGia = layThongTinTheoMa(maDG);
-        }
-
-        cursor.close();
-        db.close();
-        return docGia;
-    }
     public List<DocGia> timKiemDocGia(String keyword) {
         List<DocGia> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String key = "%" + keyword + "%";
-        
+
         Cursor cursor = db.rawQuery(
                 "SELECT d.MaDG, d.MaKhoa, d.MaLop, d.TenDG, d.NamSinh, d.GioiTinh, d.DiaChi, d.Email, d.Sdt, d.MatKhau, k.TenKhoa, l.TenLop " +
                         "FROM docgia d " +

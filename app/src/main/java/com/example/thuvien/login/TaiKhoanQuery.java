@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.thuvien.database.SQLiteHelper;
+import com.example.thuvien.docgia.DocGia;
 
 public class TaiKhoanQuery {
 
@@ -41,7 +42,6 @@ public class TaiKhoanQuery {
 
     public UserInfo dangNhap(String user, String pass) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-
         Cursor cursor = db.rawQuery(
                 "SELECT MaNV, TenNV, VaiTro FROM nhanvien WHERE User = ? AND Pass = ? LIMIT 1",
                 new String[]{user, pass}
@@ -62,19 +62,34 @@ public class TaiKhoanQuery {
         return userInfo;
     }
 
-    public boolean doiMatKhau(String user, String email, String passMoi) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("Pass", passMoi);
-
-        int row = db.update(
-                "nhanvien",
-                values,
-                "User = ? AND Email = ?",
-                new String[]{user, email}
+    public DocGia dangNhapDocGia(String email, String pass) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT MaDG, TenDG FROM docgia WHERE Email = ? AND MatKhau = ? LIMIT 1",
+                new String[]{email, pass}
         );
 
+        DocGia docGia = null;
+        if (cursor.moveToFirst()) {
+            docGia = new DocGia();
+            docGia.setMaDG(cursor.getString(0));
+            docGia.setTenDG(cursor.getString(1));
+        }
+
+        cursor.close();
         db.close();
-        return row > 0;
+        return docGia;
+    }
+
+    public boolean doiMatKhau(String user, String email, String passMoi) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        try {
+            db.execSQL("UPDATE nhanvien SET Pass = ? WHERE [User] = ? AND Email = ?", new Object[]{passMoi, user, email});
+            db.execSQL("UPDATE docgia SET MatKhau = ? WHERE MaDG = ? AND Email = ?", new Object[]{passMoi, user, email});
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

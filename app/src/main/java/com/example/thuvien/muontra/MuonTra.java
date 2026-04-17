@@ -9,6 +9,9 @@ public class MuonTra {
     private String trangThai;
     private String tenDG;
     private String tenNV;
+    private String tenSach;
+    private String hinhAnh;
+    private String ngayThucTra;
 
     public String getMaMT() { return maMT; }
     public void setMaMT(String maMT) { this.maMT = maMT; }
@@ -26,4 +29,10 @@ public class MuonTra {
     public void setTenDG(String tenDG) { this.tenDG = tenDG; }
     public String getTenNV() { return tenNV; }
     public void setTenNV(String tenNV) { this.tenNV = tenNV; }
+    public String getTenSach() { return tenSach; }
+    public void setTenSach(String tenSach) { this.tenSach = tenSach; }
+    public String getHinhAnh() { return hinhAnh; }
+    public void setHinhAnh(String hinhAnh) { this.hinhAnh = hinhAnh; }
+    public String getNgayThucTra() { return ngayThucTra; }
+    public void setNgayThucTra(String ngayThucTra) { this.ngayThucTra = ngayThucTra; }
 }

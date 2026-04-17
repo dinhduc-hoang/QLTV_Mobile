@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.thuvien.common.SpinnerItem;
 import com.example.thuvien.database.SQLiteHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -112,6 +115,7 @@ public class TheThuVienQuery {
     public boolean themThe(TheThuVien item) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
+            String trangThai = tinhTrangThaiThe(item.getNgayHetHan());
             db.execSQL(
                     "INSERT INTO thethuvien (MaThe, MaDG, NgayCap, NgayHetHan, TrangThai) VALUES (?, ?, ?, ?, ?)",
                     new Object[]{
@@ -119,7 +123,7 @@ public class TheThuVienQuery {
                             item.getMaDG(),
                             item.getNgayCap(),
                             item.getNgayHetHan(),
-                            item.getTrangThai()
+                            trangThai
                     }
             );
             db.close();
@@ -134,13 +138,14 @@ public class TheThuVienQuery {
     public boolean capNhatThe(TheThuVien item) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
+            String trangThai = tinhTrangThaiThe(item.getNgayHetHan());
             db.execSQL(
                     "UPDATE thethuvien SET MaDG = ?, NgayCap = ?, NgayHetHan = ?, TrangThai = ? WHERE MaThe = ?",
                     new Object[]{
                             item.getMaDG(),
                             item.getNgayCap(),
                             item.getNgayHetHan(),
-                            item.getTrangThai(),
+                            trangThai,
                             item.getMaThe()
                     }
             );
@@ -151,6 +156,36 @@ public class TheThuVienQuery {
             db.close();
             return false;
         }
+    }
+
+    private String tinhTrangThaiThe(String ngayHetHanStr) {
+        if (ngayHetHanStr == null || ngayHetHanStr.isEmpty()) return "Hết hiệu lực";
+        
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdfShort = new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
+            
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            Date today = cal.getTime();
+
+            Date ngayHetHan = null;
+            if (ngayHetHanStr.length() == 10) {
+                ngayHetHan = sdf.parse(ngayHetHanStr);
+            } else if (ngayHetHanStr.length() == 8) {
+                ngayHetHan = sdfShort.parse(ngayHetHanStr);
+            }
+
+            if (ngayHetHan != null && !ngayHetHan.before(today)) {
+                return "Còn hiệu lực";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Hết hiệu lực";
     }
 
     public boolean xoaThe(String maThe) {
@@ -200,5 +235,55 @@ public class TheThuVienQuery {
         cursor.close();
         db.close();
         return list;
+    }
+
+    public void tuDongCapNhatTrangThaiThe() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT MaThe, NgayHetHan, TrangThai FROM thethuvien", null);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdfShort = new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            Date today = cal.getTime();
+
+            while (cursor.moveToNext()) {
+                String maThe = cursor.getString(0);
+                String ngayHetHanStr = cursor.getString(1);
+                String trangThaiHienTai = cursor.getString(2);
+
+                Date ngayHetHan = null;
+                try {
+                    if (ngayHetHanStr != null) {
+                        if (ngayHetHanStr.length() == 10) {
+                            ngayHetHan = sdf.parse(ngayHetHanStr);
+                        } else if (ngayHetHanStr.length() == 8) {
+                            ngayHetHan = sdfShort.parse(ngayHetHanStr);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (ngayHetHan != null) {
+                    String trangThaiMoi = ngayHetHan.before(today) ? "Hết hiệu lực" : "Còn hiệu lực";
+
+                    if (!trangThaiMoi.equals(trangThaiHienTai)) {
+                        db.execSQL("UPDATE thethuvien SET TrangThai = ? WHERE MaThe = ?", new Object[]{trangThaiMoi, maThe});
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
     }
 }

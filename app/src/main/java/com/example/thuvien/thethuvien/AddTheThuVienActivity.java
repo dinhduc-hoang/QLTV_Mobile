@@ -96,13 +96,8 @@ public class AddTheThuVienActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 AddTheThuVienActivity.this,
                 (view, year, month, dayOfMonth) -> {
-                    String ngay = String.format(
-                            Locale.getDefault(),
-                            "%02d/%02d/%04d",
-                            dayOfMonth,
-                            month + 1,
-                            year
-                    );
+                    String ngay = String.format(Locale.getDefault(), "%02d/%02d/%04d",
+                            dayOfMonth, month + 1, year);
                     targetEditText.setText(ngay);
                 },
                 calendar.get(Calendar.YEAR),
@@ -110,12 +105,37 @@ public class AddTheThuVienActivity extends AppCompatActivity {
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
 
+        if (targetEditText.getId() == R.id.edtNgayHetHan) {
+            // Lấy ngày cấp thẻ từ EditText edtNgayCap
+            EditText edtNgayCap = findViewById(R.id.edtNgayCap);
+
+            if (edtNgayCap != null && !edtNgayCap.getText().toString().isEmpty()) {
+                try {
+                    String ngayCapStr = edtNgayCap.getText().toString();
+                    String[] parts = ngayCapStr.split("/");
+
+                    int day = Integer.parseInt(parts[0]);
+                    int month = Integer.parseInt(parts[1]) - 1;
+                    int year = Integer.parseInt(parts[2]);
+
+                    Calendar minDate = Calendar.getInstance();
+                    minDate.set(year, month, day);
+
+                    datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+            }
+        }
         datePickerDialog.show();
     }
     private void setDefaultDates() {
         Calendar calendar = Calendar.getInstance();
 
-        
+
         String ngayCap = String.format(
                 Locale.getDefault(),
                 "%02d/%02d/%04d",

@@ -35,18 +35,18 @@ public class NhanVienQuery {
             nv.setSdt(cursor.getString(7));
             nv.setUser(cursor.getString(8));
             nv.setPass(cursor.getString(9));
-            
+
             listNhanVien.add(nv);
         }
         cursor.close();
-        
+
         return listNhanVien;
     }
 
     public List<NhanVien> timKiemNhanVien(String keyword) {
         List<NhanVien> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String sql = "SELECT * FROM NhanVien WHERE MaNV LIKE ? OR TenNV LIKE ? OR SDT LIKE ? OR Email LIKE ?";
+        String sql = "SELECT * FROM nhanvien WHERE MaNV LIKE ? OR TenNV LIKE ? OR SDT LIKE ? OR Email LIKE ?";
         String wildCard = "%" + keyword + "%";
         Cursor cursor = db.rawQuery(sql, new String[]{wildCard, wildCard, wildCard, wildCard});
 
@@ -57,7 +57,7 @@ public class NhanVienQuery {
                 nv.setTenNV(cursor.getString(1));
                 nv.setQueQuan(cursor.getString(2));
                 nv.setGioiTinh(cursor.getString(3));
-                nv.setNamSinh(cursor.getInt(4));
+                nv.setNamSinh(cursor.getString(4));
                 nv.setVaiTro(cursor.getString(5));
                 nv.setEmail(cursor.getString(6));
                 nv.setSdt(cursor.getString(7));
@@ -74,19 +74,16 @@ public class NhanVienQuery {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT MaNV FROM nhanvien ORDER BY MaNV DESC LIMIT 1", null);
 
-        String maMoi = "NV001"; // Mã mặc định bắt đầu nếu bảng trống
-        
+        String maMoi = "NV001";
+
         if (cursor.moveToFirst() == true) {
             String maCuoi = cursor.getString(0);
-            
+
             if (maCuoi != null && maCuoi.startsWith("NV")) {
-                // Tách chuỗi "NV001" lấy phần số "001" rẽ sang Int
-                String phanSo = maCuoi.substring(2); 
+                String phanSo = maCuoi.substring(2);
                 try {
                     int so = Integer.parseInt(phanSo);
-                    so = so + 1; // Tăng mã lên 1
-                    
-                    // Nối thủ công thay vì dùng String.format phức tạp
+                    so = so + 1;
                     if (so < 10) {
                         maMoi = "NV00" + so;
                     } else if (so < 100) {
@@ -107,9 +104,9 @@ public class NhanVienQuery {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
             Object[] data = new Object[]{
-                nv.getMaNV(), nv.getTenNV(), nv.getQueQuan(), nv.getGioiTinh(), 
-                nv.getNamSinh(), nv.getVaiTro(), nv.getEmail(), nv.getSdt(), 
-                nv.getUser(), nv.getPass()
+                    nv.getMaNV(), nv.getTenNV(), nv.getQueQuan(), nv.getGioiTinh(),
+                    nv.getNamSinh(), nv.getVaiTro(), nv.getEmail(), nv.getSdt(),
+                    nv.getUser(), nv.getPass()
             };
             db.execSQL("INSERT INTO nhanvien (MaNV, TenNV, QueQuan, GioiTinh, NamSinh, VaiTro, Email, SDT, User, Pass) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data);
             return true;
@@ -122,9 +119,9 @@ public class NhanVienQuery {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
             Object[] data = new Object[]{
-                nv.getTenNV(), nv.getQueQuan(), nv.getGioiTinh(), nv.getNamSinh(), 
-                nv.getVaiTro(), nv.getEmail(), nv.getSdt(), nv.getUser(), 
-                nv.getPass(), nv.getMaNV()
+                    nv.getTenNV(), nv.getQueQuan(), nv.getGioiTinh(), nv.getNamSinh(),
+                    nv.getVaiTro(), nv.getEmail(), nv.getSdt(), nv.getUser(),
+                    nv.getPass(), nv.getMaNV()
             };
             db.execSQL("UPDATE nhanvien SET TenNV = ?, QueQuan = ?, GioiTinh = ?, NamSinh = ?, VaiTro = ?, Email = ?, SDT = ?, User = ?, Pass = ? WHERE MaNV = ?", data);
             return true;

@@ -19,10 +19,14 @@ import com.example.thuvien.common.SpinnerItem;
 import com.example.thuvien.sach.Sach;
 import com.example.thuvien.sach.SachQuery;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class UpdateMuonTraActivity extends AppCompatActivity {
 
@@ -120,7 +124,7 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
             setSpinnerSelected(spnTrangThai, item.getTrangThai());
         }
 
-        
+
         List<ChiTietMuonTra> details = muonTraQuery.layDanhSachChiTiet(maMT);
         listHienThi.clear();
         listMaSach.clear();
@@ -207,31 +211,53 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
     private void showDatePicker(final EditText targetEditText) {
         Calendar calendar = Calendar.getInstance();
 
-        // Thử lấy ngày hiện tại trong EditText nếu có
-        try {
-            String current = targetEditText.getText().toString();
-            if (!current.isEmpty()) {
-                String[] p = current.split("[/-]");
-                if (p.length == 3) {
-                    int d = Integer.parseInt(p[0]);
-                    int m = Integer.parseInt(p[1]) - 1;
-                    int y = Integer.parseInt(p[2]);
-                    calendar.set(y, m, d);
-                }
+        // Nếu là EditText Hạn trả, cố gắng lấy ngày mượn để làm mốc
+        if (targetEditText == edtHanTra) {
+            String ngayMuonStr = edtNgayMuon.getText().toString().trim();
+            if (!ngayMuonStr.isEmpty()) {
+                try {
+                    String[] p = ngayMuonStr.split("[/-]");
+                    if (p.length == 3) {
+                        int d = Integer.parseInt(p[0]);
+                        int m = Integer.parseInt(p[1]) - 1;
+                        int y = Integer.parseInt(p[2]);
+                        calendar.set(y, m, d);
+                        // Tăng thêm 1 ngày làm mốc tối thiểu cho hạn trả
+                        calendar.add(Calendar.DAY_OF_MONTH, 1);
+                    }
+                } catch (Exception ignored) {}
+            } else {
+                Toast.makeText(this, "Vui lòng chọn Ngày mượn trước!", Toast.LENGTH_SHORT).show();
+                return;
             }
-        } catch (Exception ignored) {}
+        }
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 UpdateMuonTraActivity.this,
                 (view, year, month, dayOfMonth) -> {
-                    String ngay = String.format(
-                            Locale.getDefault(),
-                            "%02d/%02d/%04d",
-                            dayOfMonth,
-                            month + 1,
-                            year
-                    );
-                    targetEditText.setText(ngay);
+                    String selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d",
+                            dayOfMonth, month + 1, year);
+
+                    // ==================== KIỂM TRA ĐIỀU KIỆN ====================
+                    if (targetEditText == edtHanTra) {
+                        String ngayMuonStr = edtNgayMuon.getText().toString().trim();
+
+                        if (ngayMuonStr.isEmpty()) {
+                            Toast.makeText(this, "Vui lòng chọn Ngày mượn trước!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (isDateBeforeOrEqual(ngayMuonStr, selectedDate)) {
+                            Toast.makeText(this,
+                                    "Hạn trả phải lớn hơn ngày mượn!",
+                                    Toast.LENGTH_LONG).show();
+                            return;   // Không cho set ngày
+                        }
+                    }
+
+                    // Nếu hợp lệ thì mới gán ngày
+                    targetEditText.setText(selectedDate);
+
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -239,5 +265,20 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
         );
 
         datePickerDialog.show();
+    }
+    // Kiểm tra ngày1 (ngày mượn) có lớn hơn hoặc bằng ngày2 (hạn trả) không
+    private boolean isDateBeforeOrEqual(String dateStr1, String dateStr2) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date date1 = sdf.parse(dateStr1);   // Ngày mượn
+            Date date2 = sdf.parse(dateStr2);   // Hạn trả
+
+            if (date1 == null || date2 == null) return false;
+
+            return !date2.after(date1);   // Nếu hạn trả không sau ngày mượn → không hợp lệ
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

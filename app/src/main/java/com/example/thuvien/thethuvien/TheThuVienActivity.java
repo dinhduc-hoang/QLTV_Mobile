@@ -90,6 +90,7 @@ public class TheThuVienActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        theThuVienQuery.tuDongCapNhatTrangThaiThe();
         String keyword = edtSearch.getText().toString().trim();
         listGoc.clear();
         if (keyword.isEmpty()) {
@@ -97,7 +98,7 @@ public class TheThuVienActivity extends AppCompatActivity {
         } else {
             listGoc.addAll(theThuVienQuery.timKiemThe(keyword));
         }
-        
+
         listHienThi.clear();
         listHienThi.addAll(listGoc);
         if (adapter != null) {

@@ -98,13 +98,8 @@ public class UpdateTheThuVienActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 UpdateTheThuVienActivity.this,
                 (view, year, month, dayOfMonth) -> {
-                    String ngay = String.format(
-                            Locale.getDefault(),
-                            "%02d/%02d/%04d",
-                            dayOfMonth,
-                            month + 1,
-                            year
-                    );
+                    String ngay = String.format(Locale.getDefault(), "%02d/%02d/%04d",
+                            dayOfMonth, month + 1, year);
                     targetEditText.setText(ngay);
                 },
                 calendar.get(Calendar.YEAR),
@@ -112,9 +107,32 @@ public class UpdateTheThuVienActivity extends AppCompatActivity {
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
 
+        if (targetEditText.getId() == R.id.edtNgayHetHan) {
+
+            EditText edtNgayCap = findViewById(R.id.edtNgayCap);
+
+            if (edtNgayCap != null && !edtNgayCap.getText().toString().trim().isEmpty()) {
+                try {
+                    String[] parts = edtNgayCap.getText().toString().trim().split("/");
+
+                    int day = Integer.parseInt(parts[0]);
+                    int month = Integer.parseInt(parts[1]) - 1;
+                    int year = Integer.parseInt(parts[2]);
+
+                    Calendar minDate = Calendar.getInstance();
+                    minDate.set(year, month, day);
+
+                    datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+            }
+        }
         datePickerDialog.show();
     }
-
     private void loadThongTin() {
         TheThuVien item = theThuVienQuery.layThongTinTheoMa(id);
 

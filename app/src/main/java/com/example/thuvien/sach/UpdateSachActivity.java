@@ -1,5 +1,6 @@
 package com.example.thuvien.sach;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,6 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thuvien.R;
 import com.example.thuvien.common.SpinnerItem;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import java.util.Calendar;
 import java.util.List;
@@ -23,6 +32,8 @@ public class UpdateSachActivity extends AppCompatActivity {
     EditText edtTenSach, edtSoLuong, edtNamXB;
     Spinner spnMaTL, spnMaTG, spnMaNXB, spnMaNN, spnMaViTri;
     Button btnUpdateSach;
+    ImageView imgSach;
+    String imagePath = "";
 
     String maSach;
     SachQuery sachQuery;
@@ -42,12 +53,18 @@ public class UpdateSachActivity extends AppCompatActivity {
         spnMaNN = findViewById(R.id.spnMaNN);
         spnMaViTri = findViewById(R.id.spnMaViTri);
         btnUpdateSach = findViewById(R.id.btnUpdateSach);
+        imgSach = findViewById(R.id.imgSach);
 
         maSach = getIntent().getStringExtra("MaSach");
         sachQuery = new SachQuery(this);
 
         loadSpinnerData();
         loadThongTinSach();
+        imgSach.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, 200);
+        });
 
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +111,14 @@ public class UpdateSachActivity extends AppCompatActivity {
             setSpinnerSelected(spnMaViTri, sach.getMaViTri());
             edtNamXB.setText(String.valueOf(sach.getNamXB()));
             edtSoLuong.setText(String.valueOf(sach.getSoLuong()));
+            
+            imagePath = sach.getHinhAnh();
+            if (imagePath != null && !imagePath.isEmpty()) {
+                File imgFile = new File(imagePath);
+                if (imgFile.exists()) {
+                    imgSach.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+                }
+            }
         }
     }
 
@@ -176,6 +201,7 @@ public class UpdateSachActivity extends AppCompatActivity {
         sach.setMaViTri(viTri.getId());
         sach.setNamXB(namXB);
         sach.setSoLuong(soLuong);
+        sach.setHinhAnh(imagePath);
 
         boolean result = sachQuery.suaSach(sach);
 
@@ -193,6 +219,48 @@ public class UpdateSachActivity extends AppCompatActivity {
             if (item.getId().equals(selectedId)) {
                 spinner.setSelection(i);
                 break;
+            }
+        }
+    }
+    private String saveImageToInternalStorage(Uri uri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+
+            File file = new File(getFilesDir(),
+                    "img_" + System.currentTimeMillis() + ".jpg");
+
+            OutputStream outputStream = new FileOutputStream(file);
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
+            return file.getAbsolutePath();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 200 && resultCode == RESULT_OK && data != null) {
+
+            Uri uri = data.getData();
+
+            if (uri != null) {
+                imgSach.setImageURI(uri);
+                imagePath = saveImageToInternalStorage(uri);
             }
         }
     }

@@ -24,10 +24,11 @@ public class MuonTraQuery {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String sql = "SELECT mt.MaMT, mt.MaDG, mt.MaNV, mt.NgayMuon, mt.HanTra, mt.TrangThai, " +
-                "d.TenDG, nv.TenNV " +
+                "d.TenDG, nv.TenNV, pt.NgayTra " +
                 "FROM muontra mt " +
                 "JOIN docgia d ON mt.MaDG = d.MaDG " +
                 "JOIN nhanvien nv ON mt.MaNV = nv.MaNV " +
+                "LEFT JOIN phieutra pt ON mt.MaMT = pt.MaMT " +
                 "ORDER BY mt.MaMT ASC";
 
         Cursor cursor = db.rawQuery(sql, null);
@@ -42,6 +43,7 @@ public class MuonTraQuery {
             item.setTrangThai(cursor.getString(5));
             item.setTenDG(cursor.getString(6));
             item.setTenNV(cursor.getString(7));
+            item.setNgayThucTra(cursor.getString(8));
             list.add(item);
         }
 
@@ -221,7 +223,7 @@ public class MuonTraQuery {
     }
 
     public boolean capNhatMuonTraToanBo(String maMT, String maDG, String maNV, String ngayMuon, String hanTra, String trangThai,
-                                       List<String> listMaSach, List<Integer> listSoLuong) {
+                                        List<String> listMaSach, List<Integer> listSoLuong) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
             db.beginTransaction();
@@ -295,22 +297,21 @@ public class MuonTraQuery {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String sql = "SELECT mt.MaMT, mt.MaDG, mt.MaNV, mt.NgayMuon, mt.HanTra, mt.TrangThai, " +
-                "d.TenDG, nv.TenNV " +
+                "d.TenDG, nv.TenNV, s.TenSach, s.HinhAnh, pt.NgayTra " +
                 "FROM muontra mt " +
                 "JOIN docgia d ON mt.MaDG = d.MaDG " +
                 "LEFT JOIN nhanvien nv ON mt.MaNV = nv.MaNV " +
+                "LEFT JOIN chitietmuontra ct ON mt.MaMT = ct.MaMT " +
+                "LEFT JOIN sach s ON ct.MaSach = s.MaSach " +
+                "LEFT JOIN phieutra pt ON mt.MaMT = pt.MaMT " +
                 "WHERE mt.MaDG = ?";
 
         List<String> args = new ArrayList<>();
         args.add(maDG);
 
-        if (trangThai != null) {
-            if (trangThai.equals("Đã trả") || trangThai.equals("Chưa trả")) {
-                sql += " AND mt.TrangThai = ?";
-                args.add(trangThai);
-            } else if (trangThai.equals("Quá hạn")) {
-                sql += " AND mt.TrangThai = 'Chưa trả' AND mt.HanTra < date('now')";
-            }
+        if (trangThai != null && !trangThai.equals("Tất cả")) {
+            sql += " AND mt.TrangThai = ?";
+            args.add(trangThai);
         }
 
         sql += " ORDER BY mt.NgayMuon DESC";
@@ -327,6 +328,10 @@ public class MuonTraQuery {
             item.setTrangThai(cursor.getString(5));
             item.setTenDG(cursor.getString(6));
             item.setTenNV(cursor.getString(7));
+            item.setTenSach(cursor.getString(8));
+            item.setHinhAnh(cursor.getString(9));
+            item.setNgayThucTra(cursor.getString(10));
+
             list.add(item);
         }
 
@@ -339,10 +344,11 @@ public class MuonTraQuery {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String sql = "SELECT mt.MaMT, mt.MaDG, mt.MaNV, mt.NgayMuon, mt.HanTra, mt.TrangThai, " +
-                "d.TenDG, nv.TenNV " +
+                "d.TenDG, nv.TenNV, pt.NgayTra " +
                 "FROM muontra mt " +
                 "JOIN docgia d ON mt.MaDG = d.MaDG " +
                 "JOIN nhanvien nv ON mt.MaNV = nv.MaNV " +
+                "LEFT JOIN phieutra pt ON mt.MaMT = pt.MaMT " +
                 "WHERE mt.MaMT LIKE ? OR d.TenDG LIKE ? OR nv.TenNV LIKE ? OR mt.TrangThai LIKE ? " +
                 "ORDER BY mt.MaMT ASC";
 
@@ -359,11 +365,63 @@ public class MuonTraQuery {
             item.setTrangThai(cursor.getString(5));
             item.setTenDG(cursor.getString(6));
             item.setTenNV(cursor.getString(7));
+            item.setNgayThucTra(cursor.getString(8));
             list.add(item);
         }
 
         cursor.close();
         db.close();
         return list;
+    }
+
+    public void tuDongCapNhatTrangThaiQuaHan() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = null;
+        try {
+            // Cập nhật từ Chưa trả sang Quá hạn
+            cursor = db.rawQuery("SELECT MaMT, HanTra FROM muontra WHERE TrangThai = 'Chưa trả'", null);
+
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            java.util.Date today = new java.util.Date();
+            try {
+                today = sdf.parse(sdf.format(today));
+            } catch (Exception ignored) {}
+
+            while (cursor.moveToNext()) {
+                String maMT = cursor.getString(0);
+                String hanTraStr = cursor.getString(1);
+
+                try {
+                    java.util.Date hanTra = sdf.parse(hanTraStr);
+                    if (hanTra != null && hanTra.before(today)) {
+                        db.execSQL("UPDATE muontra SET TrangThai = 'Quá hạn' WHERE MaMT = ?", new Object[]{maMT});
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (cursor != null) cursor.close();
+
+            // Cập nhật ngược lại từ Quá hạn sang Chưa trả nếu ngày hạn trả được sửa đổi thành tương lai
+            cursor = db.rawQuery("SELECT MaMT, HanTra FROM muontra WHERE TrangThai = 'Quá hạn'", null);
+            while (cursor.moveToNext()) {
+                String maMT = cursor.getString(0);
+                String hanTraStr = cursor.getString(1);
+
+                try {
+                    java.util.Date hanTra = sdf.parse(hanTraStr);
+                    if (hanTra != null && !hanTra.before(today)) {
+                        db.execSQL("UPDATE muontra SET TrangThai = 'Chưa trả' WHERE MaMT = ?", new Object[]{maMT});
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
     }
 }

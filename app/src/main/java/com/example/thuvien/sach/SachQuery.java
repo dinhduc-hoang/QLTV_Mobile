@@ -23,7 +23,7 @@ public class SachQuery {
         List<Sach> list = new ArrayList<Sach>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, " +
+        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, s.HinhAnh, " +
                 "tg.TenTG, tl.TenTL, nxb.TenNXB, nn.TenNN, ks.TenKe " +
                 "FROM sach s " +
                 "JOIN tacgia tg ON s.MaTG = tg.MaTG " +
@@ -46,11 +46,12 @@ public class SachQuery {
             sach.setMaViTri(cursor.getString(6));
             sach.setNamXB(cursor.getInt(7));
             sach.setSoLuong(cursor.getInt(8));
-            sach.setTenTG(cursor.getString(9));
-            sach.setTenTL(cursor.getString(10));
-            sach.setTenNXB(cursor.getString(11));
-            sach.setTenNN(cursor.getString(12));
-            sach.setTenViTri(cursor.getString(13));
+            sach.setHinhAnh(cursor.getString(9));
+            sach.setTenTG(cursor.getString(10));
+            sach.setTenTL(cursor.getString(11));
+            sach.setTenNXB(cursor.getString(12));
+            sach.setTenNN(cursor.getString(13));
+            sach.setTenViTri(cursor.getString(14));
             list.add(sach);
         }
 
@@ -63,7 +64,7 @@ public class SachQuery {
         List<Sach> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, " +
+        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, s.HinhAnh, " +
                 "tg.TenTG, tl.TenTL, nxb.TenNXB, nn.TenNN, ks.TenKe " +
                 "FROM sach s " +
                 "JOIN tacgia tg ON s.MaTG = tg.MaTG " +
@@ -88,11 +89,12 @@ public class SachQuery {
             sach.setMaViTri(cursor.getString(6));
             sach.setNamXB(cursor.getInt(7));
             sach.setSoLuong(cursor.getInt(8));
-            sach.setTenTG(cursor.getString(9));
-            sach.setTenTL(cursor.getString(10));
-            sach.setTenNXB(cursor.getString(11));
-            sach.setTenNN(cursor.getString(12));
-            sach.setTenViTri(cursor.getString(13));
+            sach.setHinhAnh(cursor.getString(9));
+            sach.setTenTG(cursor.getString(10));
+            sach.setTenTL(cursor.getString(11));
+            sach.setTenNXB(cursor.getString(12));
+            sach.setTenNN(cursor.getString(13));
+            sach.setTenViTri(cursor.getString(14));
             list.add(sach);
         }
 
@@ -104,7 +106,7 @@ public class SachQuery {
     public Sach layThongTinSachTheoMa(String maSach) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, " +
+        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, s.HinhAnh, " +
                 "tg.TenTG, tl.TenTL, nxb.TenNXB, nn.TenNN, ks.TenKe " +
                 "FROM sach s " +
                 "JOIN tacgia tg ON s.MaTG = tg.MaTG " +
@@ -129,11 +131,12 @@ public class SachQuery {
             sach.setMaViTri(cursor.getString(6));
             sach.setNamXB(cursor.getInt(7));
             sach.setSoLuong(cursor.getInt(8));
-            sach.setTenTG(cursor.getString(9));
-            sach.setTenTL(cursor.getString(10));
-            sach.setTenNXB(cursor.getString(11));
-            sach.setTenNN(cursor.getString(12));
-            sach.setTenViTri(cursor.getString(13));
+            sach.setHinhAnh(cursor.getString(9));
+            sach.setTenTG(cursor.getString(10));
+            sach.setTenTL(cursor.getString(11));
+            sach.setTenNXB(cursor.getString(12));
+            sach.setTenNN(cursor.getString(13));
+            sach.setTenViTri(cursor.getString(14));
         }
 
         cursor.close();
@@ -165,17 +168,18 @@ public class SachQuery {
     public boolean themSach(Sach sach) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
-            db.execSQL("INSERT INTO sach (MaSach, MaTG, MaNXB, MaTL, TenSach, MaNN, MaViTri, NamXB, SoLuong) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            db.execSQL("INSERT INTO sach (MaSach, MaTG, MaNXB, MaTL, TenSach, NamXB, SoLuong, MaNN, MaViTri, HinhAnh) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     new Object[]{
                             sach.getMaSach(),
                             sach.getMaTG(),
                             sach.getMaNXB(),
                             sach.getMaTL(),
                             sach.getTenSach(),
+                            sach.getNamXB(),
+                            sach.getSoLuong(),
                             sach.getMaNN(),
                             sach.getMaViTri(),
-                            sach.getNamXB(),
-                            sach.getSoLuong()
+                            sach.getHinhAnh()
                     });
             db.close();
             return true;
@@ -189,16 +193,17 @@ public class SachQuery {
     public boolean suaSach(Sach sach) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         try {
-            db.execSQL("UPDATE sach SET MaTG = ?, MaNXB = ?, MaTL = ?, TenSach = ?, MaNN = ?, MaViTri = ?, NamXB = ?, SoLuong = ? WHERE MaSach = ?",
+            db.execSQL("UPDATE sach SET MaTG = ?, MaNXB = ?, MaTL = ?, TenSach = ?, NamXB = ?, SoLuong = ?, MaNN = ?, MaViTri = ?, HinhAnh = ? WHERE MaSach = ?",
                     new Object[]{
                             sach.getMaTG(),
                             sach.getMaNXB(),
                             sach.getMaTL(),
                             sach.getTenSach(),
-                            sach.getMaNN(),
-                            sach.getMaViTri(),
                             sach.getNamXB(),
                             sach.getSoLuong(),
+                            sach.getMaNN(),
+                            sach.getMaViTri(),
+                            sach.getHinhAnh(),
                             sach.getMaSach()
                     });
             db.close();
@@ -241,7 +246,7 @@ public class SachQuery {
         List<Sach> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, " +
+        String sql = "SELECT s.MaSach, s.MaTG, s.MaNXB, s.MaTL, s.TenSach, s.MaNN, s.MaViTri, s.NamXB, s.SoLuong, s.HinhAnh, " +
                 "tg.TenTG, tl.TenTL, nxb.TenNXB, nn.TenNN, ks.TenKe, SUM(ct.SoLuong) as TongMuon " +
                 "FROM sach s " +
                 "JOIN tacgia tg ON s.MaTG = tg.MaTG " +
@@ -267,11 +272,12 @@ public class SachQuery {
             sach.setMaViTri(cursor.getString(6));
             sach.setNamXB(cursor.getInt(7));
             sach.setSoLuong(cursor.getInt(8));
-            sach.setTenTG(cursor.getString(9));
-            sach.setTenTL(cursor.getString(10));
-            sach.setTenNXB(cursor.getString(11));
-            sach.setTenNN(cursor.getString(12));
-            sach.setTenViTri(cursor.getString(13));
+            sach.setHinhAnh(cursor.getString(9));
+            sach.setTenTG(cursor.getString(10));
+            sach.setTenTL(cursor.getString(11));
+            sach.setTenNXB(cursor.getString(12));
+            sach.setTenNN(cursor.getString(13));
+            sach.setTenViTri(cursor.getString(14));
             list.add(sach);
         }
 

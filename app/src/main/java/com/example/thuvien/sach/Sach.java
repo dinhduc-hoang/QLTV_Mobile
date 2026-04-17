@@ -16,6 +16,7 @@ public class Sach {
     private String tenTL;
     private String tenNN;
     private String tenViTri;
+    private String hinhAnh;
 
     public Sach() {
     }
@@ -143,5 +144,13 @@ public class Sach {
 
     public void setTenViTri(String tenViTri) {
         this.tenViTri = tenViTri;
+    }
+
+    public String getHinhAnh() {
+        return hinhAnh;
+    }
+
+    public void setHinhAnh(String hinhAnh) {
+        this.hinhAnh = hinhAnh;
     }
 }

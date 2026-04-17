@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.thuvien.R;
@@ -48,9 +49,23 @@ public class UserBookAdapter extends BaseAdapter {
         TextView tvBookName = convertView.findViewById(R.id.tvBookName);
         TextView tvAuthorName = convertView.findViewById(R.id.tvAuthorName);
         TextView tvStatus = convertView.findViewById(R.id.tvStatus);
+        ImageView imgBook = convertView.findViewById(R.id.imgBook);
 
         tvBookName.setText(sach.getTenSach());
         tvAuthorName.setText(sach.getTenTG());
+
+        if (imgBook != null) {
+            if (sach.getHinhAnh() != null && !sach.getHinhAnh().isEmpty()) {
+                java.io.File file = new java.io.File(sach.getHinhAnh());
+                if (file.exists()) {
+                    imgBook.setImageURI(android.net.Uri.fromFile(file));
+                } else {
+                    imgBook.setImageResource(R.drawable.ic_book);
+                }
+            } else {
+                imgBook.setImageResource(R.drawable.ic_book);
+            }
+        }
 
         if (sach.getSoLuong() <= 0) {
             tvStatus.setText("Hết sách");

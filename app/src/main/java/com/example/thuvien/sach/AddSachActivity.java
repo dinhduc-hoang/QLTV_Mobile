@@ -1,6 +1,9 @@
 package com.example.thuvien.sach;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -14,6 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.thuvien.R;
 import com.example.thuvien.common.SpinnerItem;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.List;
 
@@ -23,6 +30,8 @@ public class AddSachActivity extends AppCompatActivity {
     EditText edtTenSach, edtSoLuong, edtNamXB;
     Spinner spnMaTL, spnMaTG, spnMaNXB, spnMaNN, spnMaViTri;
     Button btnSaveSach;
+    ImageView imgSach;
+    String imagePath = "";
 
     SachQuery sachQuery;
 
@@ -41,6 +50,9 @@ public class AddSachActivity extends AppCompatActivity {
         spnMaNN = findViewById(R.id.spnMaNN);
         spnMaViTri = findViewById(R.id.spnMaViTri);
         btnSaveSach = findViewById(R.id.btnSaveSach);
+        imgSach = findViewById(R.id.imgSach);
+
+
 
         sachQuery = new SachQuery(this);
 
@@ -52,7 +64,11 @@ public class AddSachActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        imgSach.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, 100);
+        });
         btnSaveSach.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,6 +177,7 @@ public class AddSachActivity extends AppCompatActivity {
         sach.setMaViTri(viTri.getId());
         sach.setNamXB(namXB);
         sach.setSoLuong(soLuong);
+        sach.setHinhAnh(imagePath);
 
         boolean result = sachQuery.themSach(sach);
 
@@ -171,4 +188,48 @@ public class AddSachActivity extends AppCompatActivity {
             Toast.makeText(this, "Thêm sách thất bại!", Toast.LENGTH_SHORT).show();
         }
     }
+    private String saveImageToInternalStorage(Uri uri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+
+            File file = new File(getFilesDir(),
+                    "img_" + System.currentTimeMillis() + ".jpg");
+
+            OutputStream outputStream = new FileOutputStream(file);
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
+            return file.getAbsolutePath();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+
+            Uri uri = data.getData();
+
+            if (uri != null) {
+                // hiển thị ảnh lên ImageView
+                imgSach.setImageURI(uri);
+
+                // lưu ảnh vào bộ nhớ app
+                imagePath = saveImageToInternalStorage(uri);
+            }
+        }
+    }
+
 }

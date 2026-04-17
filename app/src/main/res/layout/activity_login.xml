@@ -52,7 +52,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tên đăng nhập"
+                    android:text="Tên đăng nhập hoặc email"
                     android:textColor="#111827"
                     android:textStyle="bold" />
 
@@ -62,7 +62,7 @@
                     android:layout_height="52dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input_box"
-                    android:hint="Nhập tên đăng nhập"
+                    android:hint="Nhập tên đăng nhập hoặc email"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
                     android:textColor="#111827"

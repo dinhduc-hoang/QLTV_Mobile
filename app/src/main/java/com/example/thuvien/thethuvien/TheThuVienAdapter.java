@@ -60,6 +60,12 @@ public class TheThuVienAdapter extends BaseAdapter {
         tvNgayHetHan.setText("Ngày hết hạn: " + dinhDangNgay(the.getNgayHetHan()));
         tvTrangThai.setText(the.getTrangThai());
 
+        if ("Hết hiệu lực".equals(the.getTrangThai())) {
+            tvTrangThai.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
+        } else {
+            tvTrangThai.setTextColor(context.getResources().getColor(android.R.color.holo_green_dark));
+        }
+
         return view;
     }
 

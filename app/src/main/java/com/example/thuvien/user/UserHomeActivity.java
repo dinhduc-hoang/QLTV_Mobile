@@ -72,9 +72,23 @@ public class UserHomeActivity extends AppCompatActivity {
             View view = getLayoutInflater().inflate(R.layout.item_user_book_featured, lnFeaturedBooks, false);
             TextView tvBookName = view.findViewById(R.id.tvBookName);
             TextView tvAuthorName = view.findViewById(R.id.tvAuthorName);
+            android.widget.ImageView imgBook = view.findViewById(R.id.imgBook);
 
             tvBookName.setText(sach.getTenSach());
             tvAuthorName.setText(sach.getTenTG());
+
+            if (imgBook != null) {
+                if (sach.getHinhAnh() != null && !sach.getHinhAnh().isEmpty()) {
+                    java.io.File file = new java.io.File(sach.getHinhAnh());
+                    if (file.exists()) {
+                        imgBook.setImageURI(android.net.Uri.fromFile(file));
+                    } else {
+                        imgBook.setImageResource(R.drawable.ic_book);
+                    }
+                } else {
+                    imgBook.setImageResource(R.drawable.ic_book);
+                }
+            }
 
             view.setOnClickListener(v -> {
                 Intent intent = new Intent(this, UserBookDetailActivity.class);

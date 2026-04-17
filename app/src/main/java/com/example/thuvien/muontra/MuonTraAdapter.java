@@ -62,6 +62,14 @@ public class MuonTraAdapter extends BaseAdapter {
         tvHanTra.setText("Hạn trả: " + mt.getHanTra());
         tvTrangThai.setText(mt.getTrangThai());
 
+        if (mt.getNgayThucTra() != null && !mt.getNgayThucTra().isEmpty()) {
+            tvTrangThai.setTextColor(context.getResources().getColor(android.R.color.holo_green_dark));
+        } else if ("Quá hạn".equals(mt.getTrangThai())) {
+            tvTrangThai.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
+        } else {
+            tvTrangThai.setTextColor(context.getResources().getColor(android.R.color.black));
+        }
+
         return view;
     }
 }
