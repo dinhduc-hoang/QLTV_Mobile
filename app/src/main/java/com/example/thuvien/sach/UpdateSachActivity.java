@@ -111,7 +111,7 @@ public class UpdateSachActivity extends AppCompatActivity {
             setSpinnerSelected(spnMaViTri, sach.getMaViTri());
             edtNamXB.setText(String.valueOf(sach.getNamXB()));
             edtSoLuong.setText(String.valueOf(sach.getSoLuong()));
-            
+
             imagePath = sach.getHinhAnh();
             if (imagePath != null && !imagePath.isEmpty()) {
                 File imgFile = new File(imagePath);

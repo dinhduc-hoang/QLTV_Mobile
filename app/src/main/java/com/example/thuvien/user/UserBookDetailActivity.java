@@ -78,14 +78,14 @@ public class UserBookDetailActivity extends AppCompatActivity {
         if (currentSach != null) {
             tvBookName.setText(currentSach.getTenSach());
             tvAuthorName.setText(currentSach.getTenTG() != null ? currentSach.getTenTG() : "Chưa rõ tác giả");
-            
+
             if (currentSach.getTenTL() != null && !currentSach.getTenTL().isEmpty()) {
                 tvCategory.setVisibility(android.view.View.VISIBLE);
                 tvCategory.setText(currentSach.getTenTL());
             } else {
                 tvCategory.setVisibility(android.view.View.GONE);
             }
-            
+
             tvStockStatus.setText("Số lượng còn: " + currentSach.getSoLuong());
             tvPublishYear.setText(String.valueOf(currentSach.getNamXB()));
             tvPublisher.setText(currentSach.getTenNXB() != null ? currentSach.getTenNXB() : "Đang cập nhật");
@@ -103,7 +103,7 @@ public class UserBookDetailActivity extends AppCompatActivity {
                     imgBook.setImageResource(R.drawable.ic_book);
                 }
             }
-            
+
             if (currentSach.getSoLuong() <= 0) {
                 btnBorrow.setEnabled(false);
                 btnBorrow.setText("Hết sách");

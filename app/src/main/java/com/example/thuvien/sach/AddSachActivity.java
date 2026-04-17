@@ -223,10 +223,7 @@ public class AddSachActivity extends AppCompatActivity {
             Uri uri = data.getData();
 
             if (uri != null) {
-                // hiển thị ảnh lên ImageView
                 imgSach.setImageURI(uri);
-
-                // lưu ảnh vào bộ nhớ app
                 imagePath = saveImageToInternalStorage(uri);
             }
         }

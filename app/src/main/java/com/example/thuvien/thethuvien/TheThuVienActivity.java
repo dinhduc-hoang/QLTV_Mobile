@@ -107,7 +107,6 @@ public class TheThuVienActivity extends AppCompatActivity {
     }
 
     private void filterData(String keyword) {
-        // Logic moved to loadData using SQL
         loadData();
     }
 

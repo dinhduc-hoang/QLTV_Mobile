@@ -51,7 +51,7 @@ public class QuaHanActivity extends AppCompatActivity {
                 "  CAST(julianday('now', 'start of day') - julianday(substr(m.HanTra, 7, 4) || '-' || substr(m.HanTra, 4, 2) || '-' || substr(m.HanTra, 1, 2)) AS INTEGER) as SoNgay " +
                 "  FROM muontra m " +
                 "  JOIN docgia d ON m.MaDG = d.MaDG " +
-                "  WHERE m.TrangThai = 'Chưa trả'" +
+                "  WHERE m.TrangThai = 'Quá hạn'" +
                 ") WHERE SoNgay > 0 ORDER BY SoNgay DESC";
 
         Cursor c = db.rawQuery(sql, null);

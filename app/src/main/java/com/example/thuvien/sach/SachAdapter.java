@@ -71,7 +71,7 @@ public class SachAdapter extends BaseAdapter {
         if (tvViTri != null) tvViTri.setText("Kệ sách: " + sach.getTenViTri());
         if (tvNamXB != null) tvNamXB.setText("Năm XB: " + sach.getNamXB());
         if (tvSoLuong != null) tvSoLuong.setText("SL: " + sach.getSoLuong());
-        
+
         if (imgSach != null) {
             if (sach.getHinhAnh() != null && !sach.getHinhAnh().isEmpty()) {
                 File file = new File(sach.getHinhAnh());

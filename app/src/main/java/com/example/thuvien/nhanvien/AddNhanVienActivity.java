@@ -24,7 +24,6 @@ public class AddNhanVienActivity extends AppCompatActivity {
 
     NhanVienQuery nhanVienQuery;
 
-    // Dữ liệu mảng đơn giản cho cửa sổ Spinner
     String[] arrGioiTinh = {"Nam", "Nữ"};
     String[] arrVaiTro = {"Thủ thư", "Quản lý"};
 
@@ -33,7 +32,6 @@ public class AddNhanVienActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_nhanvien);
 
-        // Ánh xạ id (findViewById)
         edtTenNV = findViewById(R.id.edtTenNV);
         edtQueQuan = findViewById(R.id.edtQueQuan);
         edtNamSinh = findViewById(R.id.edtNamSinh);
@@ -41,15 +39,14 @@ public class AddNhanVienActivity extends AppCompatActivity {
         edtSdt = findViewById(R.id.edtSdt);
         edtUser = findViewById(R.id.edtUser);
         edtPass = findViewById(R.id.edtPass);
-        
+
         spnGioiTinh = findViewById(R.id.spnGioiTinh);
         spnVaiTro = findViewById(R.id.spnVaiTro);
-        
+
         btnSave = findViewById(R.id.btnSave);
-        
+
         nhanVienQuery = new NhanVienQuery(this);
 
-        // Nút lùi về
         ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +55,6 @@ public class AddNhanVienActivity extends AppCompatActivity {
             }
         });
 
-        // Thiết lập Adapter cho 2 Spinner
         ArrayAdapter<String> adapterGioiTinh = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrGioiTinh);
         adapterGioiTinh.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnGioiTinh.setAdapter(adapterGioiTinh);
@@ -67,14 +63,12 @@ public class AddNhanVienActivity extends AppCompatActivity {
         adapterVaiTro.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnVaiTro.setAdapter(adapterVaiTro);
 
-        // Bấm lưu
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<NhanVien> list = nhanVienQuery.layDanhSachNhanVien();
                 int year = Calendar.getInstance().get(Calendar.YEAR);
 
-                // Lấy nội dung từ các Edit Text
                 String ten = edtTenNV.getText().toString().trim();
                 String que = edtQueQuan.getText().toString().trim();
                 String nam = edtNamSinh.getText().toString().trim();
@@ -172,23 +166,20 @@ public class AddNhanVienActivity extends AppCompatActivity {
                     }
                 }
 
-                // Lấy giá trị trực tiếp từ mảng bằng cách truy cập vị trí người dùng đã chọn
                 int viTriGioiTinh = spnGioiTinh.getSelectedItemPosition();
                 String gioiTinh = arrGioiTinh[viTriGioiTinh];
 
                 int viTriVaiTro = spnVaiTro.getSelectedItemPosition();
                 String vaiTro = arrVaiTro[viTriVaiTro];
 
-                // Sinh mã mới và khởi tạo Đối tượng NV
                 String maNV = nhanVienQuery.taoMaNhanVienMoi();
                 NhanVien nv = new NhanVien(maNV, ten, que, gioiTinh, nam, vaiTro, email, sdt, user, pass);
 
-                // Insert (Thêm) vào Database
                 boolean ketQua = nhanVienQuery.themNhanVien(nv);
-                
+
                 if (ketQua == true) {
                     Toast.makeText(AddNhanVienActivity.this, "Thêm thành công! Mã: " + maNV, Toast.LENGTH_SHORT).show();
-                    finish(); // Trở về
+                    finish();
                 } else {
                     Toast.makeText(AddNhanVienActivity.this, "Thêm thất bại!", Toast.LENGTH_SHORT).show();
                 }

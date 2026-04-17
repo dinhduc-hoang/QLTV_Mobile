@@ -57,11 +57,10 @@ public class TopSachActivity extends AppCompatActivity {
 
         list.clear();
         while (c.moveToNext()) {
-            
-            String info = c.getString(1) + "|" +          
-                         "Mã: " + c.getString(0) + "|" +  
-                         "Tác giả: " + c.getString(2) + "|" + 
-                         c.getInt(3);                     
+            String info = c.getString(1) + "|" +
+                         "Mã: " + c.getString(0) + "|" +
+                         "Tác giả: " + c.getString(2) + "|" +
+                         c.getInt(3);
             list.add(info);
         }
         c.close();

@@ -211,7 +211,6 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
     private void showDatePicker(final EditText targetEditText) {
         Calendar calendar = Calendar.getInstance();
 
-        // Nếu là EditText Hạn trả, cố gắng lấy ngày mượn để làm mốc
         if (targetEditText == edtHanTra) {
             String ngayMuonStr = edtNgayMuon.getText().toString().trim();
             if (!ngayMuonStr.isEmpty()) {
@@ -222,7 +221,6 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
                         int m = Integer.parseInt(p[1]) - 1;
                         int y = Integer.parseInt(p[2]);
                         calendar.set(y, m, d);
-                        // Tăng thêm 1 ngày làm mốc tối thiểu cho hạn trả
                         calendar.add(Calendar.DAY_OF_MONTH, 1);
                     }
                 } catch (Exception ignored) {}
@@ -238,7 +236,6 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
                     String selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d",
                             dayOfMonth, month + 1, year);
 
-                    // ==================== KIỂM TRA ĐIỀU KIỆN ====================
                     if (targetEditText == edtHanTra) {
                         String ngayMuonStr = edtNgayMuon.getText().toString().trim();
 
@@ -251,11 +248,10 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
                             Toast.makeText(this,
                                     "Hạn trả phải lớn hơn ngày mượn!",
                                     Toast.LENGTH_LONG).show();
-                            return;   // Không cho set ngày
+                            return;
                         }
                     }
 
-                    // Nếu hợp lệ thì mới gán ngày
                     targetEditText.setText(selectedDate);
 
                 },
@@ -266,16 +262,15 @@ public class UpdateMuonTraActivity extends AppCompatActivity {
 
         datePickerDialog.show();
     }
-    // Kiểm tra ngày1 (ngày mượn) có lớn hơn hoặc bằng ngày2 (hạn trả) không
     private boolean isDateBeforeOrEqual(String dateStr1, String dateStr2) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            Date date1 = sdf.parse(dateStr1);   // Ngày mượn
-            Date date2 = sdf.parse(dateStr2);   // Hạn trả
+            Date date1 = sdf.parse(dateStr1);
+            Date date2 = sdf.parse(dateStr2);
 
             if (date1 == null || date2 == null) return false;
 
-            return !date2.after(date1);   // Nếu hạn trả không sau ngày mượn → không hợp lệ
+            return !date2.after(date1);
         } catch (Exception e) {
             e.printStackTrace();
             return false;

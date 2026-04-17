@@ -58,13 +58,13 @@ public class UserBorrowSuccessActivity extends AppCompatActivity {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
-        cal.add(Calendar.DAY_OF_YEAR, 14); // 14 days borrow period
+        cal.add(Calendar.DAY_OF_YEAR, 14);
         String hanTra = sdf.format(cal.getTime());
         tvDueDate.setText(hanTra);
 
         if (maDG != null && !maDG.isEmpty() && maSach != null) {
             String maMT = muonTraQuery.taoMaMuonTraMoi();
-            
+
             List<String> listMaSach = new ArrayList<>();
             listMaSach.add(maSach);
             List<Integer> listSoLuong = new ArrayList<>();

@@ -140,8 +140,7 @@ public class AddMuonTraActivity extends AppCompatActivity {
                     String selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d",
                             dayOfMonth, month + 1, year);
 
-                    // ====================== KIỂM TRA ĐIỀU KIỆN ======================
-                    if (targetEditText == edtHanTra) {           // Nếu đang chọn Hạn trả
+                    if (targetEditText == edtHanTra) {
                         String ngayMuonStr = edtNgayMuon.getText().toString().trim();
 
                         if (!ngayMuonStr.isEmpty()) {
@@ -149,7 +148,7 @@ public class AddMuonTraActivity extends AppCompatActivity {
                                 Toast.makeText(this,
                                         "Hạn trả không được nhỏ hơn ngày mượn!",
                                         Toast.LENGTH_LONG).show();
-                                return;        // Không cho set ngày
+                                return;
                             }
                         } else {
                             Toast.makeText(this,
@@ -159,7 +158,6 @@ public class AddMuonTraActivity extends AppCompatActivity {
                         }
                     }
 
-                    // Nếu hợp lệ thì mới gán ngày vào EditText
                     targetEditText.setText(selectedDate);
 
                 },
@@ -282,7 +280,7 @@ public class AddMuonTraActivity extends AppCompatActivity {
             Date date2 = sdf.parse(dateStr2);
 
             if (date1 == null || date2 == null) return false;
-            return date1.after(date2);   // date1 (ngày mượn) sau date2 (hạn trả) → không hợp lệ
+            return date1.after(date2);
         } catch (Exception e) {
             e.printStackTrace();
             return false;

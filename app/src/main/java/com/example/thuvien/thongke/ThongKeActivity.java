@@ -64,7 +64,7 @@ public class ThongKeActivity extends AppCompatActivity {
                 "SELECT IFNULL(SUM(ct.SoLuong),0) " +
                         "FROM chitietmuontra ct " +
                         "JOIN muontra mt ON ct.MaMT = mt.MaMT " +
-                        "WHERE mt.TrangThai = 'Chưa trả'"
+                        "WHERE mt.TrangThai IN ('Chưa trả', 'Quá hạn')"
         )));
 
         db.close();

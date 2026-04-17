@@ -96,7 +96,7 @@ public class UserBorrowAdapter extends BaseAdapter {
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
             java.util.Date dueDate = sdf.parse(hanTra);
             java.util.Date today = sdf.parse(sdf.format(new java.util.Date()));
-            
+
             if (dueDate != null) {
                 long diff = dueDate.getTime() - today.getTime();
                 long days = diff / (24 * 60 * 60 * 1000);

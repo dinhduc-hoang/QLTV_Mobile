@@ -19,74 +19,74 @@
             </intent-filter>
         </activity>
 
-        
+
         <activity android:name=".login.LoginActivity" />
         <activity android:name=".login.RecoverPasswordActivity" />
 
-        
+
         <activity android:name=".trangchu.TrangChuActivity" />
 
-        
+
         <activity android:name=".sach.SachActivity" />
         <activity android:name=".sach.AddSachActivity" />
         <activity android:name=".sach.UpdateSachActivity" />
 
-        
+
         <activity android:name=".tacgia.TacGiaActivity" />
         <activity android:name=".tacgia.AddTacGiaActivity" />
         <activity android:name=".tacgia.UpdateTacGiaActivity" />
 
-        
+
         <activity android:name=".theloai.TheLoaiActivity" />
         <activity android:name=".theloai.AddTheLoaiActivity" />
         <activity android:name=".theloai.UpdateTheLoaiActivity" />
 
-        
+
         <activity android:name=".nhaxuatban.NXBActivity" />
         <activity android:name=".nhaxuatban.AddNXBActivity" />
         <activity android:name=".nhaxuatban.UpdateNXBActivity" />
 
-        
+
         <activity android:name=".ngonngu.NgonNguActivity" />
         <activity android:name=".ngonngu.AddNgonNguActivity" />
         <activity android:name=".ngonngu.UpdateNgonNguActivity" />
 
-        
+
         <activity android:name=".kesach.KeSachActivity" />
         <activity android:name=".kesach.AddKeSachActivity" />
         <activity android:name=".kesach.UpdateKeSachActivity" />
 
-        
+
         <activity android:name=".docgia.DocGiaActivity" />
         <activity android:name=".docgia.AddDocGiaActivity" />
         <activity android:name=".docgia.UpdateDocGiaActivity" />
 
-        
+
         <activity android:name=".nhanvien.NhanVienActivity" />
         <activity android:name=".nhanvien.AddNhanVienActivity" />
         <activity android:name=".nhanvien.UpdateNhanVienActivity" />
 
-        
+
         <activity android:name=".muontra.MuonTraActivity" />
         <activity android:name=".muontra.AddMuonTraActivity" />
         <activity android:name=".muontra.UpdateMuonTraActivity" />
 
-        
+
         <activity android:name=".thethuvien.TheThuVienActivity" />
         <activity android:name=".thethuvien.AddTheThuVienActivity" />
         <activity android:name=".thethuvien.UpdateTheThuVienActivity" />
 
-        
+
         <activity android:name=".lop.LopActivity" />
         <activity android:name=".lop.AddLopActivity" />
         <activity android:name=".lop.UpdateLopActivity" />
 
-        
+
         <activity android:name=".khoa.KhoaActivity" />
         <activity android:name=".khoa.AddKhoaActivity" />
         <activity android:name=".khoa.UpdateKhoaActivity" />
 
-        
+
         <activity android:name=".thongke.ThongKeActivity" />
         <activity android:name=".thongke.TopDocGiaActivity"/>
         <activity android:name=".thongke.TopSachActivity"/>

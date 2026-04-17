@@ -22,11 +22,11 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
     EditText edtTenNV, edtQueQuan, edtNamSinh, edtEmail, edtSdt, edtUser, edtPass;
     Spinner spnGioiTinh, spnVaiTro;
     Button btnUpdate;
-    
+
     NhanVienQuery nhanVienQuery;
     String maNV;
 
-    // Dữ liệu mảng đơn giản
+
     String[] arrGioiTinh = {"Nam", "Nữ"};
     String[] arrVaiTro = {"Thủ thư", "Quản lý"};
 
@@ -42,12 +42,12 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
         edtSdt = findViewById(R.id.edtSdt);
         edtUser = findViewById(R.id.edtUser);
         edtPass = findViewById(R.id.edtPass);
-        
+
         spnGioiTinh = findViewById(R.id.spnGioiTinh);
         spnVaiTro = findViewById(R.id.spnVaiTro);
-        
+
         btnUpdate = findViewById(R.id.btnUpdate);
-        
+
         nhanVienQuery = new NhanVienQuery(this);
 
         ImageView imgBack = findViewById(R.id.imgBack);
@@ -57,8 +57,6 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        // Đọc dữ liệu Intent gửi qua
         Intent intent = getIntent();
         maNV = intent.getStringExtra("maNV");
         edtTenNV.setText(intent.getStringExtra("tenNV"));
@@ -68,33 +66,30 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
         edtSdt.setText(intent.getStringExtra("sdt"));
         edtUser.setText(intent.getStringExtra("user"));
         edtPass.setText(intent.getStringExtra("pass"));
-        
+
         String gioiTinhCu = intent.getStringExtra("gioiTinh");
         String vaiTroCu = intent.getStringExtra("vaiTro");
 
-        // Thiết lập Adapter
         ArrayAdapter<String> adapterGioiTinh = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrGioiTinh);
         adapterGioiTinh.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnGioiTinh.setAdapter(adapterGioiTinh);
-        
-        // So sánh chuỗi (thủ công) để gán vị trí Spinner Chọn
+
         if (gioiTinhCu != null && gioiTinhCu.equals("Nữ")) {
             spnGioiTinh.setSelection(1);
         } else {
-            spnGioiTinh.setSelection(0); // Nam
+            spnGioiTinh.setSelection(0);
         }
 
         ArrayAdapter<String> adapterVaiTro = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrVaiTro);
         adapterVaiTro.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnVaiTro.setAdapter(adapterVaiTro);
-        
+
         if (vaiTroCu != null && vaiTroCu.equals("Quản lý")) {
             spnVaiTro.setSelection(1);
         } else {
-            spnVaiTro.setSelection(0); // Thủ thư
+            spnVaiTro.setSelection(0);
         }
 
-        // Bấm Cập nhật
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -216,7 +211,7 @@ public class UpdateNhanVienActivity extends AppCompatActivity {
                 String vaiTroMoi = arrVaiTro[spnVaiTro.getSelectedItemPosition()];
 
                 NhanVien nvMoi = new NhanVien(maNV, ten, que, gioiTinhMoi, nam, vaiTroMoi, email, sdt, user, pass);
-                
+
                 boolean ketQua = nhanVienQuery.suaNhanVien(nvMoi);
 
                 if (ketQua == true) {

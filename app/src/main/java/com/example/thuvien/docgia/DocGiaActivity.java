@@ -96,7 +96,7 @@ public class DocGiaActivity extends AppCompatActivity {
         } else {
             listGoc.addAll(docGiaQuery.timKiemDocGia(keyword));
         }
-        
+
         listHienThi.clear();
         listHienThi.addAll(listGoc);
         if (adapter != null) {
@@ -105,7 +105,6 @@ public class DocGiaActivity extends AppCompatActivity {
     }
 
     private void filterData(String keyword) {
-        // Logic moved to loadData using SQL
         loadData();
     }
 

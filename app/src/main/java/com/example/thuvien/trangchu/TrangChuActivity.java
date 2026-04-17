@@ -61,7 +61,6 @@ public class TrangChuActivity extends AppCompatActivity {
         tvWelcome.setText("Xin chào, " + sp.getString("TenNV", "Nhân viên"));
         tvRole.setText("Vai trò: " + sp.getString("VaiTro", "Không rõ"));
 
-        // Tự động cập nhật trạng thái thẻ thư viện và phiếu mượn quá hạn
         new TheThuVienQuery(this).tuDongCapNhatTrangThaiThe();
         new MuonTraQuery(this).tuDongCapNhatTrangThaiQuaHan();
 

@@ -30,11 +30,9 @@ public class NhanVienActivity extends AppCompatActivity {
     ListView lvData;
 
     NhanVienQuery nhanVienQuery;
-    
-    // Mảng lưu danh sách gốc
+
     List<NhanVien> listGoc = new ArrayList<>();
-    
-    // Mảng lưu danh sách khi tìm kiếm
+
     List<NhanVien> listHienThi = new ArrayList<>();
 
     NhanVienAdapter adapter;
@@ -46,13 +44,11 @@ public class NhanVienActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nhanvien);
 
-        // Ánh xạ (Tìm view theo ID)
         edtSearch = findViewById(R.id.edtSearch);
         btnAdd = findViewById(R.id.btnAdd);
         lvData = findViewById(R.id.lvNhanVien);
         nhanVienQuery = new NhanVienQuery(this);
 
-        // Sự kiện ấn nút Back
         ImageView imgBack = findViewById(R.id.imgBack);
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,13 +57,11 @@ public class NhanVienActivity extends AppCompatActivity {
             }
         });
 
-        // Thiết lập Adapter cho ListView
         adapter = new NhanVienAdapter(this, R.layout.item_nhanvien, listHienThi);
         lvData.setAdapter(adapter);
 
         loadData();
 
-        // Sự kiện tìm kiếm (Gõ chữ tới đâu hiển thị tới đó)
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -81,7 +75,6 @@ public class NhanVienActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // Chuyển sang màn hình thêm khi bấm nút Add
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,14 +83,13 @@ public class NhanVienActivity extends AppCompatActivity {
             }
         });
 
-        // Đăng ký Context menu (Menu giữ đè)
         registerForContextMenu(lvData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadData(); // Tải lại danh sách sau khi quay về trang này
+        loadData();
     }
 
     private void loadData() {
@@ -108,7 +100,7 @@ public class NhanVienActivity extends AppCompatActivity {
         } else {
             listGoc.addAll(nhanVienQuery.timKiemNhanVien(keyword));
         }
-        
+
         listHienThi.clear();
         listHienThi.addAll(listGoc);
         if (adapter != null) {
@@ -117,7 +109,6 @@ public class NhanVienActivity extends AppCompatActivity {
     }
 
     private void filterData(String keyword) {
-        // Chuyển sang dùng SQL trong loadData
         loadData();
     }
 
@@ -125,7 +116,7 @@ public class NhanVienActivity extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         getMenuInflater().inflate(R.menu.context_menu, menu);
-        
+
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         selectedPosition = info.position;
     }
@@ -136,14 +127,11 @@ public class NhanVienActivity extends AppCompatActivity {
             return super.onContextItemSelected(item);
         }
 
-        // Lấy nhân viên đang được click
         NhanVien nvEdit = listHienThi.get(selectedPosition);
 
         if (item.getItemId() == R.id.menu_update) {
-            // Chuyển sang màng hình Update
             Intent intent = new Intent(NhanVienActivity.this, UpdateNhanVienActivity.class);
-            
-            // Đẩy dữ liệu qua bằng intent
+
             intent.putExtra("maNV", nvEdit.getMaNV());
             intent.putExtra("tenNV", nvEdit.getTenNV());
             intent.putExtra("queQuan", nvEdit.getQueQuan());
@@ -154,11 +142,10 @@ public class NhanVienActivity extends AppCompatActivity {
             intent.putExtra("sdt", nvEdit.getSdt());
             intent.putExtra("user", nvEdit.getUser());
             intent.putExtra("pass", nvEdit.getPass());
-            
+
             startActivity(intent);
 
         } else if (item.getItemId() == R.id.menu_delete) {
-            // Xoá
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Xác nhận xóa");
             builder.setMessage("Bạn có chắc xóa Nhân viên này?");
@@ -168,7 +155,7 @@ public class NhanVienActivity extends AppCompatActivity {
                     boolean kq = nhanVienQuery.xoaNhanVien(nvEdit.getMaNV());
                     if (kq == true) {
                         Toast.makeText(NhanVienActivity.this, "Đã xóa!", Toast.LENGTH_SHORT).show();
-                        loadData(); // Tải lại danh sách
+                        loadData();
                     } else {
                         Toast.makeText(NhanVienActivity.this, "Xóa thất bại!", Toast.LENGTH_SHORT).show();
                     }

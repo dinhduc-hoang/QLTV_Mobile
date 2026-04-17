@@ -97,7 +97,7 @@ public class NgonNguActivity extends AppCompatActivity {
         } else {
             listGoc.addAll(ngonNguQuery.timKiemNgonNgu(keyword));
         }
-        
+
         listHienThi.clear();
         listHienThi.addAll(listGoc);
         if (adapter != null) {
@@ -106,7 +106,6 @@ public class NgonNguActivity extends AppCompatActivity {
     }
 
     private void filterData(String keyword) {
-        // Logic moved to loadData using SQL
         loadData();
     }
 

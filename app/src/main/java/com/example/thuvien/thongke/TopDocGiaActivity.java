@@ -46,7 +46,6 @@ public class TopDocGiaActivity extends AppCompatActivity {
     private void loadData() {
         SQLiteDatabase db = new SQLiteHelper(this).getReadableDatabase();
 
-        
         String sql = "SELECT d.MaDG, d.TenDG, k.TenKhoa, l.TenLop, COUNT(m.MaMT) as SoLuot " +
                 "FROM docgia d " +
                 "JOIN khoa k ON d.MaKhoa = k.MaKhoa " +
@@ -59,7 +58,6 @@ public class TopDocGiaActivity extends AppCompatActivity {
 
         list.clear();
         while (c.moveToNext()) {
-            
             String info = c.getString(1) + "|" +
                          "Mã ĐG: " + c.getString(0) + "|" +
                          "Khoa: " + c.getString(2) + " - Lớp: " + c.getString(3) + "|" +

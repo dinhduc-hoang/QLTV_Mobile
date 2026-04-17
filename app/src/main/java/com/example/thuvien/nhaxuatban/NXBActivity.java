@@ -97,7 +97,7 @@ public class NXBActivity extends AppCompatActivity {
         } else {
             listGoc.addAll(nxbQuery.timKiemNXB(keyword));
         }
-        
+
         listHienThi.clear();
         listHienThi.addAll(listGoc);
         if (adapter != null) {
@@ -106,7 +106,6 @@ public class NXBActivity extends AppCompatActivity {
     }
 
     private void filterData(String keyword) {
-        // Logic moved to loadData using SQL
         loadData();
     }
 

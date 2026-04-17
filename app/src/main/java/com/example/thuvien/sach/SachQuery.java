@@ -222,7 +222,7 @@ public class SachQuery {
                 "SELECT COUNT(*) " +
                         "FROM chitietmuontra ct " +
                         "JOIN muontra mt ON ct.MaMT = mt.MaMT " +
-                        "WHERE ct.MaSach = ? AND (mt.TrangThai = 'Chưa trả' OR mt.TrangThai = 'Đang mượn')",
+                        "WHERE ct.MaSach = ? AND mt.TrangThai IN ('Chưa trả', 'Quá hạn', 'Đang mượn')",
                 new String[]{maSach}
         );
 
@@ -284,7 +284,6 @@ public class SachQuery {
         cursor.close();
         db.close();
 
-        // Nếu danh sách vẫn trống (rất hiếm khi xảy ra), lấy danh sách sách mặc định
         if (list.isEmpty()) {
             return layDanhSachSach();
         }

@@ -48,13 +48,12 @@ public class UserCurrentBorrowingActivity extends AppCompatActivity {
         String maDG = sp.getString("MaDG", "");
 
         listMuonTra.clear();
-        // Lấy cả 'Chưa trả' và 'Quá hạn' vì cả hai đều là đang mượn chưa trả
         List<MuonTra> chuTra = muonTraQuery.layDanhSachMuonTraTheoDocGia(maDG, "Chưa trả");
         List<MuonTra> quaHan = muonTraQuery.layDanhSachMuonTraTheoDocGia(maDG, "Quá hạn");
-        
+
         listMuonTra.addAll(chuTra);
         listMuonTra.addAll(quaHan);
-        
+
         tvCount.setText("Đang mượn (" + listMuonTra.size() + ")");
         adapter.notifyDataSetChanged();
     }

@@ -286,7 +286,7 @@ public class MuonTraQuery {
 
     public boolean kiemTraDocGiaDangMuonSach(String maDG) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM muontra WHERE MaDG = ? AND TrangThai = 'Chưa trả'", new String[]{maDG});
+        Cursor cursor = db.rawQuery("SELECT * FROM muontra WHERE MaDG = ? AND TrangThai IN ('Chưa trả', 'Quá hạn')", new String[]{maDG});
         boolean result = cursor.getCount() > 0;
         cursor.close();
         db.close();
@@ -378,7 +378,6 @@ public class MuonTraQuery {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = null;
         try {
-            // Cập nhật từ Chưa trả sang Quá hạn
             cursor = db.rawQuery("SELECT MaMT, HanTra FROM muontra WHERE TrangThai = 'Chưa trả'", null);
 
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -402,7 +401,6 @@ public class MuonTraQuery {
             }
             if (cursor != null) cursor.close();
 
-            // Cập nhật ngược lại từ Quá hạn sang Chưa trả nếu ngày hạn trả được sửa đổi thành tương lai
             cursor = db.rawQuery("SELECT MaMT, HanTra FROM muontra WHERE TrangThai = 'Quá hạn'", null);
             while (cursor.moveToNext()) {
                 String maMT = cursor.getString(0);

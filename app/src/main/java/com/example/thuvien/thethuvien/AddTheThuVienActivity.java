@@ -106,7 +106,6 @@ public class AddTheThuVienActivity extends AppCompatActivity {
         );
 
         if (targetEditText.getId() == R.id.edtNgayHetHan) {
-            // Lấy ngày cấp thẻ từ EditText edtNgayCap
             EditText edtNgayCap = findViewById(R.id.edtNgayCap);
 
             if (edtNgayCap != null && !edtNgayCap.getText().toString().isEmpty()) {
