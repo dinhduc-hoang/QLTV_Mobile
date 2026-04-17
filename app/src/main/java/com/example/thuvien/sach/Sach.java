@@ -22,7 +22,7 @@ public class Sach {
     }
 
     public Sach(String maSach, String maTG, String maNXB, String maTL, String tenSach,
-                String maNN, String maViTri, int namXB, int soLuong) {
+                String maNN, String maViTri, int namXB, int soLuong,String hinhAnh) {
         this.maSach = maSach;
         this.maTG = maTG;
         this.maNXB = maNXB;
@@ -32,6 +32,7 @@ public class Sach {
         this.maViTri = maViTri;
         this.namXB = namXB;
         this.soLuong = soLuong;
+        this.hinhAnh = hinhAnh;
     }
 
     public String getMaSach() {

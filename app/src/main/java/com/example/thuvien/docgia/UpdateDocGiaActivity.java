@@ -114,8 +114,14 @@ public class UpdateDocGiaActivity extends AppCompatActivity {
 
     private void setupKhoaLopDependency() {
         spnKhoa.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            private boolean isFirstLoad = true;
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isFirstLoad) {
+                    isFirstLoad = false;
+                    return;
+                }
                 SpinnerItem khoa = (SpinnerItem) spnKhoa.getSelectedItem();
                 if (khoa != null) {
                     loadLopSpinner(khoa.getId(), "");

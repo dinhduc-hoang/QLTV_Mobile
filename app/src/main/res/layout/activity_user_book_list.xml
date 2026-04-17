@@ -30,13 +30,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/imgFilter"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_category"
-            app:tint="@color/white" />
     </RelativeLayout>
 
     <LinearLayout

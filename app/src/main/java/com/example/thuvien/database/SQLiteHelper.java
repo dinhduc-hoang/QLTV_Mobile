@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "qltv.db";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
 
     public SQLiteHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);

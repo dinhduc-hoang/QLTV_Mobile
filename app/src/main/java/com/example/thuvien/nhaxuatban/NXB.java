@@ -11,39 +11,39 @@ public class NXB {
         return MaNXB;
     }
 
-    public void setMaNXB( String MaNXB ) {
-        this.MaNXB = MaNXB;
+    public void setMaNXB(String maNXB) {
+        MaNXB = maNXB;
     }
 
     public String getTenNXB() {
         return TenNXB;
     }
 
-    public void setTenNXB( String TenNXB ) {
-        this.TenNXB = TenNXB;
+    public void setTenNXB(String tenNXB) {
+        TenNXB = tenNXB;
     }
 
     public String getDiaChi() {
         return DiaChi;
     }
 
-    public void setDiaChi( String DiaChi ) {
-        this.DiaChi = DiaChi;
+    public void setDiaChi(String diaChi) {
+        DiaChi = diaChi;
     }
 
     public String getEmail() {
         return Email;
     }
 
-    public void setEmail( String Email ) {
-        this.Email = Email;
+    public void setEmail(String email) {
+        Email = email;
     }
 
     public String getSdt() {
         return Sdt;
     }
 
-    public void setSdt( String Sdt ) {
-        this.Sdt = Sdt;
+    public void setSdt(String sdt) {
+        Sdt = sdt;
     }
 }

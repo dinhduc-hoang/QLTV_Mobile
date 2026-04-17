@@ -28,33 +28,83 @@ public class NhanVien {
         this.pass = pass;
     }
 
-    public String getMaNV() { return maNV; }
-    public void setMaNV(String maNV) { this.maNV = maNV; }
+    public String getMaNV() {
+        return maNV;
+    }
 
-    public String getTenNV() { return tenNV; }
-    public void setTenNV(String tenNV) { this.tenNV = tenNV; }
+    public void setMaNV(String maNV) {
+        this.maNV = maNV;
+    }
 
-    public String getQueQuan() { return queQuan; }
-    public void setQueQuan(String queQuan) { this.queQuan = queQuan; }
+    public String getTenNV() {
+        return tenNV;
+    }
 
-    public String getGioiTinh() { return gioiTinh; }
-    public void setGioiTinh(String gioiTinh) { this.gioiTinh = gioiTinh; }
+    public void setTenNV(String tenNV) {
+        this.tenNV = tenNV;
+    }
 
-    public String getNamSinh() { return namSinh; }
-    public void setNamSinh(String namSinh) { this.namSinh = namSinh; }
+    public String getQueQuan() {
+        return queQuan;
+    }
 
-    public String getVaiTro() { return vaiTro; }
-    public void setVaiTro(String vaiTro) { this.vaiTro = vaiTro; }
+    public void setQueQuan(String queQuan) {
+        this.queQuan = queQuan;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getGioiTinh() {
+        return gioiTinh;
+    }
 
-    public String getSdt() { return sdt; }
-    public void setSdt(String sdt) { this.sdt = sdt; }
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
+    }
 
-    public String getUser() { return user; }
-    public void setUser(String user) { this.user = user; }
+    public String getNamSinh() {
+        return namSinh;
+    }
 
-    public String getPass() { return pass; }
-    public void setPass(String pass) { this.pass = pass; }
+    public void setNamSinh(String namSinh) {
+        this.namSinh = namSinh;
+    }
+
+    public String getVaiTro() {
+        return vaiTro;
+    }
+
+    public void setVaiTro(String vaiTro) {
+        this.vaiTro = vaiTro;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
 }

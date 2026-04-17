@@ -13,19 +13,19 @@ public class KeSach {
         this.maViTri = maViTri;
     }
 
-    public String getTenKe() {
-        return tenKe;
-    }
-
-    public void setTenKe(String tenKe) {
-        this.tenKe = tenKe;
-    }
-
     public String getMoTa() {
         return moTa;
     }
 
     public void setMoTa(String moTa) {
         this.moTa = moTa;
+    }
+
+    public String getTenKe() {
+        return tenKe;
+    }
+
+    public void setTenKe(String tenKe) {
+        this.tenKe = tenKe;
     }
 }
