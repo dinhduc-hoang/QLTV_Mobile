@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="orange_primary">#FF8C00</color>
-    <color name="orange_light">#FFF4E5</color>
-    <color name="orange_dark">#E67E00</color>
+    <!-- Tông xanh tươi sáng Vibrant Blue thay thế hoàn toàn màu cam và tím -->
+    <color name="orange_primary">#2962FF</color>
+    <color name="orange_light">#E3F2FD</color>
+    <color name="orange_dark">#1565C0</color>
+
+    <!-- Màu Xanh cho Header và các thành phần khác -->
+    <color name="blue_primary">#2962FF</color>
+    <color name="blue_dark">#1565C0</color>
+    <color name="blue_light">#00B0FF</color>
+
     <color name="white">#FFFFFF</color>
     <color name="text_dark">#111827</color>
     <color name="text_gray">#6B7280</color>
     <color name="line_soft">#E5E7EB</color>
     <color name="text_hint">#9CA3AF</color>
     <color name="bg_light">#FAFAFA</color>
-    <color name="purple_primary">#FF8C00</color>
-    <color name="blue_primary">#FF8C00</color>
-    <color name="blue_dark">#E67E00</color>
+
+    <color name="purple_primary">#2962FF</color>
+    <color name="purple_200">#2962FF</color>
+    <color name="purple_500">#2962FF</color>
+    <color name="purple_700">#1565C0</color>
 </resources>

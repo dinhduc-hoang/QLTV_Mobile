@@ -93,16 +93,26 @@
             app:tint="@color/text_hint" />
     </LinearLayout>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:layout_marginTop="24dp"
-        android:backgroundTint="@color/orange_primary"
+        android:background="@drawable/bg_button_primary"
         android:text="Đăng nhập"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Quên mật khẩu?"
+        android:textColor="@color/orange_primary"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
 </LinearLayout>
